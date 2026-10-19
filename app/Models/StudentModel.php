@@ -33,7 +33,7 @@ class StudentModel
 
     public function getGrades($studId)
     {
-        $sql = "SELECT g.*, c.code, c.description, sem.semester_name, ay.ay_name
+        $sql = "SELECT g.*, c.code, c.description, c.units, sem.semester_name, ay.ay_name
                 FROM student_grades g
                 JOIN enrolments e ON g.enrolment_id = e.enrolment_id
                 JOIN courses c ON g.course_id = c.course_id
