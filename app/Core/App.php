@@ -9,7 +9,7 @@ class App
 
     private function __construct()
     {
-        $this->config = require_once __DIR__ . '/../config/config.php';
+        $this->config = require_once __DIR__ . '/../../config/config.php';
         session_start();
         $this->db = Database::getInstance();
     }
