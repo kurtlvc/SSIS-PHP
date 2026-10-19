@@ -9,6 +9,7 @@ require_once __DIR__ . '/app/Models/EnrolmentModel.php';
 require_once __DIR__ . '/app/Models/PaymentModel.php';
 require_once __DIR__ . '/app/Models/ClearanceModel.php';
 require_once __DIR__ . '/app/Models/DocumentRequestModel.php';
+require_once __DIR__ . '/app/Controllers/BaseController.php';
 require_once __DIR__ . '/app/Controllers/AuthController.php';
 require_once __DIR__ . '/app/Controllers/StudentController.php';
 require_once __DIR__ . '/app/Controllers/RegistrarController.php';
