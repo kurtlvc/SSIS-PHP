@@ -1,5 +1,16 @@
 <?php
 $studentName = ($student['fname'] ?? '') . ' ' . ($student['lname'] ?? '');
+$passedCount = 0;
+$failedCount = 0;
+if (!empty($grades)) {
+    foreach ($grades as $g) {
+        if ($g['final_grade'] !== null && $g['final_grade'] >= 3.0) {
+            $passedCount++;
+        } else {
+            $failedCount++;
+        }
+    }
+}
 ?>
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0">Grades & Academic History</h1>
@@ -24,11 +35,11 @@ $studentName = ($student['fname'] ?? '') . ' ' . ($student['lname'] ?? '');
                 <p class="text-muted small mb-0">Total Courses</p>
             </div>
             <div class="col-md-3">
-                <h2 class="display-6 fw-bold text-info"><?= count($passed ?? []) ?></h2>
+                <h2 class="display-6 fw-bold text-info"><?= $passedCount ?></h2>
                 <p class="text-muted small mb-0">Passed</p>
             </div>
             <div class="col-md-3">
-                <h2 class="display-6 fw-bold text-danger"><?= count($failed ?? []) ?></h2>
+                <h2 class="display-6 fw-bold text-danger"><?= $failedCount ?></h2>
                 <p class="text-muted small mb-0">Failed/Incomplete</p>
             </div>
         </div>

@@ -59,12 +59,25 @@ class App
     {
         $config = self::getInstance()->getConfig();
         $viewFile = __DIR__ . '/../app/Views/' . $file . '.php';
-        if (file_exists($viewFile)) {
-            extract($data);
-            require_once $viewFile;
-        } else {
+
+        if (!file_exists($viewFile)) {
             http_response_code(404);
             echo "<h1>View not found: {$file}</h1>";
+            return;
+        }
+
+        extract($data, EXTR_SKIP);
+
+        $layoutFile = __DIR__ . '/../app/Views/layouts/app.php';
+        $content = '';
+
+        if (file_exists($layoutFile) && $file !== 'auth/login') {
+            ob_start();
+            require_once $viewFile;
+            $content = ob_get_clean();
+            require_once $layoutFile;
+        } else {
+            require_once $viewFile;
         }
     }
 
