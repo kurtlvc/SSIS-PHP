@@ -3,11 +3,20 @@
 class Database
 {
     private static $instance = null;
+    private static $configCache = null;
     private $pdo;
+
+    private static function loadConfig()
+    {
+        if (self::$configCache === null) {
+            self::$configCache = require __DIR__ . '/config.php';
+        }
+        return self::$configCache;
+    }
 
     private function __construct()
     {
-        $config = require_once __DIR__ . '/config.php';
+        $config = self::loadConfig();
         $db = $config['db'];
 
         $dsn = "mysql:host={$db['host']};port={$db['port']};dbname={$db['database']};charset={$db['charset']}";
@@ -16,11 +25,11 @@ class Database
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES   => false,
-            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE {$db['collation']}",
         ];
 
         try {
             $this->pdo = new PDO($dsn, $db['username'], $db['password'], $options);
+            $this->pdo->exec("SET NAMES utf8mb4 COLLATE {$db['collation']}");
         } catch (PDOException $e) {
             if ($config['app_debug']) {
                 die("Database Connection Failed: " . $e->getMessage());
@@ -77,8 +86,8 @@ class Database
         $setClause = implode(', ', $setParts);
         $params = array_merge($data, $whereParams);
         $sql = "UPDATE {$table} SET {$setClause} WHERE {$where}";
-        $this->query($sql, $params);
-        return $this->query($sql, $params)->rowCount();
+        $stmt = $this->query($sql, $params);
+        return $stmt->rowCount();
     }
 
     public function delete($table, $where, $params = [])

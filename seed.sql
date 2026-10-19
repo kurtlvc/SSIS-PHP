@@ -75,7 +75,8 @@ INSERT INTO rooms (room_id, room_name, room_type_id, building_id, status) VALUES
 (2, 'Room 102', 1, 1, 1),
 (3, 'Room 201', 1, 1, 1),
 (4, 'Lab 1', 2, 1, 1),
-(5, 'Lab 2', 2, 1, 1);
+(5, 'Lab 2', 2, 1, 1),
+(6, 'Room 202', 1, 1, 1);
 
 -- 2. PERSONNEL
 -- ---------------------------------------------------------

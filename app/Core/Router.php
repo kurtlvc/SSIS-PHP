@@ -3,11 +3,9 @@
 class Router
 {
     private $routes = [];
-    private $config;
 
     public function __construct()
     {
-        $this->config = require_once __DIR__ . '/config/config.php';
     }
 
     public function get($path, $handler)
@@ -87,7 +85,7 @@ class Router
     {
         if (is_string($handler) && strpos($handler, '@') !== false) {
             list($controller, $method) = explode('@', $handler);
-            $controllerFile = __DIR__ . "/app/Controllers/{$controller}.php";
+            $controllerFile = __DIR__ . "/../Controllers/{$controller}.php";
             if (!file_exists($controllerFile)) {
                 $this->handle404();
                 return;
@@ -113,7 +111,7 @@ class Router
     private function handle404()
     {
         http_response_code(404);
-        $viewFile = __DIR__ . '/app/Views/errors/404.php';
+        $viewFile = __DIR__ . '/../../app/Views/errors/404.php';
         if (file_exists($viewFile)) {
             require_once $viewFile;
         } else {

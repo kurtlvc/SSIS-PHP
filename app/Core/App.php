@@ -58,7 +58,7 @@ class App
     public static function view($file, $data = [])
     {
         $config = self::getInstance()->getConfig();
-        $viewFile = __DIR__ . '/../app/Views/' . $file . '.php';
+        $viewFile = __DIR__ . '/../Views/' . $file . '.php';
 
         if (!file_exists($viewFile)) {
             http_response_code(404);
@@ -68,7 +68,7 @@ class App
 
         extract($data, EXTR_SKIP);
 
-        $layoutFile = __DIR__ . '/../app/Views/layouts/app.php';
+        $layoutFile = __DIR__ . '/../Views/layouts/app.php';
         $content = '';
 
         if (file_exists($layoutFile) && $file !== 'auth/login') {
