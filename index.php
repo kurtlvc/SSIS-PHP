@@ -1,12 +1,21 @@
-<!DOCTYPE html>
-<html lang="">
-  <head>
-    <meta charset="utf-8">
-    <title></title>
-  </head>
-  <body>
-    <header></header>
-    <main></main>
-    <footer></footer>
-  </body>
-</html>
+<?php
+
+require_once __DIR__ . '/app/Core/App.php';
+require_once __DIR__ . '/app/Core/Router.php';
+require_once __DIR__ . '/config/database.php';
+require_once __DIR__ . '/app/Models/UserModel.php';
+require_once __DIR__ . '/app/Models/StudentModel.php';
+require_once __DIR__ . '/app/Models/EnrolmentModel.php';
+require_once __DIR__ . '/app/Models/PaymentModel.php';
+require_once __DIR__ . '/app/Models/ClearanceModel.php';
+require_once __DIR__ . '/app/Models/DocumentRequestModel.php';
+require_once __DIR__ . '/app/Controllers/AuthController.php';
+require_once __DIR__ . '/app/Controllers/StudentController.php';
+require_once __DIR__ . '/app/Controllers/RegistrarController.php';
+require_once __DIR__ . '/app/Controllers/CashierController.php';
+require_once __DIR__ . '/app/Controllers/DepartmentController.php';
+require_once __DIR__ . '/app/Controllers/AdminController.php';
+
+require_once __DIR__ . '/app/routes.php';
+
+App::getInstance()->run();
