@@ -1,14 +1,234 @@
-body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+/* CuyoSIS - Cuyosis Design System */
 
-.navbar .nav-link.active { color: #0d6efd !important; }
+:root {
+    --cuyo-green: #1e4f3f;
+    --cuyo-green-dark: #153d2d;
+    --cuyo-green-light: #2ea66a;
+    --cuyo-green-soft: #e8f1ed;
+    --cuyo-white: #ffffff;
+    --cuyo-gray: #f0f1f5;
+    --cuyo-gray-dark: #6c7580;
+    --cuyo-gray-border: #e4e6eb;
+}
 
-.card { border-radius: 0.5rem; box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.04); }
-.card-header { border-bottom: 1px solid #e9ecef; }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #212529;
+}
 
-.table th { font-weight: 600; }
+.bg-cuyo-gray {
+    background-color: var(--cuyo-gray) !important;
+}
 
-.nav-link:hover { color: rgba(255,255,255,0.75) !important; }
+.text-cuyo-green {
+    color: var(--cuyo-green) !important;
+}
 
-.min-vh-100 { min-height: 100vh; }
+.border-cuyo-green {
+    border-color: var(--cuyo-green) !important;
+}
 
-.fw-bold { font-weight: 700 !important; }
+/* Top Navigation Bar */
+.navbar.navbar-light.bg-white {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.navbar .navbar-brand {
+    font-weight: 700;
+}
+
+/* Slim Sidebar */
+.cuyo-sidebar {
+    width: 220px;
+    min-width: 220px;
+}
+
+.cuyo-sidebar .nav-link {
+    border-radius: 0.5rem;
+    color: var(--cuyo-gray-dark);
+    font-weight: 500;
+    padding: 0.6rem 1rem;
+    transition: all 0.15s ease;
+}
+
+.cuyo-sidebar .nav-link:hover {
+    color: var(--cuyo-green);
+    background-color: var(--cuyo-green-soft);
+}
+
+.cuyo-sidebar .nav-link.active {
+    color: var(--cuyo-white);
+    background-color: var(--cuyo-green);
+}
+
+.cuyo-sidebar .nav-link.active i {
+    color: var(--cuyo-white);
+}
+
+.cuyo-sidebar .nav-link i {
+    color: var(--cuyo-green);
+}
+
+.cuyo-sidebar .nav-link:not(.active):hover i {
+    color: var(--cuyo-green);
+}
+
+/* Main Content */
+.cuyo-main {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+/* Welcome Banner */
+.cuyo-banner {
+    border-radius: 0.75rem;
+    overflow: hidden;
+}
+
+.bg-overlay {
+    background: linear-gradient(135deg, rgba(21, 61, 45, 0.8), rgba(21, 61, 45, 0.65));
+}
+
+.btn-cuyo-action {
+    background-color: var(--cuyo-white);
+    color: var(--cuyo-green);
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    transition: all 0.15s ease;
+}
+
+.btn-cuyo-action:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16);
+}
+
+/* Right Column */
+.cuyo-right {
+    width: 240px;
+    min-width: 240px;
+    max-width: 240px;
+}
+
+/* Date Card */
+.cuyo-date-card {
+    background: linear-gradient(135deg, var(--cuyo-green-dark), var(--cuyo-green));
+    border-radius: 0.75rem;
+    overflow: hidden;
+}
+
+/* Weather Card */
+.cuyo-weather-card {
+    border-radius: 0.75rem;
+    background-color: var(--cuyo-white);
+}
+
+.cuyo-weather-card .card-body {
+    background: linear-gradient(135deg, var(--cuyo-white), var(--cuyo-green-soft));
+}
+
+/* Statistic Cards */
+.cuyo-stat-card {
+    border-radius: 0.75rem;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cuyo-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+.cuyo-stat-card .card-body i {
+    font-size: 1.5rem;
+}
+
+/* Cards */
+.card {
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.04);
+}
+
+.card.border-0 {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.04);
+}
+
+.card-header {
+    border-bottom: 1px solid var(--cuyo-gray-border);
+    background-color: var(--cuyo-white);
+}
+
+/* Tables */
+.table th {
+    font-weight: 600;
+    color: var(--cuyo-gray-dark);
+    border-bottom: 1px solid var(--cuyo-gray-border);
+}
+
+.table td {
+    border-bottom: 1px solid var(--cuyo-gray-border);
+}
+
+.table.table-hover tbody tr:hover {
+    background-color: var(--cuyo-green-soft);
+}
+
+/* Utility */
+.min-vh-100 {
+    min-height: 100vh;
+}
+
+.fw-bold {
+    font-weight: 700 !important;
+}
+
+.nav-link:hover {
+    color: rgba(13, 110, 253, 0.75) !important;
+}
+
+/* Buttons */
+.btn-outline-cuyo-green {
+    color: var(--cuyo-green);
+    border-color: var(--cuyo-green);
+}
+
+.btn-outline-cuyo-green:hover {
+    color: var(--cuyo-white);
+    background-color: var(--cuyo-green);
+    border-color: var(--cuyo-green);
+}
+
+/* Badges */
+.badge.bg-success-subtle {
+    color: var(--cuyo-green-dark) !important;
+    background-color: rgba(40, 167, 69, 0.15) !important;
+}
+
+.badge.bg-danger-subtle {
+    color: #dc3545 !important;
+    background-color: rgba(220, 53, 69, 0.15) !important;
+}
+
+/* Responsive */
+@media (max-width: 1199.98px) {
+    .cuyo-right {
+        display: none !important;
+    }
+    .cuyo-sidebar {
+        display: none !important;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .cuyo-main {
+        padding-right: 0;
+    }
+}
+
+@media (min-width: 1200px) {
+    .cuyo-right {
+        display: flex !important;
+    }
+    .cuyo-sidebar {
+        display: flex !important;
+    }
+}

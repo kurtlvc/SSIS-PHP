@@ -55,7 +55,7 @@ class App
         exit;
     }
 
-    public static function view($file, $data = [])
+    public static function view($file, $data = [], $layout = 'app')
     {
         $config = self::getInstance()->getConfig();
         $viewFile = __DIR__ . '/../Views/' . $file . '.php';
@@ -68,10 +68,10 @@ class App
 
         extract($data, EXTR_SKIP);
 
-        $layoutFile = __DIR__ . '/../Views/layouts/app.php';
+        $layoutFile = __DIR__ . '/../Views/layouts/' . $layout . '.php';
         $content = '';
 
-        if (file_exists($layoutFile) && $file !== 'auth/login') {
+        if (file_exists($layoutFile) && $layout !== 'none') {
             ob_start();
             require_once $viewFile;
             $content = ob_get_clean();

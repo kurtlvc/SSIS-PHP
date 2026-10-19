@@ -23,14 +23,38 @@ class StudentController extends BaseController
         $gpa = $this->studentModel->calculateGPA($grades);
         $recentGrades = array_slice($grades, 0, 5);
 
+        $dateInfo = [
+            'weekday' => date('l'),
+            'day' => date('j'),
+            'month' => date('F'),
+            'year' => date('Y'),
+            'time' => date('g:i A'),
+        ];
+
+        $weatherInfo = [
+            'icon' => 'bi-sun',
+            'temperature' => '24°',
+            'condition' => 'Partly Cloudy',
+            'humidity' => '65%',
+            'wind' => '8 km/h',
+            'forecast' => [
+                ['day' => 'Mon', 'icon' => 'bi-cloud-sun', 'high' => '26°', 'low' => '18°'],
+                ['day' => 'Tue', 'icon' => 'bi-cloud', 'high' => '23°', 'low' => '17°'],
+                ['day' => 'Wed', 'icon' => 'bi-sun', 'high' => '25°', 'low' => '19°'],
+                ['day' => 'Thu', 'icon' => 'bi-cloud-drizzle', 'high' => '22°', 'low' => '16°'],
+            ],
+        ];
+
         App::view('student/dashboard', [
             'student' => $student,
             'enrolments' => $enrolments,
             'grades' => $recentGrades,
             'gpa' => $gpa,
+            'dateInfo' => $dateInfo,
+            'weatherInfo' => $weatherInfo,
             'pageTitle' => 'Dashboard',
             'module' => 'student',
-        ]);
+        ], 'cuyosis');
     }
 
     public function grades()
