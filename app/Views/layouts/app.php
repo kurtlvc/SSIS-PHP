@@ -3,6 +3,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="CuyoTech University Student Services Information System">
+    <meta name="theme-color" content="#1e4f3f">
+    <link rel="icon" type="image/webp" href="/ssis/assets/cuyotech-logo-900x900.webp">
     <title><?= htmlspecialchars($pageTitle ?? $config['system_title'] ?? 'CuyoSSIS') ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-B/GM4XqrwHnWXNOWMbloTmrYXZg10cakYGmpfsR/bbzQ6JAJI4ihuyADKLnBgrCe" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
