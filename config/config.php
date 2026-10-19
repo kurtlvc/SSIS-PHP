@@ -31,7 +31,7 @@ if (file_exists($envFile)) {
 }
 
 return [
-    'app_name'   => env('APP_NAME', 'CuyoSIS'),
+    'app_name'   => env('APP_NAME', 'CuyoSSIS'),
     'app_env'    => env('APP_ENV', 'local'),
     'app_debug'  => env('APP_DEBUG', false),
     'site_url'   => rtrim(env('SITE_URL', 'http://localhost'), '/'),

@@ -1,5 +1,5 @@
 -- ============================================================================
--- CuyoSIS - CuyoTech University Student Information System
+-- CuyoSSIS - CuyoTech University Student Services Information System
 -- Complete Database Schema
 -- Integrates core academic tables, authentication, and new modules
 -- (Cashier, Department, Registrar, Document Requests)

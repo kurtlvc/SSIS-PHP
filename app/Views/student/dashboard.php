@@ -28,7 +28,7 @@ ob_start();
 <!-- Date Card (Dark Green) -->
 <div class="card border-0 text-white cuyo-date-card mb-4 shadow-sm">
     <div class="card-body text-center py-4">
-        <i class="bi bi-calendar3 display-5 mb-2 opacity-75"></i>
+        <i class="bi bi-calendar3 display-5 mb-2 opacity-75"" aria-hidden="true"></i>
         <h3 class="fw-bold mb-1"><?= $dateInfo['day'] ?></h3>
         <p class="mb-1 small text-uppercase letter-spacing-1"><?= $dateInfo['month'] ?></p>
         <p class="mb-0 small"><?= $dateInfo['weekday'] ?></p>
@@ -39,7 +39,7 @@ ob_start();
 <!-- Weather Card (Light) -->
 <div class="card border-0 bg-white cuyo-weather-card shadow-sm">
     <div class="card-body text-center py-3">
-        <i class="bi <?= $weatherInfo['icon'] ?> display-4 text-warning mb-2"></i>
+        <i class="bi <?= $weatherInfo['icon'] ?> display-4 text-warning mb-2" aria-hidden="true"></i>
         <h2 class="fw-bold mb-1"><?= $weatherInfo['temperature'] ?></h2>
         <p class="small text-muted mb-2"><?= $weatherInfo['condition'] ?></p>
         <div class="row g-1 small text-center">
@@ -57,7 +57,7 @@ ob_start();
                 <?php foreach ($weatherInfo['forecast'] as $f): ?>
                     <div class="d-flex justify-content-between align-items-center mb-1 small">
                         <span class="text-muted w-30"><?= $f['day'] ?></span>
-                        <i class="bi <?= $f['icon'] ?> text-muted"></i>
+                        <i class="bi <?= $f['icon'] ?> text-muted" aria-hidden="true"></i>
                         <div class="text-end">
                             <span class="fw-medium"><?= $f['high'] ?>/<?= $f['low'] ?></span>
                         </div>
@@ -73,7 +73,7 @@ $rightColumn = ob_get_clean();
 ?>
 
 <!-- Welcome Banner -->
-<div class="cuyo-banner card border-0 text-white mb-4 shadow-sm overflow-hidden position-relative" style="background-image: url('/sis/assets/cuyotech-bg-1200x675.webp'); background-size: cover; background-position: center;">
+<div class="cuyo-banner card border-0 text-white mb-4 shadow-sm overflow-hidden position-relative" style="background-image: url('/ssis/assets/cuyotech-bg-1200x675.webp'); background-size: cover; background-position: center;">
     <div class="card-body position-relative text-center py-5 py-md-6">
         <div class="position-absolute top-0 start-0 w-100 h-100 bg-overlay"></div>
         <div class="position-relative z-2">
@@ -81,8 +81,8 @@ $rightColumn = ob_get_clean();
             <p class="lead mb-4 opacity-90">
                 Access your grades, schedule, and document requests in one place.
             </p>
-            <a href="/sis/student/documents/request" class="btn btn-light btn-cuyo-action rounded-pill px-4 py-2 small">
-                <i class="bi bi-folder2-open me-1"></i>Request a Document
+                <a href="/ssis/student/documents/request" class="btn btn-light btn-cuyo-action rounded-pill px-4 py-2 small">
+                <i class="bi bi-folder2-open me-1" aria-hidden="true"></i>Request a Document
             </a>
         </div>
     </div>
@@ -99,7 +99,7 @@ $rightColumn = ob_get_clean();
     <div class="col-6 col-lg-3 col-xl-2">
         <div class="card border-0 bg-white h-100 shadow-sm cuyo-stat-card">
             <div class="card-body text-center py-3">
-                <i class="bi bi-graph-up-arrow display-5 text-cuyo-green mb-2"></i>
+                <i class="bi bi-graph-up-arrow display-5 text-cuyo-green mb-2" aria-hidden="true"></i>
                 <h3 class="fw-bold mb-0 text-cuyo-green"><?= number_format($gpa ?? 0, 2) ?></h3>
                 <p class="text-muted small mb-0">Current GPA</p>
             </div>
@@ -108,7 +108,7 @@ $rightColumn = ob_get_clean();
     <div class="col-6 col-lg-3 col-xl-2">
         <div class="card border-0 bg-white h-100 shadow-sm cuyo-stat-card">
             <div class="card-body text-center py-3">
-                <i class="bi bi-journal-check display-5 text-cuyo-green mb-2"></i>
+                <i class="bi bi-journal-check display-5 text-cuyo-green mb-2" aria-hidden="true"></i>
                 <h3 class="fw-bold mb-0 text-cuyo-green"><?= count($enrolments ?? []) ?></h3>
                 <p class="text-muted small mb-0">Active Enrolments</p>
             </div>
@@ -117,7 +117,7 @@ $rightColumn = ob_get_clean();
     <div class="col-6 col-lg-3 col-xl-2">
         <div class="card border-0 bg-white h-100 shadow-sm cuyo-stat-card">
             <div class="card-body text-center py-3">
-                <i class="bi bi-folder2-open display-5 text-cuyo-green mb-2"></i>
+                <i class="bi bi-folder2-open display-5 text-cuyo-green mb-2" aria-hidden="true"></i>
                 <h3 class="fw-bold mb-0 text-cuyo-green"><?= count($requests ?? []) ?></h3>
                 <p class="text-muted small mb-0">Doc. Requests</p>
             </div>
@@ -126,7 +126,7 @@ $rightColumn = ob_get_clean();
     <div class="col-6 col-lg-3 col-xl-2">
         <div class="card border-0 bg-white h-100 shadow-sm cuyo-stat-card">
             <div class="card-body text-center py-3">
-                <i class="bi bi-clock display-5 text-cuyo-green mb-2"></i>
+                <i class="bi bi-clock display-5 text-cuyo-green mb-2" aria-hidden="true"></i>
                 <h3 class="fw-bold mb-0 text-cuyo-green">
                     <?php
                     $pending = 0;
@@ -145,7 +145,7 @@ $rightColumn = ob_get_clean();
     <div class="col-6 col-lg-3 col-xl-2">
         <div class="card border-0 bg-white h-100 shadow-sm cuyo-stat-card">
             <div class="card-body text-center py-3">
-                <i class="bi bi-person-circle display-5 text-cuyo-green mb-2"></i>
+                <i class="bi bi-person-circle display-5 text-cuyo-green mb-2" aria-hidden="true"></i>
                 <h3 class="fw-bold mb-0 text-cuyo-green d-none d-xl-block" style="font-size: 1.25rem;"><?= htmlspecialchars(substr($studentName, 0, 1)) ?></h3>
                 <h3 class="fw-bold mb-0 text-cuyo-green d-xl-none" style="font-size: 1.25rem;"><?= htmlspecialchars($studentName) ?></h3>
                 <p class="text-muted small mb-0">Student Profile</p>
@@ -155,7 +155,7 @@ $rightColumn = ob_get_clean();
     <div class="col-6 col-lg-3 col-xl-2">
         <div class="card border-0 bg-white h-100 shadow-sm cuyo-stat-card">
             <div class="card-body text-center py-3">
-                <i class="bi bi-trophy display-5 text-cuyo-green mb-2"></i>
+                <i class="bi bi-trophy display-5 text-cuyo-green mb-2" aria-hidden="true"></i>
                 <h3 class="fw-bold mb-0 text-cuyo-green">
                     <?php
                     $passed = 0;
@@ -179,7 +179,7 @@ $rightColumn = ob_get_clean();
         <h3 class="h6 fw-bold mb-3">Recent Grades</h3>
         <?php if (!empty($grades)): ?>
             <div class="table-responsive">
-                <table class="table table-sm table-hover mb-0">
+                <table class="table table-sm table-hover mb-0" aria-label="Recent grades">
                     <thead>
                         <tr>
                             <th class="border-0 text-muted small">Subject</th>
@@ -216,9 +216,12 @@ $rightColumn = ob_get_clean();
     <div class="card-body">
         <h3 class="h6 fw-bold mb-3">Quick Actions</h3>
         <div class="d-grid gap-2">
-            <a href="/sis/student/grades" class="btn btn-outline-cuyo-green btn-sm">View All Grades</a>
-            <a href="/sis/student/schedule" class="btn btn-outline-cuyo-green btn-sm">My Schedule</a>
-            <a href="/sis/student/documents/request" class="btn btn-outline-cuyo-green btn-sm">Request Document</a>
+                <a href="/ssis/student/grades" class="btn btn-outline-cuyo-green btn-sm">
+                <i class="bi bi-journal-text me-1" aria-hidden="true"></i>View All Grades</a>
+                <a href="/ssis/student/schedule" class="btn btn-outline-cuyo-green btn-sm">
+                <i class="bi bi-calendar-event me-1" aria-hidden="true"></i>My Schedule</a>
+                <a href="/ssis/student/documents/request" class="btn btn-outline-cuyo-green btn-sm">
+                <i class="bi bi-folder2-open me-1" aria-hidden="true"></i>Request Document</a>
         </div>
     </div>
 </div>

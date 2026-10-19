@@ -32,6 +32,12 @@ class Router
         return $this;
     }
 
+    public function patch($path, $handler)
+    {
+        $this->routes['PATCH'][$this->normalizePath($path)] = $handler;
+        return $this;
+    }
+
     private function normalizePath($path)
     {
         return '/' . trim($path, '/');
@@ -41,7 +47,7 @@ class Router
     {
         $path = parse_url($requestUri, PHP_URL_PATH);
         $path = $this->normalizePath($path);
-        $basePath = '/sis';
+        $basePath = '/ssis';
         if (strpos($path, $basePath) === 0) {
             $path = substr($path, strlen($basePath));
             $path = $path === '' ? '/' : $path;

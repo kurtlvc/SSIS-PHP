@@ -1,14 +1,14 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0">Clearance Processing</h1>
-    <a href="/sis/department/clearance" class="btn btn-outline-secondary btn-sm">Refresh</a>
+    <a href="/ssis/department/clearance" class="btn btn-outline-secondary btn-sm">Refresh</a>
 </div>
 
 <div class="card mb-4">
     <div class="card-header bg-white">
         <form method="GET" class="row g-3 align-items-end">
             <div class="col-md-5">
-                <label class="form-label small">Semester</label>
-                <select name="sem_id" class="form-select form-select-sm">
+                <label for="sem_id" class="form-label small">Semester</label>
+                <select name="sem_id" id="sem_id" class="form-select form-select-sm">
                     <option value="">All Semesters</option>
                     <?php foreach ($semesters as $sem): ?>
                         <option value="<?= $sem['sem_id'] ?>" <?= (isset($_GET['sem_id']) && $_GET['sem_id'] == $sem['sem_id']) ? 'selected' : '' ?>>
@@ -18,8 +18,8 @@
                 </select>
             </div>
             <div class="col-md-5">
-                <label class="form-label small">Department</label>
-                <select name="dept_id" class="form-select form-select-sm">
+                <label for="dept_id" class="form-label small">Department</label>
+                <select name="dept_id" id="dept_id" class="form-select form-select-sm">
                     <option value="">All Departments</option>
                     <?php foreach ($departments as $dept): ?>
                         <option value="<?= $dept['dept_id'] ?>" <?= (isset($_GET['dept_id']) && $_GET['dept_id'] == $dept['dept_id']) ? 'selected' : '' ?>>
@@ -36,7 +36,7 @@
     <div class="card-body p-0">
         <?php if (!empty($records)): ?>
             <div class="table-responsive">
-                <table class="table table-hover mb-0">
+                <table class="table table-hover mb-0" aria-label="Clearance records">
                     <thead class="table-light">
                         <tr>
                             <th>Student</th>
@@ -61,7 +61,7 @@
                                     <span class="badge <?= $cls ?>"><?= $rec['status'] ?></span>
                                 </td>
                                 <td class="text-center">
-                                    <a href="/sis/department/clearance/<?= $rec['stud_id'] ?>" class="btn btn-sm btn-outline-primary">Process</a>
+                                    <a href="/ssis/department/clearance/<?= $rec['stud_id'] ?>" class="btn btn-sm btn-outline-primary">Process</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

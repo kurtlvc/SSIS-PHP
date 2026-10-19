@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="CuyoTech University Student Information System">
-    <title>Login - <?= htmlspecialchars($system_title ?? $config['system_title'] ?? 'CuyoSIS') ?></title>
+    <meta name="description" content="CuyoTech University Student Services Information System">
+    <title>Login - <?= htmlspecialchars($system_title ?? $config['system_title'] ?? 'CuyoSSIS') ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-B/GM4XqrwHnWXNOWMbloTmrYXZg10cakYGmpfsR/bbzQ6JAJI4ihuyADKLnBgrCe" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="/sis/assets/css/style.css" rel="stylesheet">
+    <link href="/ssis/assets/css/style.css" rel="stylesheet">
     <style>
         :root {
             --teal: #0d9488;
@@ -43,7 +43,7 @@
         /* Left Panel - 53% on desktop, full on mobile */
         .login-left {
             position: relative;
-            background-image: url('/sis/assets/cuyotech-bg-1200x675.webp');
+            background-image: url('/ssis/assets/cuyotech-bg-1200x675.webp');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -237,10 +237,10 @@
         <div class="login-left">
             <div class="content-wrapper d-flex flex-column justify-content-center">
                 <div class="info-card card border-0">
-                    <img src="/sis/assets/cuyotech-logo-900x900.webp" alt="CuyoTech Logo" class="logo img-fluid mx-auto d-block">
+                    <img src="/ssis/assets/cuyotech-logo-900x900.webp" alt="CuyoTech Logo" class="logo img-fluid mx-auto d-block">
                     <div class="brand">CuyoTech University</div>
-                    <h1 class="title">CuyoSIS</h1>
-                    <p class="subtitle">Student Information System</p>
+                    <h1 class="title">CuyoSSIS</h1>
+                    <p class="subtitle">Student Services Information System</p>
                     <p class="desc">Access your academic records, enrollment, grades, schedules, and document services — all in one secure portal.</p>
                 </div>
             </div>
@@ -250,59 +250,66 @@
         <div class="login-right">
             <div class="login-card card border-0">
                 <div class="card-body">
-                    <img src="/sis/assets/cuyotech-logo-900x900.webp" alt="Institutional Crest" class="crest img-fluid mx-auto d-block">
+                    <img src="/ssis/assets/cuyotech-logo-900x900.webp" alt="Institutional Crest" class="crest img-fluid mx-auto d-block">
                     <h2>Welcome back</h2>
-                    <p class="lead">Sign in to continue to CuyoSIS</p>
+                    <p class="lead">Sign in to continue to CuyoSSIS</p>
 
                     <?php if (isset($error) && $error): ?>
-                        <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert" style="border-radius: 0.75rem; border: none; font-size: 0.875rem;">
-                            <i class="bi bi-exclamation-circle me-1"></i>
+                        <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert" aria-live="polite" style="border-radius: 0.75rem; border: none; font-size: 0.875rem;">
+                            <i class="bi bi-exclamation-circle me-1" aria-hidden="true"></i>
                             <?= htmlspecialchars($error) ?>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     <?php endif; ?>
 
-                    <form method="POST" action="/sis/login" autocomplete="off" novalidate>
-                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token ?? '') ?>">
+                    <form method="POST" action="/ssis/login" autocomplete="off">
+                         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token ?? '') ?>">
 
-                        <div class="mb-4">
-                            <label for="login" class="form-label">Institutional Email / Username</label>
-                            <div class="input-group-wrapper">
-                                <i class="input-icon bi bi-person"></i>
-                                <input type="text" class="form-control" id="login" name="login"
-                                       placeholder="Enter your email or username" required autofocus>
-                            </div>
-                        </div>
+                         <div class="mb-4">
+                             <label for="login" class="form-label">Institutional Email / Username</label>
+                             <div class="input-group-wrapper">
+                                 <i class="input-icon bi bi-person" aria-hidden="true"></i>
+                                 <input type="text" class="form-control" id="login" name="login"
+                                        placeholder="Enter your email or username" required autofocus
+                                        aria-required="true" autocomplete="username">
+                             </div>
+                         </div>
 
-                        <div class="mb-4">
-                            <label for="password" class="form-label">Password</label>
-                            <div class="input-group-wrapper">
-                                <i class="input-icon bi bi-lock"></i>
-                                <input type="password" class="form-control" id="password" name="password"
-                                       placeholder="Enter your password" required>
-                                <button type="button" class="password-toggle" id="togglePassword" title="Show password" aria-label="Toggle password visibility">
-                                    <i class="bi bi-eye-slash"></i>
-                                </button>
-                            </div>
-                        </div>
+                         <div class="mb-4">
+                             <label for="password" class="form-label">Password</label>
+                             <div class="input-group-wrapper">
+                                 <i class="input-icon bi bi-lock" aria-hidden="true"></i>
+                                 <input type="password" class="form-control" id="password" name="password"
+                                        placeholder="Enter your password" required
+                                        aria-required="true" autocomplete="current-password"
+                                        aria-describedby="passwordHelp">
+                                 <button type="button" class="password-toggle" id="togglePassword"
+                                        title="Show password" aria-label="Show password"
+                                        aria-controls="password" aria-pressed="false">
+                                     <i class="bi bi-eye-slash" aria-hidden="true"></i>
+                                 </button>
+                             </div>
+                             <div id="passwordHelp" class="form-text small text-muted mt-1">Password must be at least 8 characters.</div>
+                         </div>
 
-                        <div class="remember-row">
-                            <div class="form-check d-flex align-items-center">
-                                <input class="form-check-input" type="checkbox" id="remember" name="remember">
-                                <label class="form-check-label" for="remember">Remember me</label>
-                            </div>
-                            <a href="/sis/password-reset" class="forgot-link">Forgot password?</a>
-                        </div>
+                         <div class="remember-row">
+                             <div class="form-check d-flex align-items-center">
+                                 <input class="form-check-input" type="checkbox" id="remember" name="remember"
+                                        aria-label="Remember me">
+                                 <label class="form-check-label" for="remember">Remember me</label>
+                             </div>
+                             <a href="/ssis/forgot-password" class="forgot-link">Forgot password?</a>
+                         </div>
 
-                        <button type="submit" class="btn btn-signin">
-                            <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
-                        </button>
-                    </form>
+                         <button type="submit" class="btn btn-signin">
+                             <i class="bi bi-box-arrow-in-right me-2" aria-hidden="true"></i>Sign In
+                         </button>
+                     </form>
 
-                    <div class="help-text">
-                        Need assistance? Contact the
-                        <a href="mailto:registrar@cuyotech.edu">Registrar's Office</a>
-                    </div>
+                     <div class="help-text">
+                         Need assistance? Contact the
+                         <a href="mailto:registrar@cuyotech.edu">Registrar's Office</a>
+                     </div>
                 </div>
             </div>
         </div>
@@ -310,7 +317,7 @@
 
     <!-- Footer: Dark Navy Strip -->
     <footer class="footer-strip w-100">
-        &copy; <?= date('Y') ?> CuyoTech University &middot; CuyoSIS &middot; Academic Year <?= $academic_year ?? (date('Y') . '&ndash;' . date('Y', strtotime('+1 year'))) ?>
+        &copy; <?= date('Y') ?> CuyoTech University &middot; CuyoSSIS &middot; Academic Year <?= $academic_year ?? (date('Y') . '&ndash;' . date('Y', strtotime('+1 year'))) ?>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-1a/pXj49ZQ1aHEmrJ+gMw1otqoVsYwlEnlD8mIfY2TV03r20Y0CN7uqx1tQogjPL" crossorigin="anonymous"></script>
@@ -320,8 +327,13 @@
             const toggle = document.getElementById('togglePassword');
             const password = document.getElementById('password');
             toggle.addEventListener('click', function() {
-                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-                password.setAttribute('type', type);
+                const isShowing = password.getAttribute('type') === 'text';
+                const newType = isShowing ? 'password' : 'text';
+                const newLabel = isShowing ? 'Show password' : 'Hide password';
+                password.setAttribute('type', newType);
+                this.setAttribute('aria-pressed', isShowing ? 'false' : 'true');
+                this.setAttribute('aria-label', newLabel);
+                this.setAttribute('title', newLabel);
                 const icon = this.querySelector('i');
                 icon.classList.toggle('bi-eye');
                 icon.classList.toggle('bi-eye-slash');

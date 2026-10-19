@@ -67,7 +67,7 @@ if (!empty($grades)) {
     <div class="card-body p-0">
         <?php if (!empty($grades)): ?>
             <div class="table-responsive">
-                <table class="table table-hover mb-0">
+                <table class="table table-hover mb-0" aria-label="Academic history">
                     <thead class="table-light">
                         <tr>
                             <th>A/Y</th>

@@ -6,7 +6,7 @@
     <div class="col-md-3">
         <div class="card border-primary h-100">
             <div class="card-body text-center">
-                <i class="bi bi-cash-stack display-5 text-primary mb-2"></i>
+                <i class="bi bi-cash-stack display-5 text-primary mb-2"" aria-hidden="true"></i>
                 <h5 class="card-title">Today's Collections</h5>
                 <h2 class="fw-bold text-primary">₱ <?= number_format($summary ? array_sum(array_column($summary, 'total_amount')) : 0, 2) ?></h2>
             </div>
@@ -15,7 +15,7 @@
     <div class="col-md-3">
         <div class="card border-success h-100">
             <div class="card-body text-center">
-                <i class="bi bi-receipt display-5 text-success mb-2"></i>
+                <i class="bi bi-receipt display-5 text-success mb-2"" aria-hidden="true"></i>
                 <h5 class="card-title">Total Transactions</h5>
                 <h2 class="fw-bold text-success"><?= $summary ? array_sum(array_column($summary, 'total_transactions')) : 0 ?></h2>
             </div>
@@ -24,7 +24,7 @@
     <div class="col-md-3">
         <div class="card border-warning h-100">
             <div class="card-body text-center">
-                <i class="bi bi-hourglass-bottom display-5 text-warning mb-2"></i>
+                <i class="bi bi-hourglass-bottom display-5 text-warning mb-2"" aria-hidden="true"></i>
                 <h5 class="card-title">Pending Payments</h5>
                 <h2 class="fw-bold text-warning"><?= count($pendingPayments ?? []) ?></h2>
             </div>
@@ -33,7 +33,7 @@
     <div class="col-md-3">
         <div class="card border-info h-100">
             <div class="card-body text-center">
-                <i class="bi bi-graph-up-arrow display-5 text-info mb-2"></i>
+                <i class="bi bi-graph-up-arrow display-5 text-info mb-2"" aria-hidden="true"></i>
                 <h5 class="card-title">Avg. per Tx</h5>
                 <h2 class="fw-bold text-info">
                     ₱ <?= number_format($summary ? (array_sum(array_column($summary, 'total_amount')) / max(array_sum(array_column($summary, 'total_transactions')), 1)) : 0, 2) ?>
@@ -46,12 +46,12 @@
 <div class="card mb-4">
     <div class="card-header bg-white d-flex justify-content-between align-items-center">
         <span class="fw-bold">Pending Payment Queue</span>
-        <a href="/sis/cashier/payments/process" class="btn btn-sm btn-primary">New Payment</a>
+        <a href="/ssis/cashier/payments/process" class="btn btn-sm btn-primary">New Payment</a>
     </div>
     <div class="card-body p-0">
         <?php if (!empty($pendingPayments)): ?>
             <div class="table-responsive">
-                <table class="table table-hover mb-0">
+                <table class="table table-hover mb-0" aria-label="Pending payment queue">
                     <thead class="table-light">
                         <tr>
                             <th>Student</th>
@@ -73,7 +73,7 @@
                                 <td><?= htmlspecialchars($pp['ay_name']) ?></td>
                                 <td><?= htmlspecialchars($pp['semester_name']) ?></td>
                                 <td class="text-center">
-                                    <a href="/sis/cashier/payments/process?enrolment_id=<?= $pp['enrolment_id'] ?>" class="btn btn-sm btn-success">Collect</a>
+                                    <a href="/ssis/cashier/payments/process?enrolment_id=<?= $pp['enrolment_id'] ?>" class="btn btn-sm btn-success">Collect</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -93,7 +93,7 @@
     <div class="card-body p-0">
         <?php if (!empty($summary)): ?>
             <div class="table-responsive">
-                <table class="table table-hover mb-0">
+                <table class="table table-hover mb-0" aria-label="Pending payment queue">
                     <thead class="table-light">
                         <tr>
                             <th>Date</th>

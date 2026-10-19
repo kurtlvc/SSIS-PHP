@@ -1,6 +1,6 @@
-# CuyoSIS - CuyoTech University Student Information System
+# CuyoSSIS - CuyoTech University Student Services Information System
 
-CuyoSIS is a comprehensive, modular Student Information System designed for CuyoTech University. Built using an Agile iterative approach, it centralizes academic, financial, and administrative workflows into a secure, role-based ecosystem.
+CuyoSSIS is a comprehensive, modular Student Services Information System designed for CuyoTech University. Built using an Agile iterative approach, it centralizes academic, financial, and administrative workflows into a secure, role-based ecosystem.
 
 ## Core Modules
 
@@ -22,7 +22,7 @@ CuyoSIS is a comprehensive, modular Student Information System designed for Cuyo
 ## Directory Structure
 
 ```
-sis/
+ssis/
 ├── public/                 # Web root (nginx config)
 ├── index.php               # Application entry point
 ├── config/
@@ -87,7 +87,7 @@ cp .env.example .env
 server {
     listen 80;
     server_name localhost;
-    root /path/to/sis;
+    root /path/to/ssis;
     index index.php;
 
     location / {
@@ -127,4 +127,4 @@ server {
 
 ## License
 
-CuyoTech University SIS
+CuyoTech University SSIS

@@ -9,11 +9,11 @@ $module = $module ?? 'student';
         <h2 class="h4 mb-3">Page Not Found</h2>
         <p class="text-muted mb-4">The page you're looking for doesn't exist or you don't have permission to access it.</p>
         <?php if (isset($_SESSION['account_id'])): ?>
-            <a href="/sis/<?= ($_SESSION['account_role'] === 'student') ? 'student/dashboard' : (($_SESSION['account_role'] === 'admin') ? 'admin/users' : 'registrar/enrollments') ?>" class="btn btn-primary">
+            <a href="/ssis/<?= ($_SESSION['account_role'] === 'student') ? 'student/dashboard' : (($_SESSION['account_role'] === 'admin') ? 'admin/users' : 'registrar/enrollments') ?>" class="btn btn-primary">
                 Go to Dashboard
             </a>
         <?php else: ?>
-            <a href="/sis/login" class="btn btn-primary">Go to Login</a>
+            <a href="/ssis/login" class="btn btn-primary">Go to Login</a>
         <?php endif; ?>
     </div>
 </div>

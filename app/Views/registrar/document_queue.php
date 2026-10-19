@@ -10,7 +10,7 @@ function reqBadge($status) {
 ?>
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0">Document Request Queue</h1>
-    <a href="/sis/registrar/enrollments" class="btn btn-outline-secondary btn-sm">Back to Enrolments</a>
+    <a href="/ssis/registrar/enrollments" class="btn btn-outline-secondary btn-sm">Back to Enrolments</a>
 </div>
 
 <div class="card">
@@ -20,7 +20,7 @@ function reqBadge($status) {
     <div class="card-body p-0">
         <?php if (!empty($requests)): ?>
             <div class="table-responsive">
-                <table class="table table-hover mb-0">
+                <table class="table table-hover mb-0" aria-label="Pending document requests">
                     <thead class="table-light">
                         <tr>
                             <th>Date Requested</th>
@@ -49,9 +49,9 @@ function reqBadge($status) {
                                     <span class="badge <?= reqBadge($req['status']) ?>"><?= $req['status'] ?></span>
                                 </td>
                                 <td class="text-center">
-                                    <form method="POST" action="/sis/registrar/documents/process/<?= $req['request_id'] ?>" class="d-inline">
+                                    <form method="POST" action="/ssis/registrar/documents/process/<?= $req['request_id'] ?>" class="d-inline">
                                         <input type="hidden" name="csrf_token" value="<?= App::csrf_token() ?>">
-                                        <select name="status" class="form-select form-select-sm d-inline-block w-auto">
+                                        <select name="status" class="form-select form-select-sm d-inline-block w-auto" aria-label="Update document status">
                                             <option value="Processing">Processing</option>
                                             <option value="Ready for Pickup">Ready for Pickup</option>
                                             <option value="Released">Released</option>

@@ -3,9 +3,9 @@ $studentName = ($receipt['lname'] ?? '') . ', ' . ($receipt['fname'] ?? '');
 ?>
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0">Official Receipt</h1>
-    <a href="/sis/cashier/dashboard" class="btn btn-outline-secondary btn-sm">Back to Dashboard</a>
+    <a href="/ssis/cashier/dashboard" class="btn btn-outline-secondary btn-sm">Back to Dashboard</a>
     <button type="button" class="btn btn-outline-primary btn-sm" onclick="window.print()">
-        <i class="bi bi-printer"></i> Print
+        <i class="bi bi-printer"" aria-hidden="true"></i> Print
     </button>
 </div>
 
@@ -18,7 +18,7 @@ $studentName = ($receipt['lname'] ?? '') . ', ' . ($receipt['fname'] ?? '');
 
         <div class="row mb-4">
             <div class="col-md-6">
-                <table class="table table-sm table-borderless">
+                <table class="table table-sm table-borderless" aria-label="Receipt details">
                     <tr>
                         <td class="fw-bold text-end">Receipt No:</td>
                         <td><?= htmlspecialchars($receipt['receipt_no']) ?></td>
@@ -38,7 +38,7 @@ $studentName = ($receipt['lname'] ?? '') . ', ' . ($receipt['fname'] ?? '');
                 </table>
             </div>
             <div class="col-md-6">
-                <table class="table table-sm table-borderless">
+                <table class="table table-sm table-borderless" aria-label="Receipt details">
                     <tr>
                         <td class="fw-bold text-end">Program:</td>
                         <td><?= htmlspecialchars($receipt['program_code']) ?> - <?= htmlspecialchars($receipt['description']) ?></td>
@@ -60,7 +60,7 @@ $studentName = ($receipt['lname'] ?? '') . ', ' . ($receipt['fname'] ?? '');
         </div>
 
         <div class="mb-4">
-            <table class="table table-bordered">
+            <table class="table table-bordered" aria-label="Payment breakdown">
                 <thead class="table-light">
                     <tr>
                         <th>Description</th>

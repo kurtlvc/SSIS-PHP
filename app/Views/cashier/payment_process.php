@@ -9,7 +9,7 @@ function cashBadge($status) {
 ?>
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0">Process Payment</h1>
-    <a href="/sis/cashier/dashboard" class="btn btn-outline-secondary btn-sm">Back to Dashboard</a>
+    <a href="/ssis/cashier/dashboard" class="btn btn-outline-secondary btn-sm">Back to Dashboard</a>
 </div>
 
 <?php if (isset($error)): ?>
@@ -27,7 +27,7 @@ function cashBadge($status) {
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6">
-                    <table class="table table-sm table-borderless">
+                    <table class="table table-sm table-borderless" aria-label="Student and enrolment details">
                         <tr>
                             <td class="fw-bold text-end">Student:</td>
                             <td><?= htmlspecialchars($enrolment['lname'] . ', ' . $enrolment['fname'] . ' ' . ($enrolment['mname'] ?? '')) ?></td>
@@ -43,7 +43,7 @@ function cashBadge($status) {
                     </table>
                 </div>
                 <div class="col-md-6">
-                    <table class="table table-sm table-borderless">
+                    <table class="table table-sm table-borderless" aria-label="Student and enrolment details">
                         <tr>
                             <td class="fw-bold text-end">Program:</td>
                             <td><?= htmlspecialchars($enrolment['program_code']) ?> - <?= htmlspecialchars($enrolment['program_desc']) ?></td>
@@ -66,7 +66,7 @@ function cashBadge($status) {
         </div>
     </div>
 
-    <form method="POST" action="/sis/cashier/payments/process">
+    <form method="POST" action="/ssis/cashier/payments/process">
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token ?? '') ?>">
         <input type="hidden" name="enrolment_id" value="<?= $enrolment['enrolment_id'] ?>">
         <input type="hidden" name="ay_id" value="<?= $enrolment['ay_id'] ?>">
@@ -77,16 +77,16 @@ function cashBadge($status) {
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <label class="form-label">Amount to Pay (₱)</label>
-                        <input type="number" step="0.01" name="amount_paid" class="form-control" required>
+                        <label for="amount_paid" class="form-label">Amount to Pay (₱)</label>
+                        <input type="number" step="0.01" name="amount_paid" id="amount_paid" class="form-control" required>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">Or Number</label>
-                        <input type="text" name="or_no" class="form-control" placeholder="Optional">
+                        <label for="or_no" class="form-label">Or Number</label>
+                        <input type="text" name="or_no" id="or_no" class="form-control" placeholder="Optional">
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">Payment Method</label>
-                        <select name="payment_method" class="form-select">
+                        <label for="payment_method" class="form-label">Payment Method</label>
+                        <select name="payment_method" id="payment_method" class="form-select">
                             <option value="Cash">Cash</option>
                             <option value="Bank Deposit">Bank Deposit</option>
                             <option value="Online Transfer">Online Transfer</option>
@@ -94,8 +94,8 @@ function cashBadge($status) {
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Remarks</label>
-                    <input type="text" name="remarks" class="form-control" placeholder="Optional notes">
+                    <label for="remarks" class="form-label">Remarks</label>
+                    <input type="text" name="remarks" id="remarks" class="form-control" placeholder="Optional notes">
                 </div>
                 <button type="submit" class="btn btn-success">Process Payment</button>
             </div>
@@ -109,8 +109,8 @@ function cashBadge($status) {
         <div class="card-body">
             <form method="GET" class="row g-3">
                 <div class="col-md-4">
-                    <label class="form-label">Search by Enrolment ID</label>
-                    <input type="number" name="enrolment_id" class="form-control" placeholder="Enter enrolment ID">
+                    <label for="enrolment_id" class="form-label">Search by Enrolment ID</label>
+                    <input type="number" name="enrolment_id" id="enrolment_id" class="form-control" placeholder="Enter enrolment ID">
                 </div>
                 <div class="col-md-8 d-grid align-items-end">
                     <button type="submit" class="btn btn-primary">Search</button>

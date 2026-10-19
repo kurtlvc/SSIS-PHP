@@ -86,7 +86,7 @@ $studentName = ($student['fname'] ?? '') . ' ' . ($student['lname'] ?? '');
     <div class="card-body">
         <?php if (!empty($schedule)): ?>
             <div class="table-responsive">
-                <table class="table table-bordered table-hover">
+                <table class="table table-bordered table-hover" aria-label="Class schedule">
                     <thead class="table-light">
                         <tr>
                             <th>Day</th>

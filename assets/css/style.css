@@ -1,4 +1,4 @@
-/* CuyoSIS - Cuyosis Design System */
+/* CuyoSSIS - Cuyosis Design System */
 
 :root {
     --cuyo-green: #1e4f3f;
@@ -208,7 +208,72 @@ body {
     background-color: rgba(220, 53, 69, 0.15) !important;
 }
 
-/* Responsive */
+/* Skip Link */
+.skip-link {
+    transform: translateY(-100%);
+    transition: transform 0.2s ease;
+}
+.skip-link:focus {
+    transform: translateY(0);
+    outline: 2px solid var(--cuyo-green);
+    outline-offset: 2px;
+}
+
+/* Focus States (Keyboard Navigation) */
+*:focus-visible {
+    outline: 2px solid var(--cuyo-green);
+    outline-offset: 2px;
+}
+a:focus-visible,
+.btn:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible,
+.form-check-input:focus-visible {
+    outline: 2px solid var(--cuyo-green);
+    outline-offset: 2px;
+}
+.navbar-toggler:focus-visible,
+.btn-close:focus-visible {
+    outline: 2px solid var(--cuyo-green);
+    outline-offset: 2px;
+}
+
+/* Reduce motion preference */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    .cuyo-stat-card:hover,
+    .btn-cuyo-action:hover,
+    .cuyo-sidebar .nav-link:hover {
+        transform: none !important;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .cuyo-banner,
+    .cuyo-stat-card,
+    .card {
+        border: 2px solid #000;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .bg-cuyo-gray {
+        background-color: #1a1a2e !important;
+    }
+    .card {
+        background-color: #1e1e2e;
+    }
+    .table th,
+    .table td {
+        border-color: #333;
+    }
+}
 @media (max-width: 1199.98px) {
     .cuyo-right {
         display: none !important;
@@ -230,5 +295,70 @@ body {
     }
     .cuyo-sidebar {
         display: flex !important;
+    }
+}
+
+/* Mobile Touch Targets */
+@media (max-width: 767.98px) {
+    .cuyo-sidebar .nav-link,
+    .cuyosis-body .nav-link,
+    .btn,
+    .form-control,
+    .form-select,
+    .form-check-input,
+    .navbar-toggler,
+    .btn-close,
+    .password-toggle,
+    .dropdown-toggle {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    .cuyo-sidebar .nav-link,
+    .cuyosis-body .nav-link {
+        padding: 0.75rem 1rem;
+    }
+    .form-control,
+    .form-select {
+        padding: 0.75rem 1rem;
+        font-size: 1.0625rem;
+    }
+    .form-label {
+        font-size: 0.875rem;
+    }
+    .btn {
+        padding: 0.75rem 1.25rem;
+        font-size: 1.0625rem;
+    }
+    .table-responsive {
+        margin: -1rem -1rem;
+    }
+    .table {
+        font-size: 0.9375rem;
+    }
+    .input-group-wrapper .form-control {
+        padding-left: 3.5rem;
+        padding-right: 1rem;
+    }
+    .password-toggle {
+        right: 1rem;
+    }
+}
+
+/* iOS Safari Safe Areas */
+@supports (padding: env(safe-area-inset-top)) {
+    .login-split {
+        padding-top: env(safe-area-inset-top);
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+}
+
+/* Prevent zoom on input focus (iOS) */
+@media (max-width: 767.98px) {
+    input,
+    select,
+    textarea {
+        font-size: 16px;
     }
 }

@@ -1,21 +1,21 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0">User Management</h1>
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createUserModal">
-        <i class="bi bi-plus"></i> Create User
+        <i class="bi bi-plus"" aria-hidden="true"></i> Create User
     </button>
 </div>
 
 <?php if (isset($success)): ?>
     <div class="alert alert-success alert-dismissible">
         <?= htmlspecialchars($success) ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 <?php endif; ?>
 
 <?php if (isset($error)): ?>
     <div class="alert alert-danger alert-dismissible">
         <?= htmlspecialchars($error) ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 <?php endif; ?>
 
@@ -26,7 +26,7 @@
     <div class="card-body p-0">
         <?php if (!empty($accounts)): ?>
             <div class="table-responsive">
-                <table class="table table-hover mb-0">
+                <table class="table table-hover mb-0" aria-label="All accounts">
                     <thead class="table-light">
                         <tr>
                             <th>Login</th>
@@ -71,7 +71,7 @@
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <form method="POST" action="/sis/admin/users/update/<?= $acc['id'] ?>" class="d-inline">
+                                    <form method="POST" action="/ssis/admin/users/update/<?= $acc['id'] ?>" class="d-inline">
                                         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token ?? '') ?>">
                                         <select name="role" class="form-select form-select-sm d-inline-block w-auto">
                                             <option value="student" <?= $acc['role'] == 'student' ? 'selected' : '' ?>>Student</option>
@@ -101,24 +101,24 @@
 <div class="modal fade" id="createUserModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form method="POST" action="/sis/admin/users/create">
+            <form method="POST" action="/ssis/admin/users/create">
                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token ?? '') ?>">
                 <div class="modal-header">
                     <h5 class="modal-title">Create New User Account</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">Login / Username</label>
-                        <input type="text" name="login" class="form-control" required>
+                        <label for="login" class="form-label">Login / Username</label>
+                        <input type="text" name="login" id="login" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Password</label>
-                        <input type="password" name="password" class="form-control" required minlength="8">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" name="password" id="password" class="form-control" required minlength="8">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Role</label>
-                        <select name="role" class="form-select" required>
+                        <label for="role" class="form-label">Role</label>
+                        <select name="role" id="role" class="form-select" required>
                             <option value="student">Student</option>
                             <option value="faculty">Faculty</option>
                             <option value="chair">Chair</option>
@@ -127,15 +127,15 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Owner Type</label>
-                        <select name="owner_type" class="form-select" required>
+                        <label for="owner_type" class="form-label">Owner Type</label>
+                        <select name="owner_type" id="owner_type" class="form-select" required>
                             <option value="personnel">Personnel</option>
                             <option value="student">Student</option>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Owner ID</label>
-                        <input type="number" name="owner_id" class="form-control" required>
+                        <label for="owner_id" class="form-label">Owner ID</label>
+                        <input type="number" name="owner_id" id="owner_id" class="form-control" required>
                     </div>
                 </div>
                 <div class="modal-footer">

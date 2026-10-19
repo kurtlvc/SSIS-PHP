@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0">Roles & Permissions</h1>
-    <a href="/sis/admin/users" class="btn btn-outline-secondary btn-sm">Back to Users</a>
+    <a href="/ssis/admin/users" class="btn btn-outline-secondary btn-sm">Back to Users</a>
 </div>
 
 <div class="card mb-4">
@@ -9,7 +9,7 @@
     </div>
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-bordered">
+            <table class="table table-bordered" aria-label="Role definitions">
                 <thead class="table-light">
                     <tr>
                         <th>Role</th>
@@ -67,7 +67,7 @@
     </div>
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-bordered text-center">
+            <table class="table table-bordered text-center" aria-label="Permission matrix">
                 <thead class="table-light">
                     <tr>
                         <th>Module / Action</th>

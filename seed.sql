@@ -1,5 +1,5 @@
 -- ============================================================================
--- CuyoSIS - CuyoTech University Student Information System
+-- CuyoSSIS - CuyoTech University Student Services Information System
 -- Seed Data for Development & Testing
 -- ============================================================================
 
@@ -260,4 +260,4 @@ INSERT INTO accounts (id, owner_type, owner_id, login, email, password_hash, rol
 -- 15. SETTINGS
 -- ---------------------------------------------------------
 INSERT INTO settings (system_title, sem_id, ay_id, id_prefix, rle, upload_max_mb, rate_limit_per_minute, rate_limit_login, rate_limit_strict, singleton) VALUES
-('CuyoSIS - CuyoTech University', 1, 1, 'CUY', 4, 10, 60, 10, 0, 1);
+('CuyoSSIS - CuyoTech University', 1, 1, 'CUY', 4, 10, 60, 10, 0, 1);

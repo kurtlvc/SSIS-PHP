@@ -14,8 +14,8 @@ function gradeBadge($grade) {
     <div class="card-header bg-white">
         <form method="GET" class="row g-3 align-items-end">
             <div class="col-md-4">
-                <label class="form-label small">Academic Year</label>
-                <select name="ay_id" class="form-select form-select-sm">
+                <label for="ay_id" class="form-label small">Academic Year</label>
+                <select name="ay_id" id="ay_id" class="form-select form-select-sm">
                     <option value="">All</option>
                     <?php foreach ($academicYears as $ay): ?>
                         <option value="<?= $ay['ay_id'] ?>" <?= (isset($_GET['ay_id']) && $_GET['ay_id'] == $ay['ay_id']) ? 'selected' : '' ?>>
@@ -25,8 +25,8 @@ function gradeBadge($grade) {
                 </select>
             </div>
             <div class="col-md-4">
-                <label class="form-label small">Semester</label>
-                <select name="sem_id" class="form-select form-select-sm">
+                <label for="sem_id" class="form-label small">Semester</label>
+                <select name="sem_id" id="sem_id" class="form-select form-select-sm">
                     <option value="">All</option>
                     <?php foreach ($semesters as $sem): ?>
                         <option value="<?= $sem['sem_id'] ?>" <?= (isset($_GET['sem_id']) && $_GET['sem_id'] == $sem['sem_id']) ? 'selected' : '' ?>>
@@ -45,14 +45,14 @@ function gradeBadge($grade) {
 <?php if (isset($success)): ?>
     <div class="alert alert-success alert-dismissible">
         <?= htmlspecialchars($success) ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 <?php endif; ?>
 
 <?php if (isset($error)): ?>
     <div class="alert alert-danger alert-dismissible">
         <?= htmlspecialchars($error) ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 <?php endif; ?>
 
@@ -63,7 +63,7 @@ function gradeBadge($grade) {
     <div class="card-body">
         <?php if (!empty($gradesToEncode)): ?>
             <div class="table-responsive">
-                <table class="table table-hover align-middle" id="gradesTable">
+                <table class="table table-hover align-middle" id="gradesTable" aria-label="Grades to encode">
                     <thead class="table-light">
                         <tr>
                             <th>Student</th>
@@ -107,7 +107,7 @@ function gradeBadge($grade) {
                                             class="btn btn-success btn-sm btn-save"
                                             data-enrolment="<?= $item['enrolment_id'] ?>"
                                             data-course="<?= $item['course_id'] ?>">
-                                        <i class="bi bi-save"></i> Save
+                                        <i class="bi bi-save"" aria-hidden="true"></i> Save
                                     </button>
                                 </td>
                             </tr>
@@ -134,7 +134,7 @@ $(document).ready(function() {
             return;
         }
 
-        $.post('/sis/registrar/grades/encode', {
+        $.post('/ssis/registrar/grades/encode', {
             csrf_token: '<?= $csrf_token ?>',
             enrolment_id: enrolmentId,
             course_id: courseId,

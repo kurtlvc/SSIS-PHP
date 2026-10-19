@@ -10,15 +10,15 @@ function badgeClass($status) {
 ?>
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0">Enrollment Management</h1>
-    <a href="/sis/registrar/grades/encode" class="btn btn-outline-primary btn-sm">Grade Encoding</a>
+    <a href="/ssis/registrar/grades/encode" class="btn btn-outline-primary btn-sm">Grade Encoding</a>
 </div>
 
 <div class="card mb-4">
     <div class="card-header bg-white">
         <form method="GET" class="row g-3 align-items-end">
             <div class="col-md-4">
-                <label class="form-label small">Academic Year</label>
-                <select name="ay_id" class="form-select form-select-sm">
+                <label for="ay_id" class="form-label small">Academic Year</label>
+                <select name="ay_id" id="ay_id" class="form-select form-select-sm">
                     <option value="">All</option>
                     <?php foreach ($academicYears as $ay): ?>
                         <option value="<?= $ay['ay_id'] ?>" <?= (isset($_GET['ay_id']) && $_GET['ay_id'] == $ay['ay_id']) ? 'selected' : '' ?>>
@@ -28,8 +28,8 @@ function badgeClass($status) {
                 </select>
             </div>
             <div class="col-md-4">
-                <label class="form-label small">Semester</label>
-                <select name="sem_id" class="form-select form-select-sm">
+                <label for="sem_id" class="form-label small">Semester</label>
+                <select name="sem_id" id="sem_id" class="form-select form-select-sm">
                     <option value="">All</option>
                     <?php foreach ($semesters as $sem): ?>
                         <option value="<?= $sem['sem_id'] ?>" <?= (isset($_GET['sem_id']) && $_GET['sem_id'] == $sem['sem_id']) ? 'selected' : '' ?>>
@@ -46,7 +46,7 @@ function badgeClass($status) {
     <div class="card-body p-0">
         <?php if (!empty($enrolments)): ?>
             <div class="table-responsive">
-                <table class="table table-hover mb-0">
+                <table class="table table-hover mb-0" aria-label="Enrollment list">
                     <thead class="table-light">
                         <tr>
                             <th>Student</th>
@@ -68,7 +68,7 @@ function badgeClass($status) {
                                 <td><?= htmlspecialchars($enr['semester_name']) ?></td>
                                 <td><?= htmlspecialchars($enr['enrol_status'] ?? 'N/A') ?></td>
                                 <td class="text-center">
-                                    <a href="/sis/registrar/students/<?= $enr['stud_id'] ?>" class="btn btn-sm btn-outline-primary">View Record</a>
+                                    <a href="/ssis/registrar/students/<?= $enr['stud_id'] ?>" class="btn btn-sm btn-outline-primary">View Record</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

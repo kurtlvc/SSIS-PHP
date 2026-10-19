@@ -23,16 +23,18 @@ $docTypes = ['TOR' => 'Transcript of Records', 'COR' => 'Certificate of Registra
                 <?php if (isset($success)): ?>
                     <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
                 <?php endif; ?>
-                <form method="POST" action="/sis/student/documents/request">
+                <form method="POST" action="/ssis/student/documents/request">
                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token ?? '') ?>">
                     <div class="mb-3">
-                        <label class="form-label">Document Type</label>
-                        <select name="document_type" class="form-select" required>
+                        <label for="document_type" class="form-label">Document Type</label>
+                        <select name="document_type" id="document_type" class="form-select" required
+                               aria-describedby="docHelp">
                             <option value="">-- Select Document --</option>
                             <?php foreach ($docTypes as $value => $label): ?>
                                 <option value="<?= $value ?>"><?= $label ?></option>
                             <?php endforeach; ?>
                         </select>
+                        <div id="docHelp" class="form-text small text-muted mt-1">Choose the document type you need to request.</div>
                     </div>
                     <button type="submit" class="btn btn-primary w-100">Submit Request</button>
                 </form>
@@ -47,7 +49,7 @@ $docTypes = ['TOR' => 'Transcript of Records', 'COR' => 'Certificate of Registra
             <div class="card-body">
                 <?php if (!empty($requests)): ?>
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table class="table table-hover" aria-label="My document requests">
                             <thead>
                                 <tr>
                                     <th>Date</th>

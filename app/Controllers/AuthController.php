@@ -23,7 +23,7 @@ class AuthController
             'error' => $error,
             'csrf_token' => App::csrf_token(),
             'academic_year' => date('Y') . '&ndash;' . date('Y', strtotime('+1 year')),
-            'system_title' => 'CuyoSIS',
+            'system_title' => 'CuyoSSIS',
         ], 'none');
     }
 

@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0">Student Master Record</h1>
-    <a href="/sis/registrar/enrollments" class="btn btn-outline-secondary btn-sm">Back to Enrolments</a>
+    <a href="/ssis/registrar/enrollments" class="btn btn-outline-secondary btn-sm">Back to Enrolments</a>
 </div>
 
 <div class="card mb-4">
@@ -10,7 +10,7 @@
     <div class="card-body">
         <div class="row">
             <div class="col-md-6">
-                <table class="table table-sm table-borderless">
+                <table class="table table-sm table-borderless" aria-label="Student information">
                     <tr>
                         <td class="fw-bold text-end">Student ID:</td>
                         <td><?= htmlspecialchars($student['ref_no'] ?? '') ?></td>
@@ -30,7 +30,7 @@
                 </table>
             </div>
             <div class="col-md-6">
-                <table class="table table-sm table-borderless">
+                <table class="table table-sm table-borderless" aria-label="Student information">
                     <tr>
                         <td class="fw-bold text-end">Program:</td>
                         <td><?= htmlspecialchars($student['program_code'] ?? '') ?> - <?= htmlspecialchars($student['program_desc'] ?? '') ?></td>
@@ -62,7 +62,7 @@
             <div class="card-body">
                 <?php if (!empty($enrolments)): ?>
                     <div class="table-responsive">
-                        <table class="table table-sm">
+                        <table class="table table-sm" aria-label="Enrolment history">
                             <thead>
                                 <tr><th>A/Y</th><th>Semester</th><th>Units</th><th>Status</th></tr>
                             </thead>
@@ -93,7 +93,7 @@
             <div class="card-body">
                 <?php if (!empty($grades)): ?>
                     <div class="table-responsive">
-                        <table class="table table-sm">
+                        <table class="table table-sm" aria-label="Enrolment history">
                             <thead>
                                 <tr><th>A/Y</th><th>Sem</th><th>Code</th><th>Grade</th><th>Remarks</th></tr>
                             </thead>
