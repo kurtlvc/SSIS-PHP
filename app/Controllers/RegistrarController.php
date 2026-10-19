@@ -133,6 +133,32 @@ class RegistrarController extends BaseController
             'requests' => $requests,
             'pageTitle' => 'Document Request Queue',
             'module' => 'registrar',
+            'csrf_token' => App::csrf_token(),
         ]);
+    }
+
+    public function processDocument($id)
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->registrar()) return;
+
+        if (!App::verify_csrf($_POST['csrf_token'] ?? '')) {
+            App::flash('error', 'Invalid CSRF token.');
+            App::redirect('/registrar/documents/queue');
+            return;
+        }
+
+        $status = $_POST['status'] ?? 'Processing';
+        $validStatuses = ['Pending', 'Processing', 'Ready for Pickup', 'Released'];
+
+        if (!in_array($status, $validStatuses)) {
+            App::flash('error', 'Invalid status value.');
+            App::redirect('/registrar/documents/queue');
+            return;
+        }
+
+        $this->documentModel->updateStatus($id, $status, $_SESSION['owner_id'] ?? 0);
+        App::flash('success', 'Document request status updated.');
+        App::redirect('/registrar/documents/queue');
     }
 }

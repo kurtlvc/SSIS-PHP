@@ -21,6 +21,7 @@ $router->get('/registrar/students/{stud_id}', 'RegistrarController@studentRecord
 $router->get('/registrar/grades/encode', 'RegistrarController@gradesEncode');
 $router->post('/registrar/grades/encode', 'RegistrarController@storeGrade');
 $router->get('/registrar/documents/queue', 'RegistrarController@documentQueue');
+$router->post('/registrar/documents/process/{id}', 'RegistrarController@processDocument');
 
 // Cashier Module
 $router->get('/cashier/dashboard', 'CashierController@dashboard');
@@ -40,3 +41,6 @@ $router->get('/admin/system-settings', 'AdminController@settings');
 $router->post('/admin/users/create', 'AdminController@createUser');
 $router->post('/admin/users/update/{id}', 'AdminController@updateUser');
 $router->post('/admin/settings/update', 'AdminController@updateSettings');
+
+// API Endpoints
+$router->get('/api/document/request', 'ApiController@documentRequestStatus');

@@ -17,7 +17,7 @@ class CashierController extends BaseController
     public function dashboard()
     {
         if (!$this->requireAuth()) return;
-        if (!$this->role('cashier')) return;
+        if (!$this->requireRole(['cashier', 'admin'])) return;
 
         $ayId = $_GET['ay_id'] ?? null;
         $semId = $_GET['sem_id'] ?? null;
@@ -39,7 +39,7 @@ class CashierController extends BaseController
     public function paymentProcess()
     {
         if (!$this->requireAuth()) return;
-        if ($this->role('cashier') === false) return;
+        if (!$this->requireRole(['cashier', 'admin'])) return;
 
         $enrolmentId = $_GET['enrolment_id'] ?? null;
         $enrolment = null;
@@ -67,7 +67,7 @@ class CashierController extends BaseController
     public function storePayment()
     {
         if (!$this->requireAuth()) return;
-        if ($this->role('cashier') === false) return;
+        if (!$this->requireRole(['cashier', 'admin'])) return;
 
         if (!App::verify_csrf($_POST['csrf_token'] ?? '')) {
             App::flash('error', 'Invalid CSRF token.');
@@ -110,7 +110,7 @@ class CashierController extends BaseController
     public function receipt($receiptNo)
     {
         if (!$this->requireAuth()) return;
-        if ($this->role('cashier') === false) return;
+        if (!$this->requireRole(['cashier', 'admin'])) return;
 
         $receipt = $this->paymentModel->findReceipt($receiptNo);
 
@@ -125,10 +125,5 @@ class CashierController extends BaseController
             'pageTitle' => 'Official Receipt',
             'module' => 'cashier',
         ]);
-    }
-
-    private function role($role)
-    {
-        return $this->middleware->role(['cashier', 'admin']);
     }
 }

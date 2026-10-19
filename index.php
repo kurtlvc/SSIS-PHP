@@ -15,6 +15,7 @@ require_once __DIR__ . '/app/Controllers/RegistrarController.php';
 require_once __DIR__ . '/app/Controllers/CashierController.php';
 require_once __DIR__ . '/app/Controllers/DepartmentController.php';
 require_once __DIR__ . '/app/Controllers/AdminController.php';
+require_once __DIR__ . '/app/Controllers/ApiController.php';
 
 require_once __DIR__ . '/app/routes.php';
 
