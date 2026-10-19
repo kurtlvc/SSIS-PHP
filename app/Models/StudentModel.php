@@ -49,17 +49,13 @@ class StudentModel
         $params = ['stud_id' => $studId];
         $where = '';
 
-        $sql = "SELECT s.class_no, s.sched_id, c.code, c.description, c.units,
+        $sql = "SELECT sch.class_no, sch.sched_id, c.code, c.description, c.units,
                        p.lname as prof_lname, p.fname as prof_fname,
                        d.day_name, t.time_start, t2.time_end, r.room_name,
                        ay.ay_name, sem.semester_name
                 FROM enrolments e
-                JOIN schedules sch ON sch.course_id IN (
-                    SELECT DISTINCT c.course_id
-                    FROM courses c
-                    JOIN enrolments en ON en.program_id = c.program_id AND en.stud_id = :stud_id
-                )
-                JOIN courses c ON sch.course_id = c.course_id
+                JOIN courses c ON e.program_id = c.program_id AND e.stud_id = :stud_id
+                JOIN schedules sch ON sch.course_id = c.course_id
                 LEFT JOIN schedule_daytimes sd ON sch.sched_id = sd.sched_id
                 LEFT JOIN days d ON sd.day_id = d.day_id
                 LEFT JOIN times t ON sd.time_start_id = t.time_id
@@ -68,7 +64,7 @@ class StudentModel
                 LEFT JOIN personnel p ON sch.p_id = p.p_id
                 JOIN academic_years ay ON sch.ay_id = ay.ay_id
                 JOIN semesters sem ON sch.sem_id = sem.sem_id
-                WHERE e.stud_id = :stud_id AND sch.ay_id = e.ay_id AND sch.sem_id = e.sem_id";
+                WHERE sch.ay_id = e.ay_id AND sch.sem_id = e.sem_id";
 
         if ($ayId) {
             $where .= " AND sch.ay_id = :ay_id";

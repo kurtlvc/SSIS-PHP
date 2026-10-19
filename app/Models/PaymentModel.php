@@ -26,12 +26,12 @@ class PaymentModel
         $sql = "SELECT 
                        COUNT(p.payment_id) as total_transactions,
                        SUM(p.amount_paid) as total_amount,
-                       p.payment_date
+                       DATE(p.payment_date) as payment_date
                 FROM payments p
                 JOIN enrolments e ON p.enrolment_id = e.enrolment_id
                 {$where}
                 GROUP BY DATE(p.payment_date)
-                ORDER BY p.payment_date DESC
+                ORDER BY payment_date DESC
                 LIMIT 30";
         return $this->db->fetchAll($sql, $params);
     }

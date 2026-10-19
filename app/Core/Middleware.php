@@ -42,7 +42,7 @@ class Middleware
 
     public function faculty()
     {
-        return $this->role(['faculty', 'chair', 'dean']);
+        return $this->role(['faculty', 'chair', 'dean', 'admin']);
     }
 
     public function registrar()
@@ -71,7 +71,7 @@ class Middleware
             return false;
         }
 
-        $config = require_once __DIR__ . '/../config/config.php';
+        $config = App::getInstance()->getConfig();
 
         if ($_SESSION['account_role'] === 'student') {
             $userModel = new UserModel();

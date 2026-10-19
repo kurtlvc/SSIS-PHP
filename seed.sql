@@ -242,20 +242,20 @@ INSERT INTO document_requests (request_id, stud_id, document_type, request_date,
 -- 14. ACCOUNTS
 -- ---------------------------------------------------------
 INSERT INTO accounts (id, owner_type, owner_id, login, email, password_hash, role, is_active, created_at) VALUES
-(1, 'personnel', 1, 'admin', 'admin@cuytech.edu', '$2y$10$92IXMNI5OQq1Xx2N6y3j0e0u0q5K0x0y0z0a0b0c0d0e0f0g0h0i0', 'admin', 1, '2026-10-01 00:00:00'),
-(2, 'personnel', 2, 'prof.smith', 'smith@cuytech.edu', '$2y$10$92IXMNI5OQq1Xx2N6y3j0e0u0q5K0x0y0z0a0b0c0d0e0f0g0h0i0', 'faculty', 1, '2026-10-01 00:00:00'),
-(3, 'personnel', 7, 'dean.garcia', 'garcia@cuytech.edu', '$2y$10$92IXMNI5OQq1Xx2N6y3j0e0u0q5K0x0y0z0a0b0c0d0e0f0g0h0i0', 'dean', 1, '2026-10-01 00:00:00'),
-(4, 'personnel', 8, 'cashier.miller', 'miller@cuytech.edu', '$2y$10$92IXMNI5OQq1Xx2N6y3j0e0u0q5K0x0y0z0a0b0c0d0e0f0g0h0i0', 'faculty', 1, '2026-10-01 00:00:00'),
-(5, 'student', 1, 'student001', 'juan.aguilar@student.cuytech.edu', '$2y$10$92IXMNI5OQq1Xx2N6y3j0e0u0q5K0x0y0z0a0b0c0d0e0f0g0h0i0', 'student', 1, '2026-10-01 00:00:00'),
-(6, 'student', 2, 'student002', 'maria.santos@student.cuytech.edu', '$2y$10$92IXMNI5OQq1Xx2N6y3j0e0u0q5K0x0y0z0a0b0c0d0e0f0g0h0i0', 'student', 1, '2026-10-01 00:00:00'),
-(7, 'student', 3, 'student003', 'carlos.reyes@student.cuytech.edu', '$2y$10$92IXMNI5OQq1Xx2N6y3j0e0u0q5K0x0y0z0a0b0c0d0e0f0g0h0i0', 'student', 1, '2026-10-01 00:00:00'),
-(8, 'student', 4, 'student004', 'ana.cruz@student.cuytech.edu', '$2y$10$92IXMNI5OQq1Xx2N6y3j0e0u0q5K0x0y0z0a0b0c0d0e0f0g0h0i0', 'student', 1, '2026-10-01 00:00:00'),
-(9, 'student', 5, 'student005', 'miguel.torres@student.cuytech.edu', '$2y$10$92IXMNI5OQq1Xx2N6y3j0e0u0q5K0x0y0z0a0b0c0d0e0f0g0h0i0', 'student', 1, '2026-10-01 00:00:00'),
-(10, 'student', 6, 'student006', 'sophia.lee@student.cuytech.edu', '$2y$10$92IXMNI5OQq1Xx2N6y3j0e0u0q5K0x0y0z0a0b0c0d0e0f0g0h0i0', 'student', 1, '2026-10-01 00:00:00'),
-(11, 'student', 7, 'student007', 'david.castro@student.cuytech.edu', '$2y$10$92IXMNI5OQq1Xx2N6y3j0e0u0q5K0x0y0z0a0b0c0d0e0f0g0h0i0', 'student', 1, '2026-10-01 00:00:00'),
-(12, 'student', 8, 'student008', 'isabella.diaz@student.cuytech.edu', '$2y$10$92IXMNI5OQq1Xx2N6y3j0e0u0q5K0x0y0z0a0b0c0d0e0f0g0h0i0', 'student', 1, '2026-10-01 00:00:00'),
-(13, 'student', 9, 'student009', 'ethan.martinez@student.cuytech.edu', '$2y$10$92IXMNI5OQq1Xx2N6y3j0e0u0q5K0x0y0z0a0b0c0d0e0f0g0h0i0', 'student', 1, '2026-10-01 00:00:00'),
-(14, 'student', 10, 'student010', 'olivia.robinson@student.cuytech.edu', '$2y$10$92IXMNI5OQq1Xx2N6y3j0e0u0q5K0x0y0z0a0b0c0d0e0f0g0h0i0', 'student', 1, '2026-10-01 00:00:00');
+(1, 'personnel', 1, 'admin', 'admin@cuytech.edu', '$2y$12$Iex93s7RLrav9U9lsRyFheHZNOUjok0C60rveEapRh4k2PhpE7VYC', 'admin', 1, '2026-10-01 00:00:00'),
+(2, 'personnel', 2, 'prof.smith', 'smith@cuytech.edu', '$2y$12$Iex93s7RLrav9U9lsRyFheHZNOUjok0C60rveEapRh4k2PhpE7VYC', 'faculty', 1, '2026-10-01 00:00:00'),
+(3, 'personnel', 7, 'dean.garcia', 'garcia@cuytech.edu', '$2y$12$Iex93s7RLrav9U9lsRyFheHZNOUjok0C60rveEapRh4k2PhpE7VYC', 'dean', 1, '2026-10-01 00:00:00'),
+(4, 'personnel', 8, 'cashier.miller', 'miller@cuytech.edu', '$2y$12$Iex93s7RLrav9U9lsRyFheHZNOUjok0C60rveEapRh4k2PhpE7VYC', 'faculty', 1, '2026-10-01 00:00:00'),
+(5, 'student', 1, 'student001', 'juan.aguilar@student.cuytech.edu', '$2y$12$Iex93s7RLrav9U9lsRyFheHZNOUjok0C60rveEapRh4k2PhpE7VYC', 'student', 1, '2026-10-01 00:00:00'),
+(6, 'student', 2, 'student002', 'maria.santos@student.cuytech.edu', '$2y$12$Iex93s7RLrav9U9lsRyFheHZNOUjok0C60rveEapRh4k2PhpE7VYC', 'student', 1, '2026-10-01 00:00:00'),
+(7, 'student', 3, 'student003', 'carlos.reyes@student.cuytech.edu', '$2y$12$Iex93s7RLrav9U9lsRyFheHZNOUjok0C60rveEapRh4k2PhpE7VYC', 'student', 1, '2026-10-01 00:00:00'),
+(8, 'student', 4, 'student004', 'ana.cruz@student.cuytech.edu', '$2y$12$Iex93s7RLrav9U9lsRyFheHZNOUjok0C60rveEapRh4k2PhpE7VYC', 'student', 1, '2026-10-01 00:00:00'),
+(9, 'student', 5, 'student005', 'miguel.torres@student.cuytech.edu', '$2y$12$Iex93s7RLrav9U9lsRyFheHZNOUjok0C60rveEapRh4k2PhpE7VYC', 'student', 1, '2026-10-01 00:00:00'),
+(10, 'student', 6, 'student006', 'sophia.lee@student.cuytech.edu', '$2y$12$Iex93s7RLrav9U9lsRyFheHZNOUjok0C60rveEapRh4k2PhpE7VYC', 'student', 1, '2026-10-01 00:00:00'),
+(11, 'student', 7, 'student007', 'david.castro@student.cuytech.edu', '$2y$12$Iex93s7RLrav9U9lsRyFheHZNOUjok0C60rveEapRh4k2PhpE7VYC', 'student', 1, '2026-10-01 00:00:00'),
+(12, 'student', 8, 'student008', 'isabella.diaz@student.cuytech.edu', '$2y$12$Iex93s7RLrav9U9lsRyFheHZNOUjok0C60rveEapRh4k2PhpE7VYC', 'student', 1, '2026-10-01 00:00:00'),
+(13, 'student', 9, 'student009', 'ethan.martinez@student.cuytech.edu', '$2y$12$Iex93s7RLrav9U9lsRyFheHZNOUjok0C60rveEapRh4k2PhpE7VYC', 'student', 1, '2026-10-01 00:00:00'),
+(14, 'student', 10, 'student010', 'olivia.robinson@student.cuytech.edu', '$2y$12$Iex93s7RLrav9U9lsRyFheHZNOUjok0C60rveEapRh4k2PhpE7VYC', 'student', 1, '2026-10-01 00:00:00');
 
 -- 15. SETTINGS
 -- ---------------------------------------------------------

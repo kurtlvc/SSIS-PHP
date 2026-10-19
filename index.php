@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/app/Core/App.php';
 require_once __DIR__ . '/app/Core/Router.php';
+require_once __DIR__ . '/app/Core/Middleware.php';
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/app/Models/UserModel.php';
 require_once __DIR__ . '/app/Models/StudentModel.php';
