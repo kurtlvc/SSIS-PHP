@@ -18,6 +18,13 @@ require_once __DIR__ . '/app/Controllers/CashierController.php';
 require_once __DIR__ . '/app/Controllers/DepartmentController.php';
 require_once __DIR__ . '/app/Controllers/AdminController.php';
 require_once __DIR__ . '/app/Controllers/ApiController.php';
+require_once __DIR__ . '/app/Controllers/ApiAuthController.php';
+require_once __DIR__ . '/app/Controllers/ApiStudentController.php';
+require_once __DIR__ . '/app/Controllers/ApiRegistrarController.php';
+require_once __DIR__ . '/app/Controllers/ApiCashierController.php';
+require_once __DIR__ . '/app/Controllers/ApiDepartmentController.php';
+require_once __DIR__ . '/app/Controllers/ApiAdminController.php';
+require_once __DIR__ . '/app/Controllers/ApiGlobalController.php';
 
 require_once __DIR__ . '/app/routes.php';
 
