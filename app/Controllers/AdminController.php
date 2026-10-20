@@ -254,7 +254,13 @@ class AdminController extends BaseController
         if (!$this->requireAuth()) return;
         if (!$this->middleware->admin()) return;
 
-        $isActive = isset($_POST['is_active']) ? (int) $_POST['is_active'] : 1;
+        if (!App::verify_csrf($_POST['csrf_token'] ?? '')) {
+            App::flash('error', 'Invalid CSRF token.');
+            App::redirect('/admin/users');
+            return;
+        }
+
+        $isActive   = isset($_POST['is_active']) ? (int) $_POST['is_active'] : 1;
         $this->db->update('accounts', ['is_active' => $isActive], 'id = :id', ['id' => $id]);
         App::flash('success', 'User status updated.');
         App::redirect('/admin/users');

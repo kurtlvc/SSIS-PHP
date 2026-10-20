@@ -309,6 +309,12 @@ class RegistrarController extends BaseController
         if (!$this->requireAuth()) return;
         if (!$this->middleware->registrar()) return;
 
+        if (!App::verify_csrf($_POST['csrf_token'] ?? '')) {
+            App::flash('error', 'Invalid CSRF token.');
+            App::redirect('/registrar/enrollments');
+            return;
+        }
+
         $enrolmentId = $_POST['enrolment_id'] ?? null;
 
         if (empty($enrolmentId)) {
@@ -326,6 +332,12 @@ class RegistrarController extends BaseController
     {
         if (!$this->requireAuth()) return;
         if (!$this->middleware->registrar()) return;
+
+        if (!App::verify_csrf($_POST['csrf_token'] ?? '')) {
+            App::flash('error', 'Invalid CSRF token.');
+            App::redirect('/registrar/enrollments');
+            return;
+        }
 
         $status = $_POST['enrol_status'] ?? null;
         $valid  = ['Pending', 'Approved', 'Rejected', 'Dropped'];
@@ -375,6 +387,12 @@ class RegistrarController extends BaseController
     {
         if (!$this->requireAuth()) return;
         if (!$this->middleware->registrar()) return;
+
+        if (!App::verify_csrf($_POST['csrf_token'] ?? '')) {
+            App::flash('error', 'Invalid CSRF token.');
+            App::redirect('/registrar/documents/queue');
+            return;
+        }
 
         $status = $_POST['status'] ?? null;
         $validStatuses = ['Pending', 'Processing', 'Ready for Pickup', 'Released'];

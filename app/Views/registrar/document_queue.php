@@ -49,8 +49,9 @@ function reqBadge($status) {
                                     <span class="badge <?= reqBadge($req['status']) ?>"><?= $req['status'] ?></span>
                                 </td>
                                 <td class="text-center">
-                                    <form method="POST" action="/ssis/registrar/documents/process/<?= $req['request_id'] ?>" class="d-inline">
-                                        <input type="hidden" name="csrf_token" value="<?= App::csrf_token() ?>">
+                                     <form method="POST" action="/ssis/registrar/documents/<?= $req['request_id'] ?>/status" class="d-inline">
+                                         <input type="hidden" name="csrf_token" value="<?= App::csrf_token() ?>">
+                                         <input type="hidden" name="_method" value="PATCH">
                                         <select name="status" class="form-select form-select-sm d-inline-block w-auto" aria-label="Update document status">
                                             <option value="Processing">Processing</option>
                                             <option value="Ready for Pickup">Ready for Pickup</option>

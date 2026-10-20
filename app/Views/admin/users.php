@@ -71,8 +71,9 @@
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <form method="POST" action="/ssis/admin/users/update/<?= $acc['id'] ?>" class="d-inline">
+                                    <form method="POST" action="/ssis/admin/users/<?= $acc['id'] ?>" class="d-inline">
                                         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token ?? '') ?>">
+                                        <input type="hidden" name="_method" value="PUT">
                                         <select name="role" class="form-select form-select-sm d-inline-block w-auto">
                                             <option value="student" <?= $acc['role'] == 'student' ? 'selected' : '' ?>>Student</option>
                                             <option value="faculty" <?= $acc['role'] == 'faculty' ? 'selected' : '' ?>>Faculty</option>
