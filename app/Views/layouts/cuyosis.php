@@ -45,8 +45,8 @@
                         <img src="/ssis/assets/cuyotech-logo-900x900.webp" alt="Avatar" width="36" height="36" class="rounded-circle border object-fit-cover">
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#" data-dropdown="profile">Profile</a></li>
-                        <li><a class="dropdown-item" href="#" data-dropdown="settings">Settings</a></li>
+                        <li><a class="dropdown-item" href="/ssis/student/profile" data-dropdown="profile">Profile</a></li>
+                        <li><a class="dropdown-item" href="/ssis/student/documents/history" data-dropdown="settings">Document History</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="/ssis/logout">Logout</a></li>
                     </ul>
