@@ -450,37 +450,37 @@
 
         <nav class="sidebar-nav nav nav-pills flex-column mx-2 my-4 gap-1" role="navigation" aria-label="Sidebar navigation">
             <?php if ($role === 'student'): ?>
-                <li class="nav-item"><a class="nav-link" href="/ssis/student/dashboard"><i class="bi bi-speedometer2"></i>Dashboard</a></li>
-                <li class="nav-item"><a class="nav-link" href="/ssis/student/grades"><i class="bi bi-journal-text"></i>Grades</a></li>
-                <li class="nav-item"><a class="nav-link" href="/ssis/student/schedule"><i class="bi bi-calendar-event"></i>Schedule</a></li>
-                <li class="nav-item"><a class="nav-link" href="/ssis/student/documents/request"><i class="bi bi-folder2-open"></i>Documents</a></li>
-                <li class="nav-item"><a class="nav-link" href="/ssis/student/documents/history"><i class="bi bi-clock"></i>Request History</a></li>
-                <li class="nav-item"><a class="nav-link" href="/ssis/student/clearance"><i class="bi bi-clipboard-check"></i>Clearance</a></li>
-                <li class="nav-item"><a class="nav-link" href="/ssis/student/profile"><i class="bi bi-person"></i>Profile</a></li>
+                <li class="nav-item"><a class="nav-link" href="/ssis/student/dashboard"><i class="bi bi-speedometer2 mx-2"></i>Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="/ssis/student/grades"><i class="bi bi-journal-text mx-2"></i>Grades</a></li>
+                <li class="nav-item"><a class="nav-link" href="/ssis/student/schedule"><i class="bi bi-calendar-event mx-2"></i>Schedule</a></li>
+                <li class="nav-item"><a class="nav-link" href="/ssis/student/documents/request"><i class="bi bi-folder2-open mx-2"></i>Documents</a></li>
+                <li class="nav-item"><a class="nav-link" href="/ssis/student/documents/history"><i class="bi bi-clock mx-2"></i>Request History</a></li>
+                <li class="nav-item"><a class="nav-link" href="/ssis/student/clearance"><i class="bi bi-clipboard-check mx-2"></i>Clearance</a></li>
+                <li class="nav-item"><a class="nav-link" href="/ssis/student/profile"><i class="bi bi-person mx-2"></i>Profile</a></li>
             <?php elseif (in_array($role, ['faculty', 'chair', 'dean'])): ?>
-                <li class="nav-item"><a class="nav-link" href="/ssis/registrar/dashboard"><i class="bi bi-speedometer2"></i>Dashboard</a></li>
-                <li class="nav-item"><a class="nav-link" href="/ssis/registrar/students"><i class="bi bi-people"></i>Students</a></li>
-                <li class="nav-item"><a class="nav-link" href="/ssis/registrar/enrollments"><i class="bi bi-journal-check"></i>Enrollments</a></li>
-                <li class="nav-item"><a class="nav-link" href="/ssis/registrar/grades/encode"><i class="bi bi-pencil-square"></i>Grade Encoding</a></li>
-                <li class="nav-item"><a class="nav-link" href="/ssis/registrar/documents/queue"><i class="bi bi-folder2-open"></i>Document Queue</a></li>
+                <li class="nav-item"><a class="nav-link" href="/ssis/registrar/dashboard"><i class="bi bi-speedometer2 mx-2"></i>Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="/ssis/registrar/students"><i class="bi bi-people mx-2"></i>Students</a></li>
+                <li class="nav-item"><a class="nav-link" href="/ssis/registrar/enrollments"><i class="bi bi-journal-check mx-2"></i>Enrollments</a></li>
+                <li class="nav-item"><a class="nav-link" href="/ssis/registrar/grades/encode"><i class="bi bi-pencil-square mx-2"></i>Grade Encoding</a></li>
+                <li class="nav-item"><a class="nav-link" href="/ssis/registrar/documents/queue"><i class="bi bi-folder2-open mx-2"></i>Document Queue</a></li>
             <?php elseif ($role === 'cashier'): ?>
-                <li class="nav-item"><a class="nav-link" href="/ssis/cashier/dashboard"><i class="bi bi-speedometer2"></i>Dashboard</a></li>
-                <li class="nav-item"><a class="nav-link" href="/ssis/cashier/payments/process"><i class="bi bi-credit-card-2-front"></i>Process Payment</a></li>
-                <li class="nav-item"><a class="nav-link" href="/ssis/cashier/reports/daily"><i class="bi bi-bar-chart-steps"></i>Daily Report</a></li>
+                <li class="nav-item"><a class="nav-link" href="/ssis/cashier/dashboard"><i class="bi bi-speedometer2 mx-2"></i>Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="/ssis/cashier/payments/process"><i class="bi bi-credit-card-2-front mx-2"></i>Process Payment</a></li>
+                <li class="nav-item"><a class="nav-link" href="/ssis/cashier/reports/daily"><i class="bi bi-bar-chart-steps mx-2"></i>Daily Report</a></li>
             <?php elseif ($role === 'admin'): ?>
-                <li class="nav-item"><a class="nav-link" href="/ssis/admin/dashboard"><i class="bi bi-speedometer2"></i>Dashboard</a></li>
-                <li class="nav-item"><a class="nav-link" href="/ssis/admin/users"><i class="bi bi-people"></i>Users</a></li>
-                <li class="nav-item"><a class="nav-link" href="/ssis/admin/roles"><i class="bi bi-shield-lock"></i>Roles & Permissions</a></li>
-                <li class="nav-item"><a class="nav-link" href="/ssis/admin/system-settings"><i class="bi bi-gear"></i>System Settings</a></li>
-                <li class="nav-item"><a class="nav-link" href="/ssis/admin/audit-logs"><i class="bi bi-clipboard-data"></i>Audit Logs</a></li>
-                <li class="nav-item"><a class="nav-link" href="/ssis/registrar/students"><i class="bi bi-person-badge"></i>Student Records</a></li>
-                <li class="nav-item"><a class="nav-link" href="/ssis/department/clearance"><i class="bi bi-clipboard-check"></i>Clearance Queue</a></li>
+                <li class="nav-item"><a class="nav-link" href="/ssis/admin/dashboard"><i class="bi bi-speedometer2 mx-2"></i>Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="/ssis/admin/users"><i class="bi bi-people mx-2"></i>Users</a></li>
+                <li class="nav-item"><a class="nav-link" href="/ssis/admin/roles"><i class="bi bi-shield-lock mx-2"></i>Roles & Permissions</a></li>
+                <li class="nav-item"><a class="nav-link" href="/ssis/admin/system-settings"><i class="bi bi-gear mx-2"></i>System Settings</a></li>
+                <li class="nav-item"><a class="nav-link" href="/ssis/admin/audit-logs"><i class="bi bi-clipboard-data mx-2"></i>Audit Logs</a></li>
+                <li class="nav-item"><a class="nav-link" href="/ssis/registrar/students"><i class="bi bi-person-badge mx-2"></i>Student Records</a></li>
+                <li class="nav-item"><a class="nav-link" href="/ssis/department/clearance"><i class="bi bi-clipboard-check mx-2"></i>Clearance Queue</a></li>
             <?php endif; ?>
         </nav>
 
         <div class="p-3" style="border-top: 1px solid var(--card-border);">
             <a class="nav-link text-warning" href="/ssis/logout">
-                <i class="bi bi-box-arrow-right"></i>Logout
+                <i class="bi bi-box-arrow-right mx-2"></i>Logout
             </a>
         </div>
     </aside>
