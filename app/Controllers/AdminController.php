@@ -86,7 +86,7 @@ class AdminController extends BaseController
         $ownerType = $_POST['owner_type'] ?? '';
         $ownerId = $_POST['owner_id'] ?? '';
 
-        $validRoles = ['student', 'faculty', 'chair', 'dean', 'admin'];
+        $validRoles = ['student', 'faculty', 'chair', 'dean', 'admin', 'cashier'];
         $validOwnerTypes = ['personnel', 'student'];
 
         if (!in_array($role, $validRoles) || !in_array($ownerType, $validOwnerTypes)) {
@@ -171,5 +171,119 @@ class AdminController extends BaseController
         $this->db->update('settings', $updates, 'singleton = 1');
         App::flash('success', 'System settings updated successfully.');
         App::redirect('/admin/system-settings');
+    }
+
+    public function dashboard()
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->admin()) return;
+
+        $counts = $this->db->fetchOne("SELECT
+            (SELECT COUNT(*) FROM students) AS students,
+            (SELECT COUNT(*) FROM personnel WHERE is_active = 1) AS personnel,
+            (SELECT COUNT(*) FROM accounts WHERE is_active = 1) AS accounts,
+            (SELECT COUNT(*) FROM enrolments WHERE is_approved = 1) AS approved_enrolments,
+            (SELECT COUNT(*) FROM document_requests WHERE status = 'Pending') AS pending_requests,
+            (SELECT COALESCE(SUM(amount_paid),0) FROM payments WHERE DATE(payment_date) = CURDATE()) AS today_collection");
+
+        App::view('admin/dashboard', [
+            'counts' => $counts,
+            'pageTitle' => 'Admin Dashboard',
+            'module' => 'admin',
+        ]);
+    }
+
+    public function createUserForm()
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->admin()) return;
+
+        App::view('admin/user_form', [
+            'user' => null,
+            'personnel' => $this->userModel->getPersonnelList(),
+            'students' => $this->userModel->getStudentsList(),
+            'csrf_token' => App::csrf_token(),
+            'pageTitle' => 'Create User',
+            'module' => 'admin',
+        ]);
+    }
+
+    public function viewUser($id)
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->admin()) return;
+
+        $user = $this->userModel->findById($id);
+        if (!$user) {
+            App::flash('error', 'User not found.');
+            App::redirect('/admin/users');
+            return;
+        }
+
+        App::view('admin/user_view', [
+            'user' => $user,
+            'pageTitle' => 'View User',
+            'module' => 'admin',
+        ]);
+    }
+
+    public function editUserForm($id)
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->admin()) return;
+
+        $user = $this->userModel->findById($id);
+        if (!$user) {
+            App::flash('error', 'User not found.');
+            App::redirect('/admin/users');
+            return;
+        }
+
+        App::view('admin/user_form', [
+            'user' => $user,
+            'personnel' => $this->userModel->getPersonnelList(),
+            'students' => $this->userModel->getStudentsList(),
+            'csrf_token' => App::csrf_token(),
+            'pageTitle' => 'Edit User',
+            'module' => 'admin',
+        ]);
+    }
+
+    public function toggleUserStatus($id)
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->admin()) return;
+
+        $isActive = isset($_POST['is_active']) ? (int) $_POST['is_active'] : 1;
+        $this->db->update('accounts', ['is_active' => $isActive], 'id = :id', ['id' => $id]);
+        App::flash('success', 'User status updated.');
+        App::redirect('/admin/users');
+    }
+
+    public function auditLogs()
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->admin()) return;
+
+        $actor = $_GET['actor_id'] ?? null;
+        $params = [];
+        $where = "WHERE 1=1";
+        if ($actor) {
+            $where .= " AND actor_id = :actor_id";
+            $params['actor_id'] = $actor;
+        }
+
+        $sql = "SELECT id, actor_id, action, entity, entity_id, meta, created_at
+                FROM audit_log
+                {$where}
+                ORDER BY id DESC LIMIT 200";
+
+        $logs = $this->db->fetchAll($sql, $params);
+
+        App::view('admin/audit_logs', [
+            'logs' => $logs,
+            'pageTitle' => 'Audit Logs',
+            'module' => 'admin',
+        ]);
     }
 }
