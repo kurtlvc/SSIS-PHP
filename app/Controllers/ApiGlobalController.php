@@ -52,11 +52,11 @@ class ApiGlobalController extends BaseController
 
         $sql = "SELECT id, action, entity, entity_id, meta, created_at
                 FROM audit_log
-                WHERE (actor_id = :actor OR :actor = 0)
+                WHERE actor_id = :actor OR :actor2 = 0
                 ORDER BY id DESC
                 LIMIT 50";
 
-        App::json($this->db->fetchAll($sql, ['actor' => $_SESSION['account_id'] ?? 0]));
+        App::json($this->db->fetchAll($sql, ['actor' => $_SESSION['account_id'] ?? 0, 'actor2' => $_SESSION['account_id'] ?? 0]));
     }
 
     public function markNotificationRead()
