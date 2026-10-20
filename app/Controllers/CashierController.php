@@ -126,4 +126,35 @@ class CashierController extends BaseController
             'module' => 'cashier',
         ]);
     }
+
+    public function dailyReport()
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->requireRole(['cashier', 'admin'])) return;
+
+        $day = $_GET['date'] ?? date('Y-m-d');
+        $sql = "SELECT p.payment_id, p.receipt_no, p.amount_paid, p.payment_date,
+                       s.ref_no, s.lname, s.fname, pr.lname as cashier_lname, pr.fname as cashier_fname
+                FROM payments p
+                JOIN enrolments e ON e.enrolment_id = p.enrolment_id
+                JOIN students s ON s.stud_id = e.stud_id
+                LEFT JOIN personnel pr ON pr.p_id = p.cashier_id
+                WHERE DATE(p.payment_date) = :day
+                ORDER BY p.payment_date DESC";
+
+        $rows = $this->db->fetchAll($sql, ['day' => $day]);
+        $total = 0;
+        foreach ($rows as $r) {
+            $total += (float) ($r['amount_paid'] ?? 0);
+        }
+
+        App::view('cashier/daily_report', [
+            'date' => $day,
+            'transactions' => $rows,
+            'count' => count($rows),
+            'total' => $total,
+            'pageTitle' => 'Daily Report',
+            'module' => 'cashier',
+        ]);
+    }
 }

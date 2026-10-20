@@ -31,6 +31,24 @@ class DepartmentController extends BaseController
         ]);
     }
 
+    public function dashboard()
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->department()) return;
+
+        $counts = $this->db->fetchOne("SELECT
+            (SELECT COUNT(*) FROM clearance_records WHERE status = 'Pending') AS pending,
+            (SELECT COUNT(*) FROM clearance_records WHERE status = 'Cleared') AS cleared,
+            (SELECT COUNT(*) FROM clearance_records WHERE status = 'On-Hold') AS on_hold,
+            (SELECT COUNT(*) FROM clearance_departments WHERE is_active = 1) AS departments");
+
+        App::view('department/dashboard', [
+            'counts' => $counts,
+            'pageTitle' => 'Department Dashboard',
+            'module' => 'department',
+        ]);
+    }
+
     public function studentClearance($studId)
     {
         if (!$this->requireAuth()) return;
