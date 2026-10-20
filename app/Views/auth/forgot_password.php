@@ -283,8 +283,8 @@
             <div class="float-shape s4"></div>
             <div class="content-wrapper">
                 <div class="info-card card border-0">
-                    <div class="logo-badge">
-                        <img src="/ssis/assets/cuyossis-3204x981.webp" alt="CuyoSSIS" style="width: auto; height: 48px;">
+                    <div class="logo-badge logo-badge-custom">
+                        <img src="/ssis/assets/cuyossis-3204x981.webp" alt="CuyoSSIS" class="logo-img-custom">
                     </div>
                     <div class="brand">CuyoTech University</div>
                     <h1 class="title">CuyoSSIS</h1>

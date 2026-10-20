@@ -1,12 +1,12 @@
 <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-4 gap-2">
-    <h1 class="h3 mb-0 fw-bold" style="color: var(--dash-text-primary);">Department Dashboard</h1>
-    <span class="small fst-italic" style="color: var(--dash-text-tertiary);"><?= htmlspecialchars(date('F j, Y')) ?></span>
+    <h1 class="h3 mb-0 fw-bold text-primary">Department Dashboard</h1>
+    <span class="small fst-italic text-tertiary"><?= htmlspecialchars(date('F j, Y')) ?></span>
 </div>
 
 <nav aria-label="Breadcrumb" class="mb-4">
-    <ol class="breadcrumb mb-0" style="background: transparent; padding: 0;">
-        <li class="breadcrumb-item"><a href="/ssis/department/dashboard" style="color: var(--dash-text-tertiary); text-decoration: none;">Dashboard</a></li>
-        <li class="breadcrumb-item active" aria-current="page" style="color: var(--dash-text-muted);">Department</li>
+    <ol class="breadcrumb mb-0 breadcrumb-custom">
+        <li class="breadcrumb-item"><a href="/ssis/department/dashboard">Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Department</li>
     </ol>
 </nav>
 
@@ -20,7 +20,7 @@
 <div class="dashboard-grid" role="group" aria-label="Department metrics">
     <article class="dash-card dash-card--warnings" tabindex="0">
         <div class="dash-card__icon dash-card__icon--warning" aria-hidden="true">
-            <i class="bi bi-hourglass-split" style="font-size: 1.5rem;"></i>
+            <i class="bi bi-hourglass-split icon-1_5rem"></i>
         </div>
         <div class="dash-card__content">
             <h2 class="dash-card__title">Pending Clearance</h2>
@@ -30,7 +30,7 @@
                 <?php if ($pending > 0): ?>
                     <span class="dash-card__badge dash-card__badge--critical"><?= $pending ?> Students</span>
                 <?php else: ?>
-                    <span style="color: var(--dash-accent-green);">All current</span>
+                    <span class="text-success-custom">All current</span>
                 <?php endif; ?>
             </div>
         </div>
@@ -39,7 +39,7 @@
 
     <article class="dash-card dash-card--users" tabindex="0">
         <div class="dash-card__icon dash-card__icon--success" aria-hidden="true">
-            <i class="bi bi-clipboard-check" style="font-size: 1.5rem;"></i>
+            <i class="bi bi-clipboard-check icon-1_5rem"></i>
         </div>
         <div class="dash-card__content">
             <h2 class="dash-card__title">Cleared Students</h2>
@@ -52,7 +52,7 @@
 
     <article class="dash-card dash-card--documents" tabindex="0">
         <div class="dash-card__icon dash-card__icon--info" aria-hidden="true">
-            <i class="bi bi-pause-circle" style="font-size: 1.5rem;"></i>
+            <i class="bi bi-pause-circle icon-1_5rem"></i>
         </div>
         <div class="dash-card__content">
             <h2 class="dash-card__title">On Hold</h2>
@@ -62,7 +62,7 @@
                 <?php if ($onHold > 0): ?>
                     <span class="dash-card__badge dash-card__badge--critical"><?= $onHold ?> Items</span>
                 <?php else: ?>
-                    <span style="color: var(--dash-accent-green);">None pending</span>
+                    <span class="text-success-custom">None pending</span>
                 <?php endif; ?>
             </div>
         </div>
@@ -71,7 +71,7 @@
 
     <article class="dash-card dash-card--status" tabindex="0">
         <div class="dash-card__icon dash-card__icon--cyan" aria-hidden="true">
-            <i class="bi bi-diagram-2" style="font-size: 1.5rem;"></i>
+            <i class="bi bi-diagram-2 icon-1_5rem"></i>
         </div>
         <div class="dash-card__content">
             <h2 class="dash-card__title">Departments</h2>
@@ -93,8 +93,8 @@
             <div class="card-header fw-semibold">Quick Links</div>
             <div class="card-body p-4">
                 <div class="d-grid gap-2" id="quickLinkList">
-                    <a href="/ssis/department/clearance" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center gap-2" style="padding: 12px 16px;"><i class="bi bi-clipboard-data me-1"></i>Clearance Queue</a>
-                    <a href="/ssis/registrar/students" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center gap-2" style="padding: 12px 16px;"><i class="bi bi-people me-1"></i>Student Records</a>
+                    <a href="/ssis/department/clearance" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center gap-2 btn-padding-md"><i class="bi bi-clipboard-data me-1"></i>Clearance Queue</a>
+                    <a href="/ssis/registrar/students" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center gap-2 btn-padding-md"><i class="bi bi-people me-1"></i>Student Records</a>
                 </div>
             </div>
         </div>

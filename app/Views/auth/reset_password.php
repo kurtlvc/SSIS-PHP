@@ -70,7 +70,7 @@
                     <p class="lead">Enter your new password below</p>
 
                     <?php if (isset($error) && $error): ?>
-                        <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert" aria-live="polite" style="border-radius:.75rem;border:none;font-size:.875rem;">
+                        <div class="alert alert-danger alert-dismissible fade show mb-4 alert-custom-radius" role="alert" aria-live="polite">
                             <i class="bi bi-exclamation-circle me-1" aria-hidden="true"></i>
                             <?= htmlspecialchars($error) ?>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -102,7 +102,7 @@
                         <button type="submit" class="btn-signin"><i class="bi bi-save me-2" aria-hidden="true"></i>Save New Password</button>
                     </form>
 
-                    <div class="help-text mt-3 pt-3 border-top" style="font-size:.85rem;">
+                    <div class="help-text mt-3 pt-3 border-top help-text-custom">
                         <a href="/ssis/forgot-password" class="text-muted">Resend reset link</a>
                     </div>
                 </div>

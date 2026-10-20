@@ -214,7 +214,7 @@
         .input-icon {
             position: absolute;
             left: 14px;
-            top: 50%;
+            top: 20px;
             transform: translateY(-50%);
             color: var(--brand);
             font-size: 1.1rem;
@@ -319,8 +319,8 @@
             <div class="float-shape s4"></div>
             <div class="content-wrapper">
                 <div class="info-card card border-0">
-                    <div class="logo-badge" style="width: auto; height: auto; background: none; border-radius: 0; margin: 0 auto 1.5rem;">
-                        <img src="/ssis/assets/cuyossis-3204x981.webp" alt="CuyoSSIS" style="width: auto; height: 48px;">
+                    <div class="logo-badge logo-badge-custom">
+                        <img src="/ssis/assets/cuyossis-3204x981.webp" alt="CuyoSSIS" class="logo-img-custom">
                     </div>
                     <div class="brand">CuyoTech University</div>
                     <h1 class="title">CuyoSSIS</h1>

@@ -11,7 +11,7 @@
     <link href="/ssis/assets/css/style.css" rel="stylesheet">
 </head>
 <body class="bg-cuyo-gray">
-<a href="#main-content" class="skip-link position-absolute top-0 start-0 p-2 m-2 z-3" style="background: var(--card-bg); border: 2px solid var(--accent-blue); color: var(--text-primary);">Skip to main content</a>
+<a href="#main-content" class="skip-link position-absolute top-0 start-0 p-2 m-2 z-3 skip-link-custom">Skip to main content</a>
 
 <?php if (isset($_SESSION['account_id'])): ?>
 <div class="cuyosis-layout d-flex flex-column min-vh-100">
@@ -21,7 +21,7 @@
         <div class="container-fluid px-0">
             <div class="d-flex align-items-center gap-3">
                 <a class="navbar-brand mb-0 d-flex align-items-center" href="<?= $config['site_url'] ?>/student/dashboard">
-                    <img src="/ssis/assets/cuyotech-header-908x160.webp" alt="CuyoTech" width="32" height="32" class="d-none d-sm-inline-block me-2 img-fluid" style="max-width: 32px;">
+                    <img src="/ssis/assets/cuyotech-header-908x160.webp" alt="CuyoTech" width="32" height="32" class="d-none d-sm-inline-block me-2 img-fluid w-auto">
                     <span class="fw-bold text-cuyo-green">CuyoSSIS</span>
                 </a>
                 <span class="navbar-text text-muted d-none d-md-block">|</span>
@@ -32,13 +32,13 @@
                     Welcome, <?= htmlspecialchars($_SESSION['account_login'] ?? 'User') ?>
                 </span>
                 <button class="btn btn-link text-muted p-1" type="button" title="Notifications">
-                    <i class="bi bi-bell fs-6"" aria-hidden="true"></i>
+                    <i class="bi bi-bell fs-6" aria-hidden="true"></i>
                 </button>
                 <button class="btn btn-link text-muted p-1" type="button" title="Messages">
-                    <i class="bi bi-envelope fs-6"" aria-hidden="true"></i>
+                    <i class="bi bi-envelope fs-6" aria-hidden="true"></i>
                 </button>
                 <button class="btn btn-link text-muted p-1" type="button" title="Settings">
-                    <i class="bi bi-gear fs-6"" aria-hidden="true"></i>
+                    <i class="bi bi-gear fs-6" aria-hidden="true"></i>
                 </button>
                 <div class="dropdown">
                     <a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" aria-label="User menu">
@@ -61,30 +61,30 @@
         <!-- Slim Vertical Sidebar -->
         <aside class="cuyo-sidebar d-none d-lg-flex flex-column flex-shrink-0 border-end bg-white py-4 me-4">
             <div class="px-3 text-center mb-4">
-                <img src="/ssis/assets/cuyotech-logo-900x900.webp" alt="Emblem" width="56" height="56" class="mb-2 img-fluid" style="max-width: 56px;">
+                <img src="/ssis/assets/cuyotech-logo-900x900.webp" alt="Emblem" width="56" height="56" class="mb-2 img-fluid w-auto">
                 <div class="small fw-medium text-cuyo-green">CuyoTech University</div>
             </div>
             <nav class="nav nav-pills flex-column mx-2 gap-1" role="navigation" aria-label="Sidebar navigation">
                 <a class="nav-link active" href="/ssis/student/dashboard">
-                    <i class="bi bi-speedometer2 me-2" aria-hidden="true"></i>Dashboard
+                    <i class="bi bi-speedometer2 me-2 mx-2" aria-hidden="true"></i>Dashboard
                 </a>
                 <a class="nav-link text-muted" href="/ssis/student/grades">
-                    <i class="bi bi-journal-text me-2" aria-hidden="true"></i>Grades
+                    <i class="bi bi-journal-text me-2 mx-2" aria-hidden="true"></i>Grades
                 </a>
                 <a class="nav-link text-muted" href="/ssis/student/schedule">
-                    <i class="bi bi-calendar-event me-2" aria-hidden="true"></i>Schedule
+                    <i class="bi bi-calendar-event me-2 mx-2" aria-hidden="true"></i>Schedule
                 </a>
                 <a class="nav-link text-muted" href="/ssis/student/documents/request">
-                    <i class="bi bi-folder2-open me-2" aria-hidden="true"></i>Documents
+                    <i class="bi bi-folder2-open me-2 mx-2" aria-hidden="true"></i>Documents
                 </a>
                 <a class="nav-link text-muted" href="#">
-                    <i class="bi bi-credit-card-2-front me-2" aria-hidden="true"></i>Payments
+                    <i class="bi bi-credit-card-2-front me-2 mx-2" aria-hidden="true"></i>Payments
                 </a>
                 <a class="nav-link text-muted" href="#">
-                    <i class="bi bi-clipboard-data me-2" aria-hidden="true"></i>Reports
+                    <i class="bi bi-clipboard-data me-2 mx-2" aria-hidden="true"></i>Reports
                 </a>
                 <a class="nav-link text-muted" href="#">
-                    <i class="bi bi-question-circle me-2" aria-hidden="true"></i>Help &amp; Support
+                    <i class="bi bi-question-circle me-2 mx-2" aria-hidden="true"></i>Help & Support
                 </a>
             </nav>
         </aside>

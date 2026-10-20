@@ -22,7 +22,7 @@ $loginUrl = ($config['site_url'] ?? '') . '/login';
 <body class="d-flex align-items-center justify-content-center min-vh-100">
     <main id="main-content" class="container" role="main">
         <div class="text-center">
-            <i class="bi bi-lock display-1 text-cuyo-green mb-3" aria-hidden="true" style="font-size: 4rem;"></i>
+            <i class="bi bi-lock display-1 text-cuyo-green mb-3 fs-4rem" aria-hidden="true"></i>
             <h1 class="display-4 fw-bold text-navy mb-2">403 — Access Denied</h1>
             <p class="lead text-muted">
                 You are signed in, but your role does not have permission to view this page.

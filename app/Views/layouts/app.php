@@ -427,8 +427,8 @@
         })();
     </script>
 </head>
-<body class="theme-loading" style="background: var(--bg) !important;">
-<a href="#main-content" class="skip-link">Skip to main content</a>
+<body class="theme-loading bg-var">
+<a href="#main-content" class="skip-link skip-link-custom">Skip to main content</a>
 
 <?php if (isset($_SESSION['account_id'])): ?>
 <div class="app-shell d-flex">
@@ -438,7 +438,7 @@
 
     <!-- Sidebar -->
     <aside class="sidebar d-flex flex-column" role="navigation" aria-label="Sidebar navigation" id="sidebar">
-        <div class="sidebar-header p-3" style="border-bottom: 1px solid var(--card-border);">
+        <div class="sidebar-header p-3 border-bottom-var">
             <?php
             $role = $_SESSION['account_role'] ?? 'student';
             $home = '/ssis/' . ($role === 'student' ? 'student/dashboard' : ($role === 'admin' ? 'admin/dashboard' : ($role === 'cashier' ? 'cashier/dashboard' : ($role === 'dean' || $role === 'chair' ? 'registrar/dashboard' : 'department/dashboard'))));
@@ -479,7 +479,7 @@
             <?php endif; ?>
         </nav>
 
-        <div class="p-3" style="border-top: 1px solid var(--card-border);">
+        <div class="p-3 border-top-var">
             <a class="nav-link text-warning" href="/ssis/logout">
                 <i class="bi bi-box-arrow-right mx-2"></i>Logout
             </a>
@@ -488,25 +488,25 @@
 
     <!-- Main -->
     <div class="main-wrap flex-grow-1 d-flex flex-column">
-        <header class="header d-flex align-items-center justify-content-between px-4 py-2" style="height: 60px;">
+        <header class="header d-flex align-items-center justify-content-between px-4 py-2 header-fixed">
             <div class="d-flex align-items-center gap-3">
                 <button class="sidebar-toggle d-lg-none" id="sidebarToggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="sidebar">
-                    <i class="bi bi-list" style="font-size: 1.25rem;"></i>
+                    <i class="bi bi-list fs-1_25rem"></i>
                 </button>
-                <h1 class="h5 fw-bold mb-0" style="color: var(--text-primary);"><?= htmlspecialchars($pageTitle ?? 'Dashboard') ?></h1>
+                <h1 class="h5 fw-bold mb-0 text-var-primary"><?= htmlspecialchars($pageTitle ?? 'Dashboard') ?></h1>
             </div>
             <div class="d-flex align-items-center gap-2">
                 <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" title="Toggle light/dark mode">
-                    <i class="bi bi-moon-stars" id="themeIcon" style="font-size: 1.1rem;"></i>
+                    <i class="bi bi-moon-stars" id="themeIcon" class="fs-1_1rem"></i>
                 </button>
                 <div class="dropdown">
                     <a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" aria-label="User menu"
-                       class="d-flex align-items-center text-decoration-none gap-2" style="color: var(--text-primary);">
-                        <span class="user-avatar rounded-circle border d-flex align-items-center justify-content-center fw-semibold" style="width: 36px; height: 36px; background: var(--accent-blue); color: #fff; border-color: var(--card-border) !important; font-size: 1rem;">
+                       class="d-flex align-items-center text-decoration-none gap-2 text-var-primary">
+                        <span class="user-avatar-custom">
                             <?= strtoupper(substr($_SESSION['account_login'] ?? 'U', 0, 1)) ?>
                         </span>
                         <span class="d-none d-sm-inline fw-medium"><?= htmlspecialchars($_SESSION['account_login'] ?? 'User') ?></span>
-                        <i class="bi bi-chevron-down small" style="color: var(--text-tertiary);"></i>
+                        <i class="bi bi-chevron-down small text-var-tertiary"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <?php if ($role === 'student'): ?>

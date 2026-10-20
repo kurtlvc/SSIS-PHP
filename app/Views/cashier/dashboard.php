@@ -1,12 +1,12 @@
 <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-4 gap-2">
-    <h1 class="h3 mb-0 fw-bold" style="color: var(--dash-text-primary);">Cashier Dashboard</h1>
-    <span class="small fst-italic" style="color: var(--dash-text-tertiary);"><?= htmlspecialchars(date('F j, Y')) ?></span>
+    <h1 class="h3 mb-0 fw-bold text-primary">Cashier Dashboard</h1>
+    <span class="small fst-italic text-tertiary"><?= htmlspecialchars(date('F j, Y')) ?></span>
 </div>
 
 <nav aria-label="Breadcrumb" class="mb-4">
-    <ol class="breadcrumb mb-0" style="background: transparent; padding: 0;">
-        <li class="breadcrumb-item"><a href="/ssis/cashier/dashboard" style="color: var(--dash-text-tertiary); text-decoration: none;">Dashboard</a></li>
-        <li class="breadcrumb-item active" aria-current="page" style="color: var(--dash-text-muted);">Cashier</li>
+    <ol class="breadcrumb mb-0 breadcrumb-custom">
+        <li class="breadcrumb-item"><a href="/ssis/cashier/dashboard">Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Cashier</li>
     </ol>
 </nav>
 
@@ -23,7 +23,7 @@ $avgPerTx = $totalTransactions > 0 ? $totalCollections / $totalTransactions : 0;
 <div class="dashboard-grid" role="group" aria-label="Cashier metrics">
     <article class="dash-card dash-card--users" tabindex="0">
         <div class="dash-card__icon dash-card__icon--success" aria-hidden="true">
-            <i class="bi bi-cash-stack" style="font-size: 1.5rem;"></i>
+            <i class="bi bi-cash-stack icon-1_5rem"></i>
         </div>
         <div class="dash-card__content">
             <h2 class="dash-card__title">Today's Collections</h2>
@@ -36,7 +36,7 @@ $avgPerTx = $totalTransactions > 0 ? $totalCollections / $totalTransactions : 0;
 
     <article class="dash-card dash-card--documents" tabindex="0">
         <div class="dash-card__icon dash-card__icon--info" aria-hidden="true">
-            <i class="bi bi-receipt" style="font-size: 1.5rem;"></i>
+            <i class="bi bi-receipt icon-1_5rem"></i>
         </div>
         <div class="dash-card__content">
             <h2 class="dash-card__title">Total Transactions</h2>
@@ -49,7 +49,7 @@ $avgPerTx = $totalTransactions > 0 ? $totalCollections / $totalTransactions : 0;
 
     <article class="dash-card dash-card--warnings" tabindex="0">
         <div class="dash-card__icon dash-card__icon--warning" aria-hidden="true">
-            <i class="bi bi-hourglass-bottom" style="font-size: 1.5rem;"></i>
+            <i class="bi bi-hourglass-bottom icon-1_5rem"></i>
         </div>
         <div class="dash-card__content">
             <h2 class="dash-card__title">Pending Payments</h2>
@@ -59,7 +59,7 @@ $avgPerTx = $totalTransactions > 0 ? $totalCollections / $totalTransactions : 0;
                 <?php if ($pendingCount > 0): ?>
                     <span class="dash-card__badge dash-card__badge--critical"><?= $pendingCount ?> Students</span>
                 <?php else: ?>
-                    <span style="color: var(--dash-accent-green);">Queue clear</span>
+                    <span class="text-success-custom">Queue clear</span>
                 <?php endif; ?>
             </div>
         </div>
@@ -68,7 +68,7 @@ $avgPerTx = $totalTransactions > 0 ? $totalCollections / $totalTransactions : 0;
 
     <article class="dash-card dash-card--status" tabindex="0">
         <div class="dash-card__icon dash-card__icon--cyan" aria-hidden="true">
-            <i class="bi bi-graph-up-arrow" style="font-size: 1.5rem;"></i>
+            <i class="bi bi-graph-up-arrow icon-1_5rem"></i>
         </div>
         <div class="dash-card__content">
             <h2 class="dash-card__title">Avg. per Transaction</h2>
@@ -88,14 +88,14 @@ $avgPerTx = $totalTransactions > 0 ? $totalCollections / $totalTransactions : 0;
         <div class="card border-0 h-100 quick-links-card">
             <div class="card-header fw-semibold d-flex justify-content-between align-items-center">
                 <span>Pending Payment Queue</span>
-                <a href="/ssis/cashier/payments/process" class="btn btn-sm" style="background: var(--dash-accent-blue); color: #fff; border: none;">New Payment</a>
+                <a href="/ssis/cashier/payments/process" class="btn btn-sm btn-primary-blue">New Payment</a>
             </div>
             <div class="card-body p-0">
                 <?php if (!empty($pendingPayments)): ?>
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0" aria-label="Pending payment queue" style="color: var(--dash-text-primary);">
+                        <table class="table table-hover mb-0 table-dark-theme" aria-label="Pending payment queue">
                             <thead>
-                                <tr style="border-bottom: 1px solid var(--dash-card-border); color: var(--dash-text-tertiary);">
+                                <tr>
                                     <th class="small">Student</th>
                                     <th class="small">Ref No</th>
                                     <th class="small">Program</th>
@@ -107,15 +107,15 @@ $avgPerTx = $totalTransactions > 0 ? $totalCollections / $totalTransactions : 0;
                             </thead>
                             <tbody>
                                 <?php foreach ($pendingPayments as $pp): ?>
-                                    <tr style="border-bottom: 1px solid var(--dash-card-border);">
+                                    <tr>
                                         <td><?= htmlspecialchars($pp['lname'] . ', ' . $pp['fname']) ?></td>
-                                        <td class="small" style="color: var(--dash-text-tertiary);"><?= htmlspecialchars($pp['ref_no']) ?></td>
-                                        <td class="small" style="color: var(--dash-text-tertiary);"><?= htmlspecialchars($pp['program_code']) ?></td>
-                                        <td class="small" style="color: var(--dash-text-tertiary);"><?= $pp['total_units'] ?></td>
-                                        <td class="small" style="color: var(--dash-text-tertiary);"><?= htmlspecialchars($pp['ay_name']) ?></td>
-                                        <td class="small" style="color: var(--dash-text-tertiary);"><?= htmlspecialchars($pp['semester_name']) ?></td>
+                                        <td class="small text-tertiary"><?= htmlspecialchars($pp['ref_no']) ?></td>
+                                        <td class="small text-tertiary"><?= htmlspecialchars($pp['program_code']) ?></td>
+                                        <td class="small text-tertiary"><?= $pp['total_units'] ?></td>
+                                        <td class="small text-tertiary"><?= htmlspecialchars($pp['ay_name']) ?></td>
+                                        <td class="small text-tertiary"><?= htmlspecialchars($pp['semester_name']) ?></td>
                                         <td class="text-center">
-                                            <a href="/ssis/cashier/payments/process?enrolment_id=<?= $pp['enrolment_id'] ?>" class="btn btn-sm" style="background: var(--dash-accent-green); color: #fff; border: none;">Collect</a>
+                                            <a href="/ssis/cashier/payments/process?enrolment_id=<?= $pp['enrolment_id'] ?>" class="btn btn-sm btn-success-green">Collect</a>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -123,7 +123,7 @@ $avgPerTx = $totalTransactions > 0 ? $totalCollections / $totalTransactions : 0;
                         </table>
                     </div>
                 <?php else: ?>
-                    <p class="small text-center py-3 mb-0" style="color: var(--dash-text-disabled);">No pending payments for the selected period.</p>
+                    <p class="small text-center py-3 mb-0 text-disabled">No pending payments for the selected period.</p>
                 <?php endif; ?>
             </div>
         </div>
@@ -137,9 +137,9 @@ $avgPerTx = $totalTransactions > 0 ? $totalCollections / $totalTransactions : 0;
             <div class="card-body p-4">
                 <?php if (!empty($summary)): ?>
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0" aria-label="Recent transactions" style="color: var(--dash-text-primary);">
+                        <table class="table table-hover mb-0 table-dark-theme" aria-label="Recent transactions">
                             <thead>
-                                <tr style="border-bottom: 1px solid var(--dash-card-border); color: var(--dash-text-tertiary);">
+                                <tr>
                                     <th class="small">Date</th>
                                     <th class="small">Transactions</th>
                                     <th class="small">Amount</th>
@@ -148,9 +148,9 @@ $avgPerTx = $totalTransactions > 0 ? $totalCollections / $totalTransactions : 0;
                             <tbody>
                                 <?php foreach ($summary as $day): ?>
                                     <?php if (isset($day['total_amount']) && $day['total_amount'] > 0): ?>
-                                        <tr style="border-bottom: 1px solid var(--dash-card-border);">
-                                            <td class="small" style="color: var(--dash-text-tertiary);"><?= date('M d, Y', strtotime($day['payment_date'])) ?></td>
-                                            <td class="small" style="color: var(--dash-text-tertiary);"><?= $day['total_transactions'] ?></td>
+                                        <tr>
+                                            <td class="small text-tertiary"><?= date('M d, Y', strtotime($day['payment_date'])) ?></td>
+                                            <td class="small text-tertiary"><?= $day['total_transactions'] ?></td>
                                             <td>₱ <?= number_format($day['total_amount'], 2) ?></td>
                                         </tr>
                                     <?php endif; ?>
@@ -159,7 +159,7 @@ $avgPerTx = $totalTransactions > 0 ? $totalCollections / $totalTransactions : 0;
                         </table>
                     </div>
                 <?php else: ?>
-                    <p class="small mb-0" style="color: var(--dash-text-disabled);">No transactions recorded.</p>
+                    <p class="small mb-0 text-disabled">No transactions recorded.</p>
                 <?php endif; ?>
             </div>
         </div>

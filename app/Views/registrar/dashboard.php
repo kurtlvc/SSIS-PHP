@@ -1,12 +1,12 @@
 <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-4 gap-2">
-    <h1 class="h3 mb-0 fw-bold" style="color: var(--dash-text-primary);">Registrar Dashboard</h1>
-    <span class="small fst-italic" style="color: var(--dash-text-tertiary);"><?= htmlspecialchars(date('F j, Y')) ?></span>
+    <h1 class="h3 mb-0 fw-bold text-primary">Registrar Dashboard</h1>
+    <span class="small fst-italic text-tertiary"><?= htmlspecialchars(date('F j, Y')) ?></span>
 </div>
 
 <nav aria-label="Breadcrumb" class="mb-4">
-    <ol class="breadcrumb mb-0" style="background: transparent; padding: 0;">
-        <li class="breadcrumb-item"><a href="/ssis/registrar/dashboard" style="color: var(--dash-text-tertiary); text-decoration: none;">Dashboard</a></li>
-        <li class="breadcrumb-item active" aria-current="page" style="color: var(--dash-text-muted);">Registrar</li>
+    <ol class="breadcrumb mb-0 breadcrumb-custom">
+        <li class="breadcrumb-item"><a href="/ssis/registrar/dashboard">Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Registrar</li>
     </ol>
 </nav>
 
@@ -20,7 +20,7 @@
 <div class="dashboard-grid" role="group" aria-label="Registrar metrics">
     <article class="dash-card dash-card--users" tabindex="0">
         <div class="dash-card__icon dash-card__icon--success" aria-hidden="true">
-            <i class="bi bi-people-fill" style="font-size: 1.5rem;"></i>
+            <i class="bi bi-people-fill icon-1_5rem"></i>
         </div>
         <div class="dash-card__content">
             <h2 class="dash-card__title">Total Students</h2>
@@ -37,7 +37,7 @@
 
     <article class="dash-card dash-card--documents" tabindex="0">
         <div class="dash-card__icon dash-card__icon--info" aria-hidden="true">
-            <i class="bi bi-journal-check" style="font-size: 1.5rem;"></i>
+            <i class="bi bi-journal-check icon-1_5rem"></i>
         </div>
         <div class="dash-card__content">
             <h2 class="dash-card__title">Approved Enrolments</h2>
@@ -50,7 +50,7 @@
 
     <article class="dash-card dash-card--warnings" tabindex="0">
         <div class="dash-card__icon dash-card__icon--warning" aria-hidden="true">
-            <i class="bi bi-clipboard-data" style="font-size: 1.5rem;"></i>
+            <i class="bi bi-clipboard-data icon-1_5rem"></i>
         </div>
         <div class="dash-card__content">
             <h2 class="dash-card__title">Pending Assessment</h2>
@@ -60,7 +60,7 @@
                 <?php if ($pendingAssessment > 0): ?>
                     <span class="dash-card__badge dash-card__badge--critical"><?= $pendingAssessment ?> Items</span>
                 <?php else: ?>
-                    <span style="color: var(--dash-accent-green);">All current</span>
+                    <span class="text-success-custom">All current</span>
                 <?php endif; ?>
             </div>
         </div>
@@ -69,7 +69,7 @@
 
     <article class="dash-card dash-card--status" tabindex="0">
         <div class="dash-card__icon dash-card__icon--cyan" aria-hidden="true">
-            <i class="bi bi-folder2-open" style="font-size: 1.5rem;"></i>
+            <i class="bi bi-folder2-open icon-1_5rem"></i>
         </div>
         <div class="dash-card__content">
             <h2 class="dash-card__title">Document Queue</h2>
@@ -91,11 +91,11 @@
             <div class="card-header fw-semibold">Quick Links</div>
             <div class="card-body p-4">
                 <div class="d-grid gap-2" id="quickLinkList">
-                    <a href="/ssis/registrar/students" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center gap-2" style="padding: 12px 16px;"><i class="bi bi-people me-1"></i>Manage Students</a>
-                    <a href="/ssis/registrar/enrollments" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center gap-2" style="padding: 12px 16px;"><i class="bi bi-journal-check me-1"></i>Enrollment Management</a>
-                    <a href="/ssis/registrar/grades/encode" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center gap-2" style="padding: 12px 16px;"><i class="bi bi-pencil-square me-1"></i>Grade Encoding</a>
-                    <a href="/ssis/registrar/documents/queue" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center gap-2" style="padding: 12px 16px;"><i class="bi bi-folder2-open me-1"></i>Document Queue</a>
-                    <a href="/ssis/registrar/student-form" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center gap-2" style="padding: 12px 16px;"><i class="bi bi-person-plus me-1"></i>Student Form</a>
+                    <a href="/ssis/registrar/students" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center gap-2 btn-padding-md"><i class="bi bi-people me-1"></i>Manage Students</a>
+                    <a href="/ssis/registrar/enrollments" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center gap-2 btn-padding-md"><i class="bi bi-journal-check me-1"></i>Enrollment Management</a>
+                    <a href="/ssis/registrar/grades/encode" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center gap-2 btn-padding-md"><i class="bi bi-pencil-square me-1"></i>Grade Encoding</a>
+                    <a href="/ssis/registrar/documents/queue" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center gap-2 btn-padding-md"><i class="bi bi-folder2-open me-1"></i>Document Queue</a>
+                    <a href="/ssis/registrar/student-form" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center gap-2 btn-padding-md"><i class="bi bi-person-plus me-1"></i>Student Form</a>
                 </div>
             </div>
         </div>

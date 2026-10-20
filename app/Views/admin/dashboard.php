@@ -1,12 +1,12 @@
 <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-4 gap-2">
-    <h1 class="h3 mb-0 fw-bold" style="color: var(--dash-text-primary);">Admin Dashboard</h1>
-    <span class="small fst-italic" style="color: var(--dash-text-tertiary);"><?= htmlspecialchars(date('F j, Y')) ?></span>
+    <h1 class="h3 mb-0 fw-bold text-primary">Admin Dashboard</h1>
+    <span class="small fst-italic text-tertiary"><?= htmlspecialchars(date('F j, Y')) ?></span>
 </div>
 
 <nav aria-label="Breadcrumb" class="mb-4">
-    <ol class="breadcrumb mb-0" style="background: transparent; padding: 0;">
-        <li class="breadcrumb-item"><a href="/ssis/admin/dashboard" style="color: var(--dash-text-tertiary); text-decoration: none;">Dashboard</a></li>
-        <li class="breadcrumb-item active" aria-current="page" style="color: var(--dash-text-muted);">Admin</li>
+    <ol class="breadcrumb mb-0 breadcrumb-custom">
+        <li class="breadcrumb-item"><a href="/ssis/admin/dashboard">Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Admin</li>
     </ol>
 </nav>
 
@@ -24,7 +24,7 @@
     
     <article class="dash-card dash-card--users" tabindex="0">
         <div class="dash-card__icon dash-card__icon--success" aria-hidden="true">
-            <i class="bi bi-people-fill" style="font-size: 1.5rem;"></i>
+            <i class="bi bi-people-fill icon-1_5rem"></i>
         </div>
         <div class="dash-card__content">
             <h2 class="dash-card__title">Total Users</h2>
@@ -41,7 +41,7 @@
 
     <article class="dash-card dash-card--documents" tabindex="0">
         <div class="dash-card__icon dash-card__icon--info" aria-hidden="true">
-            <i class="bi bi-file-earmark-fill" style="font-size: 1.5rem;"></i>
+            <i class="bi bi-file-earmark-fill icon-1_5rem"></i>
         </div>
         <div class="dash-card__content">
             <h2 class="dash-card__title">Total Documents</h2>
@@ -54,7 +54,7 @@
 
     <article class="dash-card dash-card--warnings" tabindex="0">
         <div class="dash-card__icon dash-card__icon--warning" aria-hidden="true">
-            <i class="bi bi-exclamation-triangle-fill" style="font-size: 1.5rem;"></i>
+            <i class="bi bi-exclamation-triangle-fill icon-1_5rem"></i>
         </div>
         <div class="dash-card__content">
             <h2 class="dash-card__title">Pending Items</h2>
@@ -69,7 +69,7 @@
 
     <article class="dash-card dash-card--status" tabindex="0">
         <div class="dash-card__icon dash-card__icon--cyan" aria-hidden="true">
-            <i class="bi bi-info-circle-fill" style="font-size: 1.5rem;"></i>
+            <i class="bi bi-info-circle-fill icon-1_5rem"></i>
         </div>
         <div class="dash-card__content">
             <h2 class="dash-card__title">System Status</h2>
@@ -91,13 +91,13 @@
             <div class="card-header fw-semibold">Quick Links</div>
             <div class="card-body p-4">
                 <div class="d-grid gap-2" id="quickLinkList">
-                    <a href="/ssis/admin/users" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center gap-2" style="padding: 12px 16px;"><i class="bi bi-people me-1"></i>User Management</a>
-                    <a href="/ssis/admin/users/create" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center gap-2" style="padding: 12px 16px;"><i class="bi bi-plus me-1"></i>Create User</a>
-                    <a href="/ssis/admin/system-settings" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center gap-2" style="padding: 12px 16px;"><i class="bi bi-gear me-1"></i>System Settings</a>
-                    <a href="/ssis/admin/audit-logs" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center gap-2" style="padding: 12px 16px;"><i class="bi bi-clipboard-data me-1"></i>Audit Logs</a>
-                    <a href="/ssis/registrar/enrollments" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center gap-2" style="padding: 12px 16px;"><i class="bi bi-journal-check me-1"></i>Enrollment Management</a>
-                    <a href="/ssis/cashier/dashboard" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center gap-2" style="padding: 12px 16px;"><i class="bi bi-cash-coin me-1"></i>Cashier Dashboard</a>
-                    <a href="/ssis/department/clearance" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center gap-2" style="padding: 12px 16px;"><i class="bi bi-clipboard-check me-1"></i>Clearance Queue</a>
+                    <a href="/ssis/admin/users" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center gap-2 btn-padding-md"><i class="bi bi-people me-1"></i>User Management</a>
+                    <a href="/ssis/admin/users/create" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center gap-2 btn-padding-md"><i class="bi bi-plus me-1"></i>Create User</a>
+                    <a href="/ssis/admin/system-settings" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center gap-2 btn-padding-md"><i class="bi bi-gear me-1"></i>System Settings</a>
+                    <a href="/ssis/admin/audit-logs" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center gap-2 btn-padding-md"><i class="bi bi-clipboard-data me-1"></i>Audit Logs</a>
+                    <a href="/ssis/registrar/enrollments" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center gap-2 btn-padding-md"><i class="bi bi-journal-check me-1"></i>Enrollment Management</a>
+                    <a href="/ssis/cashier/dashboard" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center gap-2 btn-padding-md"><i class="bi bi-cash-coin me-1"></i>Cashier Dashboard</a>
+                    <a href="/ssis/department/clearance" class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center gap-2 btn-padding-md"><i class="bi bi-clipboard-check me-1"></i>Clearance Queue</a>
                 </div>
             </div>
         </div>

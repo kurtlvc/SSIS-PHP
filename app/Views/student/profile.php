@@ -7,8 +7,7 @@
         <?php if (!empty($student)): ?>
             <div class="row g-4">
                 <div class="col-md-4 text-center">
-                    <div class="bg-light border border-secondary d-inline-flex align-items-center justify-content-center rounded-circle mb-2"
-                         style="width: 120px; height: 120px;">
+                    <div class="bg-light border border-secondary d-inline-flex align-items-center justify-content-center rounded-circle mb-2 avatar-120">
                         <i class="bi bi-person-fill display-4 text-muted"></i>
                     </div>
                     <h3 class="h5 fw-bold mb-1"><?= htmlspecialchars(($student['fname'] ?? '') . ' ' . ($student['lname'] ?? '')) ?></h3>
