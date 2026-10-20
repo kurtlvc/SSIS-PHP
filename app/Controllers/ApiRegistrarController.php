@@ -5,7 +5,7 @@ class ApiRegistrarController extends BaseController
     private $studentModel;
     private $enrolmentModel;
     private $documentModel;
-    private $db;
+    private $userModel;
 
     public function __construct()
     {

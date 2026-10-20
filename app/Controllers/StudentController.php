@@ -22,6 +22,7 @@ class StudentController extends BaseController
 
         $gpa = $this->studentModel->calculateGPA($grades);
         $recentGrades = array_slice($grades, 0, 5);
+        $requests = $this->studentModel->getDocumentRequests($studId);
 
         $dateInfo = [
             'weekday' => date('l'),
@@ -49,6 +50,8 @@ class StudentController extends BaseController
             'student' => $student,
             'enrolments' => $enrolments,
             'grades' => $recentGrades,
+            'recentGrades' => $recentGrades,
+            'requests' => $requests,
             'gpa' => $gpa,
             'dateInfo' => $dateInfo,
             'weatherInfo' => $weatherInfo,
