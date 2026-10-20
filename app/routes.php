@@ -13,6 +13,7 @@ $router->post('/forgot-password', 'AuthController@sendResetLink');
 $router->get('/reset-password', 'AuthController@resetPasswordForm');
 $router->post('/reset-password', 'AuthController@resetPassword');
 $router->get('/logout', 'AuthController@logout');
+$router->get('/unauthorized', 'AuthController@unauthorized');
 
 // ============================================================
 // Authentication & Account Management (API v1)
@@ -141,6 +142,7 @@ $router->post('/admin/users/{id}/edit', 'AdminController@updateUser');
 $router->patch('/admin/users/{id}/toggle-status', 'AdminController@toggleUserStatus');
 $router->get('/admin/system-settings', 'AdminController@settings');
 $router->post('/admin/settings/update', 'AdminController@updateSettings');
+$router->get('/admin/roles', 'AdminController@roles');
 $router->get('/admin/audit-logs', 'AdminController@auditLogs');
 
 // ============================================================

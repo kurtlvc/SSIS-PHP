@@ -359,7 +359,7 @@ class RegistrarController extends BaseController
         if (!$this->middleware->faculty()) return;
 
         $sql = "SELECT e.enrolment_id, e.stud_id, s.ref_no, s.lname, s.fname,
-                       c.code, c.description, c.units,
+                       c.course_id, c.code, c.description, c.units,
                        ay.ay_name, sem.semester_name, g.final_grade, g.remarks
                 FROM schedules sch
                 JOIN courses c ON c.course_id = sch.course_id

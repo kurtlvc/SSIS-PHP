@@ -82,7 +82,7 @@ class ClearanceModel
 
     public function getDepartmentsByStudent($studId, $semId)
     {
-        $sql = "SELECT d.*, c.status, c.clearance_id
+        $sql = "SELECT d.*, c.status, c.clearance_id, c.cleared_at
                 FROM clearance_departments d
                 LEFT JOIN clearance_records c ON c.stud_id = :stud_id AND c.sem_id = :sem_id AND c.department_id = d.dept_id
                 WHERE d.is_active = 1

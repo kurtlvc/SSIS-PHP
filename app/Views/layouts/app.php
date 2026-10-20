@@ -45,19 +45,30 @@
         .sidebar .brand-link img { width: 32px; height: 32px; }
         .sidebar-nav { flex: 1; overflow-y: auto; }
         .sidebar .nav-link {
-            color: #cbd5e1;
-            border-radius: .45rem;
-            padding: .6rem .9rem;
-            font-size: .9rem;
+            color: rgba(255, 255, 255, .65);
+            border-radius: .5rem;
+            padding: .75rem 1rem;
+            font-size: .875rem;
+            font-weight: 500;
             gap: .6rem;
-            transition: all .15s;
+            min-height: 44px;
+            transition: background-color .2s cubic-bezier(.4,0,.2,1), color .2s cubic-bezier(.4,0,.2,1), border-color .2s cubic-bezier(.4,0,.2,1);
         }
-        .sidebar .nav-link:hover,
-        .sidebar .nav-link.active {
-            background: rgba(255 255 255 / .1);
+        .sidebar .nav-link:hover {
+            background: rgba(255 255 255 / .08);
             color: #fff;
         }
-        .sidebar .nav-link.active { color: var(--cuyo-teal-light); }
+        .sidebar .nav-link.active,
+        .sidebar .nav-link[aria-current="page"] {
+            background: rgba(255 255 255 / .12);
+            color: #fff;
+            border-left: 3px solid #3b82f6;
+        }
+        .sidebar .nav-link.active { color: #fff; }
+        .sidebar .nav-link:focus-visible {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
         .main-wrap { margin-left: 250px; }
         .header {
             position: sticky;
@@ -78,6 +89,33 @@
             transition: transform .1s, box-shadow .15s;
         }
         .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(15,23,42,.08); }
+
+        /* Admin dashboard metric cards */
+        .dash-card {
+            border-radius: 8px;
+            border: 1px solid var(--cuyo-border);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, .04);
+            transition: border-color .2s cubic-bezier(.4,0,.2,1), box-shadow .2s cubic-bezier(.4,0,.2,1), transform .2s cubic-bezier(.4,0,.2,1);
+        }
+        .dash-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, .08);
+            border-color: #cbd5e1;
+        }
+        .dash-card-icon { font-size: 1.5rem; }
+        .dash-card-value { font-size: 1.875rem; line-height: 1.2; color: #0f172a; }
+        .dash-card-label { font-size: .8125rem; font-weight: 500; color: #6c7580; text-transform: capitalize; letter-spacing: .05em; }
+
+        /* Search / filter input */
+        .search-filter-bar .form-label { letter-spacing: .05em; }
+        .search-filter-bar .form-control:focus {
+            border-color: #93c5fd;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, .1);
+        }
+
+        /* Focus indicators (WCAG) */
+        .btn:focus-visible,
+        .form-control:focus { outline: 2px solid #3b82f6; outline-offset: 2px; }
     </style>
 </head>
 <body class="bg-cuyo-gray">
@@ -182,5 +220,40 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-1a/pXj49ZQ1aHEmrJ+gMw1otqoVsYwlEnlD8mIfY2TV03r20Y0CN7uqx1tQogjPL" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+(function () {
+    "use strict";
+    var here = window.location.pathname + window.location.search;
+    document.querySelectorAll(".sidebar .nav-link").forEach(function (link) {
+        var href = link.getAttribute("href") || "";
+        if (href === here) {
+            link.classList.add("active");
+            link.setAttribute("aria-current", "page");
+        } else {
+            link.setAttribute("aria-current", "false");
+        }
+    });
+
+    var q = document.getElementById("quickLinkSearch");
+    if (q) {
+        var list = document.getElementById("quickLinkList");
+        var warn = document.getElementById("noQuickMatch");
+        q.addEventListener("input", function () {
+            var term = q.value.toLowerCase();
+            var items = list ? list.querySelectorAll("a") : [];
+            var shown = 0;
+            items.forEach(function (a) {
+                var ok = a.textContent.toLowerCase().indexOf(term) !== -1;
+                a.style.display = ok ? "" : "none";
+                if (ok) shown++;
+            });
+            if (warn) {
+                warn.textContent = shown ? "" : "No matching links found";
+                warn.classList.toggle("d-none", !!shown);
+            }
+        });
+    }
+})();
+</script>
 </body>
 </html>

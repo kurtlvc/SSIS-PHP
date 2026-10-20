@@ -78,6 +78,15 @@ class AuthController
         App::redirect('/login');
     }
 
+    public function unauthorized()
+    {
+        App::view('errors/unauthorized', [
+            'config' => $this->config,
+            'system_title' => $this->config['system_title'] ?? 'CuyoSSIS',
+            'pageTitle' => 'Access Denied',
+        ], 'none');
+    }
+
     public function forgotPassword()
     {
         if (isset($_SESSION['account_id'])) {
@@ -178,13 +187,16 @@ class AuthController
             case 'student':
                 App::redirect('/student/dashboard');
                 break;
+            case 'cashier':
+                App::redirect('/cashier/dashboard');
+                break;
             case 'faculty':
             case 'chair':
             case 'dean':
                 App::redirect('/registrar/enrollments');
                 break;
             case 'admin':
-                App::redirect('/admin/users');
+                App::redirect('/admin/dashboard');
                 break;
             default:
                 App::redirect('/student/dashboard');

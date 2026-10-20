@@ -101,7 +101,11 @@ $studentName = ($student['fname'] ?? '') . ' ' . ($student['lname'] ?? '');
                         <?php foreach ($schedule as $sched): ?>
                             <tr>
                                 <td><?= htmlspecialchars($sched['day_name'] ?? '—') ?></td>
-                                <td><?= htmlspecialchars(date('g:i a', strtotime($sched['time_start']))) ?> - <?= htmlspecialchars(date('g:i a', strtotime($sched['time_end']))) ?></td>
+                                <td>
+                                    <?php $ts = $sched['time_start'] ?? null; $te = $sched['time_end'] ?? null; ?>
+                                    <?= $ts ? htmlspecialchars(date('g:i a', strtotime($ts))) : '—' ?> -
+                                    <?= $te ? htmlspecialchars(date('g:i a', strtotime($te))) : '—' ?>
+                                </td>
                                 <td>
                                     <strong><?= htmlspecialchars($sched['code']) ?></strong><br>
                                     <small class="text-muted"><?= htmlspecialchars($sched['description']) ?></small>

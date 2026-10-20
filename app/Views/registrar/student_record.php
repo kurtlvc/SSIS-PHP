@@ -45,7 +45,7 @@
                     </tr>
                     <tr>
                         <td class="fw-bold text-end">Status:</td>
-                        <td><?= $student['is_active'] ? 'Active' : 'Inactive' ?></td>
+                        <td><?= $student['is_active'] ?? true ? 'Active' : 'Inactive' ?></td>
                     </tr>
                 </table>
             </div>
