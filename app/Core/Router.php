@@ -53,6 +53,13 @@ class Router
             $path = $path === '' ? '/' : $path;
         }
 
+        if ($requestMethod === 'POST' && !empty($_POST['_method'])) {
+            $override = strtoupper($_POST['_method']);
+            if (in_array($override, ['PUT', 'PATCH', 'DELETE'], true)) {
+                $requestMethod = $override;
+            }
+        }
+
         if (!isset($this->routes[$requestMethod])) {
             $this->handle404();
             return;

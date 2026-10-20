@@ -65,6 +65,7 @@ $router->get('/registrar/enrollments', 'RegistrarController@enrollments');
 $router->post('/registrar/enrollments/assess', 'RegistrarController@assessEnrollment');
 $router->patch('/registrar/enrollments/{enrolment_id}/status', 'RegistrarController@updateEnrollmentStatus');
 $router->get('/registrar/grades/encode', 'RegistrarController@gradesEncode');
+$router->post('/registrar/grades/encode', 'RegistrarController@storeGrade');
 $router->get('/registrar/grades/encode/{sched_id}', 'RegistrarController@gradeEncodeStudents');
 $router->post('/api/v1/registrar/grades/batch', 'ApiRegistrarController@storeBatchGrades');
 $router->get('/registrar/documents/queue', 'RegistrarController@documentQueue');
