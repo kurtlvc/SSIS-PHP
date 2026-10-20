@@ -87,8 +87,14 @@ $avgPerTx = $totalTransactions > 0 ? $totalCollections / $totalTransactions : 0;
     <div class="col-12">
         <div class="card border-0 h-100 quick-links-card">
             <div class="card-header fw-semibold d-flex justify-content-between align-items-center">
-                <span>Pending Payment Queue</span>
-                <a href="/ssis/cashier/payments/process" class="btn btn-sm btn-primary-blue">New Payment</a>
+                <span class="d-flex align-items-center gap-2">
+                    <i class="bi bi-hourglass-split text-warning"></i>
+                    <span>Pending Payment Queue</span>
+                </span>
+                <a href="/ssis/cashier/payments/process" class="btn btn-sm btn-primary-blue d-flex align-items-center gap-1">
+                    <i class="bi bi-plus"></i>
+                    <span>New Payment</span>
+                </a>
             </div>
             <div class="card-body p-0">
                 <?php if (!empty($pendingPayments)): ?>
@@ -108,14 +114,17 @@ $avgPerTx = $totalTransactions > 0 ? $totalCollections / $totalTransactions : 0;
                             <tbody>
                                 <?php foreach ($pendingPayments as $pp): ?>
                                     <tr>
-                                        <td><?= htmlspecialchars($pp['lname'] . ', ' . $pp['fname']) ?></td>
-                                        <td class="small text-tertiary"><?= htmlspecialchars($pp['ref_no']) ?></td>
-                                        <td class="small text-tertiary"><?= htmlspecialchars($pp['program_code']) ?></td>
-                                        <td class="small text-tertiary"><?= $pp['total_units'] ?></td>
+                                        <td class="fw-medium"><?= htmlspecialchars($pp['lname'] . ', ' . $pp['fname']) ?></td>
+                                        <td class="small text-tertiary font-monospace"><?= htmlspecialchars($pp['ref_no']) ?></td>
+                                        <td class="small text-tertiary"><span class="badge bg-light text-dark"><?= htmlspecialchars($pp['program_code']) ?></span></td>
+                                        <td class="small text-tertiary text-center"><?= $pp['total_units'] ?></td>
                                         <td class="small text-tertiary"><?= htmlspecialchars($pp['ay_name']) ?></td>
                                         <td class="small text-tertiary"><?= htmlspecialchars($pp['semester_name']) ?></td>
                                         <td class="text-center">
-                                            <a href="/ssis/cashier/payments/process?enrolment_id=<?= $pp['enrolment_id'] ?>" class="btn btn-sm btn-success-green">Collect</a>
+                                            <a href="/ssis/cashier/payments/process?enrolment_id=<?= $pp['enrolment_id'] ?>" class="btn btn-sm btn-success-green d-flex align-items-center justify-content-center gap-1" style="min-width: 90px;">
+                                                <i class="bi bi-cash-coin"></i>
+                                                <span>Collect</span>
+                                            </a>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -123,7 +132,11 @@ $avgPerTx = $totalTransactions > 0 ? $totalCollections / $totalTransactions : 0;
                         </table>
                     </div>
                 <?php else: ?>
-                    <p class="small text-center py-3 mb-0 text-disabled">No pending payments for the selected period.</p>
+                    <div class="text-center py-5">
+                        <i class="bi bi-check-circle-fill text-success display-4 mb-3"></i>
+                        <h5 class="text-muted mb-2">No Pending Payments</h5>
+                        <p class="text-disabled small mb-0">All students have cleared their payments for the selected period.</p>
+                    </div>
                 <?php endif; ?>
             </div>
         </div>
