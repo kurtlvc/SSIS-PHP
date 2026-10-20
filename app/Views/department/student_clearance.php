@@ -8,16 +8,25 @@ function clearBadge($status) {
     <a href="/ssis/department/clearance" class="btn btn-outline-secondary btn-sm">Back to Queue</a>
 </div>
 
-<?php if (isset($error)): ?>
-    <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
+<?php if (isset($error) && !empty(trim($error))): ?>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" aria-live="polite">
+        <i class="bi bi-exclamation-circle me-1" aria-hidden="true"></i>
+        <?= htmlspecialchars($error) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 <?php endif; ?>
-<?php if (isset($success)): ?>
-    <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
+
+<?php if (isset($success) && !empty(trim($success))): ?>
+    <div class="alert alert-success alert-dismissible fade show" role="alert" aria-live="polite">
+        <i class="bi bi-check-circle me-1" aria-hidden="true"></i>
+        <?= htmlspecialchars($success) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 <?php endif; ?>
 
 <?php if ($student): ?>
     <div class="card mb-4">
-        <div class="card-header bg-white">
+        <div class="card-header">
             <span class="fw-bold">Student Information</span>
         </div>
         <div class="card-body">
@@ -61,7 +70,7 @@ function clearBadge($status) {
     </div>
 
     <div class="card">
-        <div class="card-header bg-white">
+        <div class="card-header">
             <span class="fw-bold">Department Clearance Status</span>
         </div>
         <div class="card-body p-0">
@@ -119,5 +128,9 @@ function clearBadge($status) {
         </div>
     </div>
 <?php else: ?>
-    <div class="alert alert-warning">Student not found. Please verify the student ID.</div>
+    <div class="alert alert-warning alert-dismissible fade show" role="alert" aria-live="polite">
+        <i class="bi bi-exclamation-triangle me-1" aria-hidden="true"></i>
+        Student not found. Please verify the student ID.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 <?php endif; ?>

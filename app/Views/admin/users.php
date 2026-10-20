@@ -1,33 +1,33 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0">User Management</h1>
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createUserModal">
-        <i class="bi bi-plus"" aria-hidden="true"></i> Create User
+        <i class="bi bi-plus" aria-hidden="true"></i> Create User
     </button>
 </div>
 
-<?php if (isset($success)): ?>
-    <div class="alert alert-success alert-dismissible">
+<?php if (isset($success) && !empty(trim($success))): ?>
+    <div class="alert alert-success alert-dismissible fade show" role="alert" aria-live="polite">
+        <i class="bi bi-check-circle me-1" aria-hidden="true"></i>
         <?= htmlspecialchars($success) ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 <?php endif; ?>
 
-<?php if (isset($error)): ?>
-    <div class="alert alert-danger alert-dismissible">
+<?php if (isset($error) && !empty(trim($error))): ?>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" aria-live="polite">
+        <i class="bi bi-exclamation-circle me-1" aria-hidden="true"></i>
         <?= htmlspecialchars($error) ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 <?php endif; ?>
 
-<div class="card">
-    <div class="card-header bg-white">
-        <span class="fw-bold">All Accounts</span>
-    </div>
+<div class="card quick-links-card">
+    <div class="card-header fw-semibold">All Accounts</div>
     <div class="card-body p-0">
         <?php if (!empty($accounts)): ?>
             <div class="table-responsive">
                 <table class="table table-hover mb-0" aria-label="All accounts">
-                    <thead class="table-light">
+                    <thead>
                         <tr>
                             <th>Login</th>
                             <th>Role</th>
@@ -35,7 +35,7 @@
                             <th>Name</th>
                             <th>Email</th>
                             <th class="text-center">Status</th>
-                            <th class="text-center">Actions</th>
+                            <th class="text-center" style="width: 100px;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -47,18 +47,19 @@
                                 } else {
                                     $name = ($acc['personnel_fname'] ?? '') . ' ' . ($acc['personnel_lname'] ?? '');
                                 }
+                                $roleClass = match($acc['role']) {
+                                    'admin' => 'bg-danger',
+                                    'dean' => 'bg-warning',
+                                    'chair' => 'bg-info',
+                                    'faculty' => 'bg-primary',
+                                    'student' => 'bg-success',
+                                    default => 'bg-secondary',
+                                };
                             ?>
                             <tr>
                                 <td><?= htmlspecialchars($acc['login']) ?></td>
                                 <td>
-                                    <span class="badge bg-<?= match($acc['role']) {
-                                        'admin' => 'danger',
-                                        'dean' => 'warning',
-                                        'chair' => 'info',
-                                        'faculty' => 'primary',
-                                        'student' => 'success',
-                                        default => 'secondary',
-                                    } ?>">
+                                    <span class="badge <?= $roleClass ?>">
                                         <?= ucfirst($acc['role']) ?>
                                     </span>
                                 </td>
@@ -71,22 +72,43 @@
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <form method="POST" action="/ssis/admin/users/<?= $acc['id'] ?>" class="d-inline">
-                                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token ?? '') ?>">
-                                        <input type="hidden" name="_method" value="PUT">
-                                        <select name="role" class="form-select form-select-sm d-inline-block w-auto">
-                                            <option value="student" <?= $acc['role'] == 'student' ? 'selected' : '' ?>>Student</option>
-                                            <option value="faculty" <?= $acc['role'] == 'faculty' ? 'selected' : '' ?>>Faculty</option>
-                                            <option value="chair" <?= $acc['role'] == 'chair' ? 'selected' : '' ?>>Chair</option>
-                                            <option value="dean" <?= $acc['role'] == 'dean' ? 'selected' : '' ?>>Dean</option>
-                                            <option value="admin" <?= $acc['role'] == 'admin' ? 'selected' : '' ?>>Admin</option>
-                                        </select>
-                                        <select name="is_active" class="form-select form-select-sm d-inline-block w-auto">
-                                            <option value="1" <?= $acc['is_active'] ? 'selected' : '' ?>>Active</option>
-                                            <option value="0" <?= !$acc['is_active'] ? 'selected' : '' ?>>Inactive</option>
-                                        </select>
-                                        <button type="submit" class="btn btn-sm btn-outline-primary">Save</button>
-                                    </form>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="User actions">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li>
+                                                <a class="dropdown-item" href="/ssis/admin/users/<?= $acc['id'] ?>">
+                                                    <i class="bi bi-eye me-2"></i>View
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="/ssis/admin/users/<?= $acc['id'] ?>/edit">
+                                                    <i class="bi bi-pencil me-2"></i>Edit
+                                                </a>
+                                            </li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <form method="POST" action="/ssis/admin/users/<?= $acc['id'] ?>/toggle-status" class="d-inline">
+                                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token ?? '') ?>">
+                                                    <input type="hidden" name="is_active" value="<?= $acc['is_active'] ? '0' : '1' ?>">
+                                                    <button type="submit" class="dropdown-item text-<?= $acc['is_active'] ? 'danger' : 'success' ?>">
+                                                        <i class="bi bi-<?= $acc['is_active'] ? 'x-circle' : 'check-circle' ?> me-2"></i>
+                                                        <?= $acc['is_active'] ? 'Deactivate' : 'Activate' ?>
+                                                    </button>
+                                                </form>
+                                            </li>
+                                            <li>
+                                                <form method="POST" action="/ssis/admin/users/<?= $acc['id'] ?>/delete" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token ?? '') ?>">
+                                                    <input type="hidden" name="_method" value="DELETE">
+                                                    <button type="submit" class="dropdown-item text-danger">
+                                                        <i class="bi bi-trash me-2"></i>Delete
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -99,23 +121,23 @@
     </div>
 </div>
 
-<div class="modal fade" id="createUserModal" tabindex="-1">
+<div class="modal fade" id="createUserModal" tabindex="-1" aria-labelledby="createUserModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <form method="POST" action="/ssis/admin/users/create">
                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token ?? '') ?>">
                 <div class="modal-header">
-                    <h5 class="modal-title">Create New User Account</h5>
+                    <h5 class="modal-title" id="createUserModalLabel">Create New User Account</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="login" class="form-label">Login / Username</label>
-                        <input type="text" name="login" id="login" class="form-control" required>
+                        <input type="text" name="login" id="login" class="form-control" required autocomplete="username">
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
-                        <input type="password" name="password" id="password" class="form-control" required minlength="8">
+                        <input type="password" name="password" id="password" class="form-control" required minlength="8" autocomplete="new-password">
                     </div>
                     <div class="mb-3">
                         <label for="role" class="form-label">Role</label>
@@ -136,7 +158,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="owner_id" class="form-label">Owner ID</label>
-                        <input type="number" name="owner_id" id="owner_id" class="form-control" required>
+                        <input type="number" name="owner_id" id="owner_id" class="form-control" required min="1">
                     </div>
                 </div>
                 <div class="modal-footer">

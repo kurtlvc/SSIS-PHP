@@ -3,17 +3,24 @@
     <a href="/ssis/registrar/students/new" class="btn btn-primary btn-sm"><i class="bi bi-plus me-1"></i>Add Student</a>
 </div>
 
-<?php if (isset($success)): ?>
-    <div class="alert alert-success alert-dismissible"><i class="bi bi-check-circle me-1"></i><?= htmlspecialchars($success) ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+<?php if (isset($success) && !empty(trim($success))): ?>
+    <div class="alert alert-success alert-dismissible fade show" role="alert" aria-live="polite">
+        <i class="bi bi-check-circle me-1" aria-hidden="true"></i>
+        <?= htmlspecialchars($success) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 <?php endif; ?>
-<?php if (isset($error)): ?>
-    <div class="alert alert-danger alert-dismissible"><i class="bi bi-exclamation-circle me-1"></i><?= htmlspecialchars($error) ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+
+<?php if (isset($error) && !empty(trim($error))): ?>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" aria-live="polite">
+        <i class="bi bi-exclamation-circle me-1" aria-hidden="true"></i>
+        <?= htmlspecialchars($error) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 <?php endif; ?>
 
 <div class="card border-0 shadow-sm">
-    <div class="card-header bg-white"><span class="fw-bold">All Students</span></div>
+    <div class="card-header"><span class="fw-bold">All Students</span></div>
     <div class="card-body p-0">
         <?php if (!empty($students)): ?>
             <div class="table-responsive">

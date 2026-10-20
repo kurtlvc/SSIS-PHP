@@ -4,34 +4,46 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="CuyoTech University Student Services Information System">
-    <meta name="theme-color" content="#0d9488">
+    <meta name="theme-color" content="#10b981">
     <link rel="icon" type="image/webp" href="/ssis/assets/cuyotech-logo-900x900.webp">
-    <title>Login - <?= htmlspecialchars($system_title ?? $config['system_title'] ?? 'CuyoSSIS') ?></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-B/GM4XqrwHnWXNOWMbloTmrYXZg10cakYGmpfsR/bbzQ6JAJI4ihuyADKLnBgrCe" crossorigin="anonymous">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <title>Login - <?= htmlspecialchars($system_title ?? ($config['system_title'] ?? 'CuyoSSIS')) ?></title>
+    <link href="/ssis/assets/vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/ssis/assets/vendor/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link href="/ssis/assets/css/style.css" rel="stylesheet">
     <style>
         :root {
-            --teal: #0d9488;
-            --teal-dark: #0f766e;
-            --teal-light: #14b8a6;
+            --brand: #10b981;
+            --brand-dark: #059669;
+            --brand-darker: #047857;
+            --brand-soft: rgba(16, 185, 129, .1);
+            --teal: #0f5d4b;
+            --teal-dark: #084c3d;
             --navy: #0f172a;
             --navy-light: #1e293b;
             --white: #ffffff;
             --gray-50: #f8fafc;
-            --gray-100: #f1f5f9;
-            --gray-200: #e2e8f0;
-            --gray-500: #64748b;
-            --gray-700: #334155;
-            --gray-900: #0f172a;
+            --gray-100: #f0f1f5;
+            --gray-200: #d1d5db;
+            --gray-300: #cbd5e1;
+            --gray-500: #6b7280;
+            --gray-700: #374151;
+            --gray-900: #111827;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-tertiary: #9ca3af;
+            --border: #d1d5db;
+            --error: #ef4444;
         }
         * { box-sizing: border-box; }
         html, body {
-            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            height: 100vh;
+            padding: 0;
+            height: 100%;
             overflow: hidden;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: var(--gray-50);
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
         }
         .login-split {
             display: flex;
@@ -39,31 +51,64 @@
             height: 100vh;
             overflow: hidden;
         }
-        @media (min-width: 992px) {
+        @media (min-width: 768px) and (max-width: 1199px) {
             .login-split { flex-direction: row; }
         }
-        /* Left Panel - 53% on desktop, full on mobile */
+        @media (min-width: 1200px) {
+            .login-split { flex-direction: row; }
+        }
+        /* ===== Left Panel (branding) ===== */
         .login-left {
             position: relative;
-            background-image: url('/ssis/assets/cuyotech-bg-1200x675.webp');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
             flex: 0 0 100%;
             min-height: 320px;
+            background: linear-gradient(145deg, var(--teal), var(--teal-dark)),
+                url('/ssis/assets/cuyotech-bg-1200x675.webp') center/cover no-repeat;
+            display: none;
         }
-        @media (min-width: 992px) {
-            .login-left {
-                flex: 0 0 53%;
-                min-height: 100vh;
-            }
+        @media (min-width: 768px) {
+            .login-left { display: block; flex: 0 0 40%; min-height: 100vh; }
+        }
+        @media (min-width: 1200px) {
+            .login-left { flex: 0 0 50%; }
         }
         .login-left::before {
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(145deg, rgba(15, 23, 42, 0.55), rgba(15, 23, 42, 0.35));
+            background: linear-gradient(145deg, rgba(15, 23, 42, .6), rgba(15, 23, 42, .4));
             z-index: 1;
+        }
+        .login-left::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, .06) 1px, transparent 0),
+                radial-gradient(circle at 70% 80%, rgba(255, 255, 255, .04) 1px, transparent 0);
+            background-size: 20px 20px;
+            opacity: .35;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .float-shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .09);
+            z-index: 0;
+            pointer-events: none;
+            animation: float 5.5s ease-in-out infinite;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .float-shape { animation: none; }
+        }
+        .float-shape.s1 { width: 110px; height: 110px; top: 12%; left: 8%;   animation-delay: 0s; }
+        .float-shape.s2 { width: 70px;  height: 70px;  bottom: 10%; right: 10%; animation-delay: .8s; }
+        .float-shape.s3 { width: 90px;  height: 90px;  top: 48%; left: 14%;  animation-delay: 1.6s; }
+        .float-shape.s4 { width: 60px;  height: 60px;  bottom: 22%; left: 22%; animation-delay: 2.4s; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); opacity: .8; }
+            50%      { transform: translateY(-10px) scale(1.06); opacity: .95; }
         }
         .login-left .content-wrapper {
             position: relative;
@@ -72,275 +117,358 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 3rem 2.5rem;
+            padding: 40px;
         }
-        @media (min-width: 992px) {
-            .login-left .content-wrapper {
-                padding: 4rem 3.5rem;
-                justify-content: center;
-            }
+        @media (min-width: 768px) {
+            .login-left .content-wrapper { padding: 48px; }
         }
         .info-card {
-            background: rgba(15, 23, 42, 0.72);
+            background: rgba(15, 23, 42, .72);
             backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 1.25rem;
-            max-width: 420px;
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, .12);
+            border-radius: 14px;
+            padding: 28px 24px;
             margin: 0 auto;
-            padding: 2.5rem 2rem;
-            text-align: left;
+            max-width: 420px;
+            text-align: center;
         }
-        @media (min-width: 992px) {
-            .info-card {
-                margin: 0;
-                max-width: none;
-                width: 100%;
-            }
+        @media (min-width: 768px) {
+            .info-card { margin: 0; max-width: 100%; text-align: left; }
         }
-        .info-card .logo { width: 56px; height: 56px; margin-bottom: 1.25rem; }
-        .info-card .brand { font-weight: 700; font-size: 0.85rem; letter-spacing: 0.08em; color: rgba(255,255,255,0.7); text-transform: uppercase; margin-bottom: 0.5rem; }
-        .info-card .title { font-weight: 800; font-size: 2rem; line-height: 1.2; color: var(--white); margin-bottom: 0.5rem; }
-        .info-card .subtitle { font-weight: 500; font-size: 1rem; color: rgba(255,255,255,0.75); margin-bottom: 1.5rem; }
-        .info-card .desc { font-size: 0.95rem; line-height: 1.6; color: rgba(255,255,255,0.65); }
-
-        /* Right Panel - 47% on desktop, full on mobile */
+        .info-card .logo-badge {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 1.5rem;
+            border-radius: 50%;
+            background: var(--brand);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform .2s cubic-bezier(.4, 0, .2, 1);
+        }
+        .info-card .logo-badge:hover { transform: scale(1.05); }
+        .info-card .logo-badge img { width: 30px; height: 30px; object-fit: contain; }
+        .info-card .brand { font-weight: 700; font-size: 1.1rem; letter-spacing: .5px; color: rgba(255, 255, 255, .7); text-transform: uppercase; }
+        .info-card .title { font-weight: 800; font-size: 2rem; line-height: 1.2; color: var(--white); margin: .5rem 0; }
+        .info-card .subtitle { font-weight: 400; font-size: 13px; color: rgba(255, 255, 255, .7); margin-bottom: 1.25rem; }
+        .info-card .desc { font-size: 13px; line-height: 1.6; color: rgba(255, 255, 255, .65); }
+        .info-card .features { margin-top: 1.5rem; text-align: left; }
+        .info-card .feature-item {
+            font-size: 12px; font-weight: 500; color: rgba(255, 255, 255, .8);
+            line-height: 1.8; display: flex; align-items: center; gap: .5rem;
+        }
+        .info-card .feature-item i { color: var(--brand); }
+        /* ===== Right Panel (form) ==== */
         .login-right {
             flex: 1 1 auto;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: var(--gray-50);
-            padding: 2.5rem 1.5rem;
-            min-height: 480px;
+            padding: 24px 16px;
+            overflow-y: auto;
+            min-height: 0;
         }
-        @media (min-width: 992px) {
-            .login-right {
-                flex: 0 0 47%;
-                min-height: 100vh;
-                padding: 3rem 2.5rem;
-            }
+        @media (min-width: 768px) {
+            .login-right { padding: 40px 24px; }
         }
         .login-card {
             background: var(--white);
-            border-radius: 1.25rem;
-            box-shadow: 0 20px 40px -12px rgba(15, 23, 42, 0.12), 0 8px 16px -8px rgba(15, 23, 42, 0.08);
+            border-radius: 16px;
+            box-shadow: 0 20px 40px -12px rgba(15, 23, 42, .12), 0 8px 16px -8px rgba(15, 23, 42, .08);
             width: 100%;
             max-width: 400px;
             margin: 0 auto;
+            opacity: 0;
+            transform: translateY(12px);
+            animation: fadeInUp .45s ease-in .1s forwards;
         }
-        .login-card .card-body { padding: 2.5rem 2rem; }
-        .login-card .crest { width: 56px; height: 56px; margin: 0 auto 1.5rem; }
-        .login-card h2 { font-weight: 700; font-size: 1.35rem; color: var(--navy); margin-bottom: 0.25rem; }
-        .login-card .lead { font-size: 0.95rem; color: var(--gray-500); margin-bottom: 2rem; }
+        @media (prefers-reduced-motion: reduce) {
+            .login-card { animation: none; opacity: 1; transform: none; }
+        }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        .login-card .crest { width: 48px; height: 48px; margin: 0 auto 1.5rem; }
+        .login-card h2 { font-weight: 700; font-size: 1.5rem; color: var(--navy); margin-bottom: .25rem; }
+        .login-card .lead { font-size: 13px; color: var(--text-secondary); margin-bottom: 1.75rem; }
 
         .form-label {
-            font-weight: 500;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--teal);
-            margin-bottom: 0.5rem;
+            font-weight: 600; font-size: 11px; color: var(--text-secondary);
+            text-transform: uppercase; letter-spacing: .06em; margin-bottom: .5rem;
         }
-        .input-group-wrapper { position: relative; }
+        .input-group-wrapper { position: relative; margin-bottom: 1.25rem; }
         .input-group-wrapper .form-control {
-            border-radius: 0.75rem;
-            border: 1.5px solid var(--gray-200);
-            padding: 0.875rem 1rem 0.875rem 3rem;
-            font-size: 1rem;
-            transition: border-color 0.15s, box-shadow 0.15s;
+            height: 44px;
+            padding: 10px 14px 10px 44px;
+            font-size: 14px; font-weight: 400; color: var(--text-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
             background: var(--white);
+            transition: border-color .2s cubic-bezier(.4,0,.2,1), box-shadow .2s cubic-bezier(.4,0,.2,1);
         }
+        .input-group-wrapper .form-control::placeholder { color: var(--text-tertiary); }
         .input-group-wrapper .form-control:focus {
-            border-color: var(--teal);
-            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+            border-color: var(--brand);
+            box-shadow: 0 0 0 3px var(--brand-soft);
             outline: none;
         }
         .input-icon {
             position: absolute;
-            left: 1rem;
+            left: 14px;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--gray-500);
+            color: var(--brand);
             font-size: 1.1rem;
             pointer-events: none;
-            transition: color 0.15s;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
         }
-        .input-group-wrapper:focus-within .input-icon { color: var(--teal); }
+        .input-group-wrapper .form-control.error {
+            border-color: var(--error);
+            background: rgba(239, 68, 68, .03);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, .1);
+        }
+        .field-message { font-size: 11px; margin-top: 4px; min-height: 1em; color: var(--text-secondary); }
+        .field-error  { color: var(--error); }
+        .field-success{ color: var(--brand); }
+
         .password-toggle {
-            position: absolute;
-            right: 0.875rem;
-            top: 50%;
-            transform: translateY(-50%);
-            border: none;
-            background: transparent;
-            color: var(--gray-500);
-            padding: 0.25rem;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: color 0.15s;
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            border: none; background: transparent; color: var(--text-tertiary);
+            padding: .25rem; font-size: 1.1rem; cursor: pointer;
+            transition: color .2s cubic-bezier(.4,0,.2,1);
         }
-        .password-toggle:hover { color: var(--teal); }
+        .password-toggle:hover,
+        .password-toggle:focus { color: var(--brand); }
 
         .remember-row { display: flex; align-items: center; justify-content: space-between; margin: 1.5rem 0 1.75rem; }
         .form-check-input {
-            width: 1.1rem;
-            height: 1.1rem;
-            border: 1.5px solid var(--gray-300);
-            border-radius: 0.3rem;
-            margin-right: 0.5rem;
+            width: 18px; height: 18px;
+            border: 1.5px solid var(--border);
+            border-radius: 4px;
+            margin-right: .6rem;
+            cursor: pointer;
+            transition: border-color .2s, background-color .2s;
+            background-color: var(--white);
+            appearance: none;
+            -webkit-appearance: none;
         }
-        .form-check-input:checked { background-color: var(--teal); border-color: var(--teal); }
-        .form-check-label { font-size: 0.875rem; color: var(--gray-700); cursor: pointer; }
-        .forgot-link { font-size: 0.875rem; font-weight: 500; color: var(--teal); text-decoration: none; }
-        .forgot-link:hover { color: var(--teal-dark); text-decoration: underline; }
+        .form-check-input:checked {
+            background-color: var(--brand);
+            border-color: var(--brand);
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10l3 3l6-6'/%3e%3c/svg%3e");
+        }
+        .form-check-input:focus {
+            border-color: var(--brand);
+            box-shadow: 0 0 0 3px var(--brand-soft);
+        }
+        .form-check-label { font-size: 13px; color: var(--text-primary); cursor: pointer; }
+        .forgot-link { font-size: 13px; font-weight: 500; color: var(--brand); text-decoration: none; transition: color .2s, opacity .2s; }
+        .forgot-link:hover { color: var(--brand-dark); opacity: .8; text-decoration: underline; }
 
         .btn-signin {
-            width: 100%;
-            background: var(--teal);
-            border: none;
-            border-radius: 0.75rem;
-            padding: 0.95rem 1.5rem;
-            font-weight: 600;
-            font-size: 1rem;
-            color: var(--white);
-            transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
-            box-shadow: 0 4px 14px -4px rgba(13, 148, 136, 0.4);
+            width: 100%; height: 44px;
+            background: var(--brand); border: none; border-radius: 8px;
+            font-size: 15px; font-weight: 600; color: var(--white);
+            text-transform: capitalize;
+            padding: 0 1.5rem; margin-top: 1.5rem; cursor: pointer;
+            box-shadow: 0 4px 14px -4px rgba(16, 185, 129, .4);
+            transition: background .2s cubic-bezier(.4,0,.2,1), transform .1s, box-shadow .2s;
+            display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
         }
-        .btn-signin:hover { background: var(--teal-dark); transform: translateY(-1px); box-shadow: 0 6px 20px -6px rgba(13, 148, 136, 0.5); }
-        .btn-signin:active { transform: translateY(0); }
+        .btn-signin:hover { background: var(--brand-dark); box-shadow: 0 6px 20px -6px rgba(16, 185, 129, .5); transform: translateY(-1px); }
+        .btn-signin:active { background: var(--brand-darker); transform: scale(.98); }
+        .btn-signin:disabled { background: var(--gray-200); color: var(--gray-500); cursor: not-allowed; opacity: .6; box-shadow: none; transform: none; }
+        .btn:focus-visible,
+        .form-check-input:focus,
+        .password-toggle:focus-visible {
+            outline: 2px solid var(--brand);
+            outline-offset: 3px;
+        }
+        .spinner-border { width: 18px; height: 18px; }
 
         .help-text {
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--gray-200);
-            font-size: 0.85rem;
-            color: var(--gray-500);
-            text-align: center;
+            margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);
+            font-size: 12px; color: var(--text-secondary); text-align: center;
         }
-        .help-text a { color: var(--teal); font-weight: 500; text-decoration: none; }
+        .help-text a { color: var(--brand); font-weight: 500; text-decoration: none; transition: color .2s; }
         .help-text a:hover { text-decoration: underline; }
 
-        /* Footer - dark navy strip */
-        .footer-strip {
-            background: var(--navy);
-            color: rgba(255,255,255,0.55);
-            font-size: 0.75rem;
-            padding: 0.75rem 1.5rem;
-            text-align: center;
-            flex-shrink: 0;
+        .alert-danger.shake { animation: shake .35s ease-in-out; }
+        @keyframes shake { 16% { transform: translateX(.2rem); } 33% { transform: translateX(-.2rem); } 49% { transform: translateX(.2rem); } 66% { transform: translateX(-.2rem); } 83% { transform: translateX(.15rem); } 100% { transform: translateX(0); } }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
         }
-        .footer-strip a { color: rgba(255,255,255,0.7); text-decoration: none; font-weight: 500; }
-        .footer-strip a:hover { color: var(--teal-light); }
+        @media (max-width: 767px) {
+            .login-card { border-radius: 12px; }
+            .login-card h2 { font-size: 1.35rem; }
+        }
     </style>
 </head>
 <body>
     <div class="login-split">
-        <!-- Left Panel: Tropical Coastal Landscape -->
-        <div class="login-left">
-            <div class="content-wrapper d-flex flex-column justify-content-center">
+        <!-- Left Panel: branding -->
+        <div class="login-left" aria-hidden="true">
+            <div class="float-shape s1"></div>
+            <div class="float-shape s2"></div>
+            <div class="float-shape s3"></div>
+            <div class="float-shape s4"></div>
+            <div class="content-wrapper">
                 <div class="info-card card border-0">
-                    <img src="/ssis/assets/cuyotech-logo-900x900.webp" alt="CuyoTech Logo" class="logo img-fluid mx-auto d-block">
+                    <div class="logo-badge" style="width: auto; height: auto; background: none; border-radius: 0; margin: 0 auto 1.5rem;">
+                        <img src="/ssis/assets/cuyossis-3204x981.webp" alt="CuyoSSIS" style="width: auto; height: 48px;">
+                    </div>
                     <div class="brand">CuyoTech University</div>
                     <h1 class="title">CuyoSSIS</h1>
                     <p class="subtitle">Student Services Information System</p>
                     <p class="desc">Access your academic records, enrollment, grades, schedules, and document services — all in one secure portal.</p>
+                    <div class="features">
+                        <div class="feature-item"><i class="bi bi-check2-circle"></i> Academic Records</div>
+                        <div class="feature-item"><i class="bi bi-check2-circle"></i> Enrollment &amp; Grades</div>
+                        <div class="feature-item"><i class="bi bi-check2-circle"></i> Secure Document Services</div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Right Panel: Login Form -->
+        <!-- Right Panel: login form -->
         <div class="login-right">
             <div class="login-card card border-0">
-                <div class="card-body">
-                    <img src="/ssis/assets/cuyotech-logo-900x900.webp" alt="Institutional Crest" class="crest img-fluid mx-auto d-block">
+                <div class="card-body p-4">
+                    <img src="/ssis/assets/cuyotech-logo-900x900.webp" alt="CuyoSSIS" class="crest img-fluid mx-auto d-block">
                     <h2>Welcome back</h2>
                     <p class="lead">Sign in to continue to CuyoSSIS</p>
 
                     <?php if (isset($error) && $error): ?>
-                        <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert" aria-live="polite" style="border-radius: 0.75rem; border: none; font-size: 0.875rem;">
+                        <div class="alert alert-danger alert-dismissible fade show mb-4 shake" role="alert" aria-live="polite">
                             <i class="bi bi-exclamation-circle me-1" aria-hidden="true"></i>
                             <?= htmlspecialchars($error) ?>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     <?php endif; ?>
 
-                    <form method="POST" action="/ssis/login" autocomplete="off">
-                         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token ?? '') ?>">
+                    <form method="POST" action="/ssis/login" autocomplete="off" id="loginForm" novalidate>
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token ?? '') ?>">
 
-                         <div class="mb-4">
-                             <label for="login" class="form-label">Institutional Email / Username</label>
-                             <div class="input-group-wrapper">
-                                 <i class="input-icon bi bi-person" aria-hidden="true"></i>
-                                 <input type="text" class="form-control" id="login" name="login"
-                                        placeholder="Enter your email or username" required autofocus
-                                        aria-required="true" autocomplete="username">
-                             </div>
-                         </div>
+                        <div class="mb-0">
+                            <label for="login" class="form-label">Institutional Email / Username</label>
+                            <div class="input-group-wrapper">
+                                <i class="input-icon bi bi-person" aria-hidden="true"></i>
+                                <input type="text" class="form-control" id="login" name="login"
+                                       placeholder="Enter your email or username" required autofocus
+                                       aria-required="true" autocomplete="username"
+                                       aria-describedby="loginMessage">
+                                <div id="loginMessage" class="field-message" aria-live="polite"></div>
+                            </div>
+                        </div>
 
-                         <div class="mb-4">
-                             <label for="password" class="form-label">Password</label>
-                             <div class="input-group-wrapper">
-                                 <i class="input-icon bi bi-lock" aria-hidden="true"></i>
-                                 <input type="password" class="form-control" id="password" name="password"
-                                        placeholder="Enter your password" required
-                                        aria-required="true" autocomplete="current-password"
-                                        aria-describedby="passwordHelp">
-                                 <button type="button" class="password-toggle" id="togglePassword"
-                                        title="Show password" aria-label="Show password"
-                                        aria-controls="password" aria-pressed="false">
-                                     <i class="bi bi-eye-slash" aria-hidden="true"></i>
-                                 </button>
-                             </div>
-                             <div id="passwordHelp" class="form-text small text-muted mt-1">Password must be at least 8 characters.</div>
-                         </div>
+                        <div class="mb-0">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group-wrapper">
+                                <i class="input-icon bi bi-lock" aria-hidden="true"></i>
+                                <input type="password" class="form-control" id="password" name="password"
+                                       placeholder="Enter your password" required minlength="8"
+                                       aria-required="true" autocomplete="current-password"
+                                       aria-describedby="passwordHelp">
+                                <button type="button" class="password-toggle" id="togglePassword"
+                                       title="Show password" aria-label="Show password"
+                                       aria-controls="password" aria-pressed="false">
+                                    <i class="bi bi-eye-slash" aria-hidden="true"></i>
+                                </button>
+                                <div id="passwordHelp" class="field-message">Password must be at least 8 characters.</div>
+                            </div>
+                        </div>
 
-                         <div class="remember-row">
-                             <div class="form-check d-flex align-items-center">
-                                 <input class="form-check-input" type="checkbox" id="remember" name="remember"
-                                        aria-label="Remember me">
-                                 <label class="form-check-label" for="remember">Remember me</label>
-                             </div>
-                             <a href="/ssis/forgot-password" class="forgot-link">Forgot password?</a>
-                         </div>
+                        <div class="remember-row">
+                            <div class="form-check d-flex align-items-center m-0">
+                                <input class="form-check-input" type="checkbox" id="remember" name="remember"
+                                       aria-label="Remember me">
+                                <label class="form-check-label" for="remember">Remember me</label>
+                            </div>
+                            <a href="/ssis/forgot-password" class="forgot-link">Forgot password?</a>
+                        </div>
 
-                         <button type="submit" class="btn btn-signin">
-                             <i class="bi bi-box-arrow-in-right me-2" aria-hidden="true"></i>Sign In
-                         </button>
-                     </form>
+                        <button type="submit" class="btn btn-signin" id="btnSignin" aria-busy="false" aria-live="polite">
+                            <span class="btn-label"><i class="bi bi-box-arrow-in-right me-2"></i>Sign In</span>
+                            <span class="btn-spinner d-none"><span class="spinner-border spinner-border-sm text-white" role="status" aria-hidden="true"></span> Signing in...</span>
+                        </button>
+                    </form>
 
-                     <div class="help-text">
-                         Need assistance? Contact the
-                         <a href="mailto:registrar@cuyotech.edu">Registrar's Office</a>
-                     </div>
+                    <div class="help-text">
+                        Need an account? Contact the
+                        <a href="mailto:registrar@cuyotech.edu">Registration Office</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Footer: Dark Navy Strip -->
-    <footer class="footer-strip w-100">
+    <footer class="w-100 text-center py-3 small text-secondary" role="contentinfo">
         &copy; <?= date('Y') ?> CuyoTech University &middot; CuyoSSIS &middot; Academic Year <?= $academic_year ?? (date('Y') . '&ndash;' . date('Y', strtotime('+1 year'))) ?>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-1a/pXj49ZQ1aHEmrJ+gMw1otqoVsYwlEnlD8mIfY2TV03r20Y0CN7uqx1tQogjPL" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="/ssis/assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const toggle = document.getElementById('togglePassword');
-            const password = document.getElementById('password');
-            toggle.addEventListener('click', function() {
-                const isShowing = password.getAttribute('type') === 'text';
-                const newType = isShowing ? 'password' : 'text';
-                const newLabel = isShowing ? 'Show password' : 'Hide password';
-                password.setAttribute('type', newType);
-                this.setAttribute('aria-pressed', isShowing ? 'false' : 'true');
-                this.setAttribute('aria-label', newLabel);
-                this.setAttribute('title', newLabel);
-                const icon = this.querySelector('i');
-                icon.classList.toggle('bi-eye');
-                icon.classList.toggle('bi-eye-slash');
-            });
-        });
+        (function () {
+            "use strict";
+            var toggle = document.getElementById('togglePassword');
+            var password = document.getElementById('password');
+            var signin = document.getElementById('btnSignin');
+            var form = document.getElementById('loginForm');
+
+            if (toggle && password) {
+                toggle.addEventListener('click', function () {
+                    var isShowing = password.getAttribute('type') === 'text';
+                    password.setAttribute('type', isShowing ? 'password' : 'text');
+                    toggle.setAttribute('aria-pressed', isShowing ? 'false' : 'true');
+                    toggle.setAttribute('aria-label', isShowing ? 'Show password' : 'Hide password');
+                    toggle.setAttribute('title', isShowing ? 'Show password' : 'Hide password');
+                    var icon = toggle.querySelector('i');
+                    icon.classList.toggle('bi-eye');
+                    icon.classList.toggle('bi-eye-slash');
+                });
+            }
+
+            // Real-time validation
+            var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (form) {
+                form.addEventListener('submit', function () {
+                    if (signin) {
+                        signin.disabled = true;
+                        signin.setAttribute('aria-busy', 'true');
+                        var label = signin.querySelector('.btn-label');
+                        var spinner = signin.querySelector('.btn-spinner');
+                        if (label) label.classList.add('d-none');
+                        if (spinner) spinner.classList.remove('d-none');
+                    }
+                });
+            }
+
+            var loginField = document.getElementById('login');
+            if (loginField) {
+                var msg = loginField.parentNode.querySelector('.field-message');
+                loginField.addEventListener('input', function () {
+                    var val = this.value.trim();
+                    if (val.indexOf('@') !== -1) {
+                        if (emailRegex.test(val)) {
+                            this.classList.remove('error'); this.classList.add('success');
+                            if (msg) { msg.textContent = 'Valid email format'; msg.className = 'field-message field-success'; }
+                        } else {
+                            this.classList.remove('success'); this.classList.add('error');
+                            if (msg) { msg.textContent = 'Please enter a valid email address'; msg.className = 'field-message field-error'; }
+                        }
+                    } else {
+                        this.classList.remove('error', 'success');
+                        if (msg) msg.textContent = '';
+                    }
+                });
+            }
+        })();
     </script>
 </body>
 </html>

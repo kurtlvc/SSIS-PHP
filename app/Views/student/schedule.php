@@ -10,7 +10,7 @@ $studentName = ($student['fname'] ?? '') . ' ' . ($student['lname'] ?? '');
 </div>
 
 <div class="card mb-4">
-    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+    <div class="card-header d-flex justify-content-between align-items-center">
         <span class="fw-bold">Active Enrolment</span>
         <?php if ($activeEnrolment): ?>
             <span class="text-muted small">
@@ -47,7 +47,7 @@ $studentName = ($student['fname'] ?? '') . ' ' . ($student['lname'] ?? '');
 
 <?php if (!empty($enrolments)): ?>
     <div class="card mb-4">
-        <div class="card-header bg-white">
+        <div class="card-header">
             <span class="fw-bold">Enrolment History</span>
         </div>
         <div class="card-body p-0">
@@ -80,7 +80,7 @@ $studentName = ($student['fname'] ?? '') . ' ' . ($student['lname'] ?? '');
 <?php endif; ?>
 
 <div class="card">
-    <div class="card-header bg-white">
+    <div class="card-header">
         <span class="fw-bold">Class Schedule</span>
     </div>
     <div class="card-body">

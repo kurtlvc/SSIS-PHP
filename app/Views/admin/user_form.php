@@ -7,15 +7,18 @@ $action = $isEdit ? '/ssis/admin/users/' . $user['id'] . '/edit' : '/ssis/admin/
     <a href="/ssis/admin/users" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Back</a>
 </div>
 
-<?php if (isset($error)): ?>
-    <div class="alert alert-danger alert-dismissible"><i class="bi bi-exclamation-circle me-1"></i><?= htmlspecialchars($error) ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+<?php if (isset($error) && !empty(trim($error))): ?>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" aria-live="polite">
+        <i class="bi bi-exclamation-circle me-1" aria-hidden="true"></i>
+        <?= htmlspecialchars($error) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 <?php endif; ?>
 
 <form method="POST" action="<?= $action ?>" autocomplete="new-password">
     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token ?? '') ?>">
     <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white"><span class="fw-bold">Account Details</span></div>
+        <div class="card-header"><span class="fw-bold">Account Details</span></div>
         <div class="card-body">
             <div class="row g-3">
                 <div class="col-md-6">

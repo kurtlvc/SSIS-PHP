@@ -266,6 +266,29 @@ class AdminController extends BaseController
         App::redirect('/admin/users');
     }
 
+    public function deleteUser($id)
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->admin()) return;
+
+        if (!App::verify_csrf($_POST['csrf_token'] ?? '')) {
+            App::flash('error', 'Invalid CSRF token.');
+            App::redirect('/admin/users');
+            return;
+        }
+
+        // Prevent self-deletion
+        if ($_SESSION['account_id'] == $id) {
+            App::flash('error', 'You cannot delete your own account.');
+            App::redirect('/admin/users');
+            return;
+        }
+
+        $this->db->delete('accounts', 'id = :id', ['id' => $id]);
+        App::flash('success', 'User deleted successfully.');
+        App::redirect('/admin/users');
+    }
+
     public function auditLogs()
     {
         if (!$this->requireAuth()) return;

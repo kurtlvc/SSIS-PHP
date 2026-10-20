@@ -3,7 +3,7 @@
 </div>
 
 <div class="card border-0 shadow-sm mb-4">
-    <div class="card-header bg-white">
+    <div class="card-header">
         <div class="d-flex justify-content-between align-items-center">
             <span class="fw-bold">Clearance Departments</span>
             <select id="semFilter" class="form-select form-select-sm w-auto d-none">

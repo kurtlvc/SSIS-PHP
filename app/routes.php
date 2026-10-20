@@ -140,6 +140,7 @@ $router->get('/admin/users/{id}', 'AdminController@viewUser');
 $router->get('/admin/users/{id}/edit', 'AdminController@editUserForm');
 $router->post('/admin/users/{id}/edit', 'AdminController@updateUser');
 $router->patch('/admin/users/{id}/toggle-status', 'AdminController@toggleUserStatus');
+$router->delete('/admin/users/{id}/delete', 'AdminController@deleteUser');
 $router->get('/admin/system-settings', 'AdminController@settings');
 $router->post('/admin/settings/update', 'AdminController@updateSettings');
 $router->get('/admin/roles', 'AdminController@roles');

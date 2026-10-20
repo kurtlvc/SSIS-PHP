@@ -12,8 +12,8 @@ $loginUrl = ($config['site_url'] ?? '') . '/login';
     <meta name="theme-color" content="#1e4f3f">
     <link rel="icon" type="image/webp" href="/ssis/assets/cuyotech-logo-900x900.webp">
     <title>Access Denied - <?= htmlspecialchars($systemTitle) ?></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-B/GM4XqrwHnWXNOWMbloTmrYXZg10cakYGmpfsR/bbzQ6JAJI4ihuyADKLnBgrCe" crossorigin="anonymous">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/ssis/assets/vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/ssis/assets/vendor/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         body { font-family:'Inter','Segoe UI',Tahoma,Geneva,Verdana,sans-serif; background:#f1f5f9; }
         .denied-card { max-width: 480px; }
@@ -36,7 +36,6 @@ $loginUrl = ($config['site_url'] ?? '') . '/login';
             </a>
         </div>
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-1a/pXj49ZQ1aHEmrJ+gMw1otqoVsYwlEnlD8mIfY2TV03r20Y0CN7uqx1tQogjPL" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="/ssis/assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

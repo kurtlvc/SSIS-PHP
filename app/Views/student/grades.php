@@ -21,7 +21,7 @@ if (!empty($grades)) {
 </div>
 
 <div class="card mb-4">
-    <div class="card-header bg-white">
+    <div class="card-header">
         <span class="fw-bold">Summary</span>
     </div>
     <div class="card-body">
@@ -61,7 +61,7 @@ if (!empty($grades)) {
 ?>
 
 <div class="card">
-    <div class="card-header bg-white">
+    <div class="card-header">
         <span class="fw-bold">Academic History</span>
     </div>
     <div class="card-body p-0">

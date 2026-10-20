@@ -241,6 +241,7 @@ INSERT INTO document_requests (request_id, stud_id, document_type, request_date,
 
 -- 14. ACCOUNTS
 -- ---------------------------------------------------------
+-- Password for all accounts: Password123456
 INSERT INTO accounts (id, owner_type, owner_id, login, email, password_hash, role, is_active, created_at) VALUES
 (1, 'personnel', 1, 'admin', 'admin@cuytech.edu', '$2y$12$e4aj6jaQSVqINM8I45hCYucysudFH7a0AOsM7jbqgTJHNpDCamDvW', 'admin', 1, '2026-10-01 00:00:00'),
 (2, 'personnel', 2, 'prof.smith', 'smith@cuytech.edu', '$2y$12$e4aj6jaQSVqINM8I45hCYucysudFH7a0AOsM7jbqgTJHNpDCamDvW', 'faculty', 1, '2026-10-01 00:00:00'),

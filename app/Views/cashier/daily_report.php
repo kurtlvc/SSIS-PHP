@@ -35,7 +35,7 @@
 </div>
 
 <div class="card border-0 shadow-sm">
-    <div class="card-header bg-white"><span class="fw-bold">Transactions for <?= htmlspecialchars(date('M d, Y', strtotime($date ?? ''))) ?></span></div>
+    <div class="card-header"><span class="fw-bold">Transactions for <?= htmlspecialchars(date('M d, Y', strtotime($date ?? ''))) ?></span></div>
     <div class="card-body p-0">
         <?php if (!empty($transactions)): ?>
             <div class="table-responsive">

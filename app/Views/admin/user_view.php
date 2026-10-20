@@ -15,7 +15,7 @@ if ($ownerType === 'student') {
 ?>
 
 <div class="card border-0 shadow-sm mb-4">
-    <div class="card-header bg-white"><span class="fw-bold">Account Details</span></div>
+    <div class="card-header"><span class="fw-bold">Account Details</span></div>
     <div class="card-body">
         <table class="table table-sm table-borderless mb-0">
             <tbody>

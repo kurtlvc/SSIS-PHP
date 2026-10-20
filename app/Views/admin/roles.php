@@ -4,7 +4,7 @@
 </div>
 
 <div class="card mb-4">
-    <div class="card-header bg-white">
+    <div class="card-header">
         <span class="fw-bold">Role Definitions</span>
     </div>
     <div class="card-body">
@@ -62,7 +62,7 @@
 </div>
 
 <div class="card mb-4">
-    <div class="card-header bg-white">
+    <div class="card-header">
         <span class="fw-bold">Permission Matrix</span>
     </div>
     <div class="card-body">

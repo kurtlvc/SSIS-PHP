@@ -13,16 +13,25 @@ $docTypes = ['TOR' => 'Transcript of Records', 'COR' => 'Certificate of Registra
 <div class="row">
     <div class="col-md-5 mb-4">
         <div class="card h-100">
-            <div class="card-header bg-white">
+            <div class="card-header">
                 <span class="fw-bold">Request New Document</span>
             </div>
             <div class="card-body">
-                <?php if (isset($error)): ?>
-                    <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
-                <?php endif; ?>
-                <?php if (isset($success)): ?>
-                    <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
-                <?php endif; ?>
+<?php if (isset($error) && !empty(trim($error))): ?>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" aria-live="polite">
+        <i class="bi bi-exclamation-circle me-1" aria-hidden="true"></i>
+        <?= htmlspecialchars($error) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<?php endif; ?>
+
+<?php if (isset($success) && !empty(trim($success))): ?>
+    <div class="alert alert-success alert-dismissible fade show" role="alert" aria-live="polite">
+        <i class="bi bi-check-circle me-1" aria-hidden="true"></i>
+        <?= htmlspecialchars($success) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<?php endif; ?>
                 <form method="POST" action="/ssis/student/documents/request">
                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token ?? '') ?>">
                     <div class="mb-3">
@@ -43,7 +52,7 @@ $docTypes = ['TOR' => 'Transcript of Records', 'COR' => 'Certificate of Registra
     </div>
     <div class="col-md-7">
         <div class="card h-100">
-            <div class="card-header bg-white">
+            <div class="card-header">
                 <span class="fw-bold">My Requests</span>
             </div>
             <div class="card-body">

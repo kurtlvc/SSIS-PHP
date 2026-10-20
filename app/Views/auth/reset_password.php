@@ -7,8 +7,9 @@
     <meta name="theme-color" content="#0d9488">
     <link rel="icon" type="image/webp" href="/ssis/assets/cuyotech-logo-900x900.webp">
     <title>Reset Password - <?= htmlspecialchars($system_title ?? $config['system_title'] ?? 'CuyoSSIS') ?></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-B/GM4XqrwHnWXNOWMbloTmrYXZg10cakYGmpfsR/bbzQ6JAJI4ihuyADKLnBgrCe" crossorigin="anonymous">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/ssis/assets/vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/ssis/assets/vendor/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/ssis/assets/css/style.css" rel="stylesheet">
     <style>
         :root { --teal:#0d9488; --teal-dark:#0f766e; --navy:#0f172a; --gray-50:#f8fafc; --gray-200:#e2e8f0; --gray-500:#64748b; --white:#fff; }
         html,body { font-family:'Inter','Segoe UI',Tahoma,Geneva,Verdana,sans-serif; margin:0; height:100vh; overflow:hidden; background:var(--gray-50); }
@@ -111,8 +112,7 @@
     <footer class="footer-strip w-100">
         &copy; <?= date('Y') ?> CuyoTech University &middot; CuyoSSIS &middot; Academic Year <?= $academic_year ?? (date('Y') . '&ndash;' . date('Y', strtotime('+1 year'))) ?>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-1a/pXj49ZQ1aHEmrJ+gMw1otqoVsYwlEnlD8mIfY2TV03r20Y0CN7uqx1tQogjPL" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="/ssis/assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const toggle = document.getElementById('togglePassword');

@@ -14,7 +14,7 @@ function badgeClass($status) {
 </div>
 
 <div class="card mb-4">
-    <div class="card-header bg-white">
+    <div class="card-header">
         <form method="GET" class="row g-3 align-items-end">
             <div class="col-md-4">
                 <label for="ay_id" class="form-label small">Academic Year</label>

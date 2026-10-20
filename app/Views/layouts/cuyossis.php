@@ -6,12 +6,12 @@
     <meta name="theme-color" content="#1e4f3f">
     <link rel="icon" type="image/webp" href="/ssis/assets/cuyotech-logo-900x900.webp">
     <title><?= htmlspecialchars($pageTitle ?? $config['system_title'] ?? 'CuyoSSIS') ?></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-B/GM4XqrwHnWXNOWMbloTmrYXZg10cakYGmpfsR/bbzQ6JAJI4ihuyADKLnBgrCe" crossorigin="anonymous">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/ssis/assets/vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/ssis/assets/vendor/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link href="/ssis/assets/css/style.css" rel="stylesheet">
 </head>
 <body class="bg-cuyo-gray">
-<a href="#main-content" class="skip-link position-absolute top-0 start-0 p-2 m-2 z-3 bg-white border border-2 rounded">Skip to main content</a>
+<a href="#main-content" class="skip-link position-absolute top-0 start-0 p-2 m-2 z-3" style="background: var(--card-bg); border: 2px solid var(--accent-blue); color: var(--text-primary);">Skip to main content</a>
 
 <?php if (isset($_SESSION['account_id'])): ?>
 <div class="cuyosis-layout d-flex flex-column min-vh-100">
@@ -93,8 +93,9 @@
         <main id="main-content" class="cuyo-main flex-grow-1 overflow-y-auto pe-4" role="main">
             <?php if (isset($_SESSION['flash'])): ?>
                 <?php foreach ($_SESSION['flash'] as $key => $msg): ?>
-                    <?php if (in_array($key, ['error', 'success'])): ?>
+                    <?php if (in_array($key, ['error', 'success']) && !empty(trim($msg))): ?>
                         <div class="alert alert-<?= $key === 'error' ? 'danger' : 'success' ?> alert-dismissible fade show" role="alert" aria-live="polite">
+                            <i class="bi bi-<?= $key === 'error' ? 'exclamation-circle' : 'check-circle' ?> me-1" aria-hidden="true"></i>
                             <?= htmlspecialchars($msg) ?>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
@@ -123,7 +124,6 @@
     </main>
 <?php endif; ?>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-1a/pXj49ZQ1aHEmrJ+gMw1otqoVsYwlEnlD8mIfY2TV003r20Y0CN7uqx1tQogjPL" crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="/ssis/assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

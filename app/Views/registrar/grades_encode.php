@@ -11,7 +11,7 @@ function gradeBadge($grade) {
 </div>
 
 <div class="card mb-4">
-    <div class="card-header bg-white">
+    <div class="card-header">
         <form method="GET" class="row g-3 align-items-end">
             <div class="col-md-4">
                 <label for="ay_id" class="form-label small">Academic Year</label>
@@ -42,22 +42,24 @@ function gradeBadge($grade) {
     </div>
 </div>
 
-<?php if (isset($success)): ?>
-    <div class="alert alert-success alert-dismissible">
+<?php if (isset($success) && !empty(trim($success))): ?>
+    <div class="alert alert-success alert-dismissible fade show" role="alert" aria-live="polite">
+        <i class="bi bi-check-circle me-1" aria-hidden="true"></i>
         <?= htmlspecialchars($success) ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 <?php endif; ?>
 
-<?php if (isset($error)): ?>
-    <div class="alert alert-danger alert-dismissible">
+<?php if (isset($error) && !empty(trim($error))): ?>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" aria-live="polite">
+        <i class="bi bi-exclamation-circle me-1" aria-hidden="true"></i>
         <?= htmlspecialchars($error) ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 <?php endif; ?>
 
 <div class="card">
-    <div class="card-header bg-white">
+    <div class="card-header">
         <span class="fw-bold">Students Requiring Grade Input</span>
     </div>
     <div class="card-body">

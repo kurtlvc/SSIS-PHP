@@ -4,7 +4,7 @@
 </div>
 
 <div class="card mb-4">
-    <div class="card-header bg-white">
+    <div class="card-header">
         <span class="fw-bold">Student Information</span>
     </div>
     <div class="card-body">
@@ -56,7 +56,7 @@
 <div class="row">
     <div class="col-md-6 mb-4">
         <div class="card h-100">
-            <div class="card-header bg-white">
+            <div class="card-header">
                 <span class="fw-bold">Enrolment History</span>
             </div>
             <div class="card-body">
@@ -86,7 +86,7 @@
     </div>
     <div class="col-md-6 mb-4">
         <div class="card h-100">
-            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <div class="card-header d-flex justify-content-between align-items-center">
                 <span class="fw-bold">Academic Record</span>
                 <span class="text-muted small">GPA: <?= number_format($gpa ?? 0, 2) ?></span>
             </div>

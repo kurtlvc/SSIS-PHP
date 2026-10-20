@@ -4,7 +4,7 @@
 </div>
 
 <div class="card mb-4">
-    <div class="card-header bg-white">
+    <div class="card-header">
         <form method="GET" class="row g-3 align-items-end">
             <div class="col-md-5">
                 <label for="sem_id" class="form-label small">Semester</label>

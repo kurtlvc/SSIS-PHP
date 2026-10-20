@@ -12,16 +12,25 @@ function cashBadge($status) {
     <a href="/ssis/cashier/dashboard" class="btn btn-outline-secondary btn-sm">Back to Dashboard</a>
 </div>
 
-<?php if (isset($error)): ?>
-    <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
+<?php if (isset($error) && !empty(trim($error))): ?>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" aria-live="polite">
+        <i class="bi bi-exclamation-circle me-1" aria-hidden="true"></i>
+        <?= htmlspecialchars($error) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 <?php endif; ?>
-<?php if (isset($success)): ?>
-    <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
+
+<?php if (isset($success) && !empty(trim($success))): ?>
+    <div class="alert alert-success alert-dismissible fade show" role="alert" aria-live="polite">
+        <i class="bi bi-check-circle me-1" aria-hidden="true"></i>
+        <?= htmlspecialchars($success) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 <?php endif; ?>
 
 <?php if ($enrolment): ?>
     <div class="card mb-4">
-        <div class="card-header bg-white">
+        <div class="card-header">
             <span class="fw-bold">Student & Enrolment Details</span>
         </div>
         <div class="card-body">
@@ -71,7 +80,7 @@ function cashBadge($status) {
         <input type="hidden" name="enrolment_id" value="<?= $enrolment['enrolment_id'] ?>">
         <input type="hidden" name="ay_id" value="<?= $enrolment['ay_id'] ?>">
         <div class="card">
-            <div class="card-header bg-white">
+            <div class="card-header">
                 <span class="fw-bold">Payment Details</span>
             </div>
             <div class="card-body">
@@ -103,7 +112,7 @@ function cashBadge($status) {
     </form>
 <?php else: ?>
     <div class="card">
-        <div class="card-header bg-white">
+        <div class="card-header">
             <span class="fw-bold">Find Student Enrolment</span>
         </div>
         <div class="card-body">

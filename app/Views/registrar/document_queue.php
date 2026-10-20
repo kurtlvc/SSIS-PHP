@@ -14,7 +14,7 @@ function reqBadge($status) {
 </div>
 
 <div class="card">
-    <div class="card-header bg-white">
+    <div class="card-header">
         <span class="fw-bold">Pending Document Requests</span>
     </div>
     <div class="card-body p-0">

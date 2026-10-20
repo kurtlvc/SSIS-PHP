@@ -57,7 +57,7 @@ class StudentController extends BaseController
             'weatherInfo' => $weatherInfo,
             'pageTitle' => 'Dashboard',
             'module' => 'student',
-        ], 'cuyosis');
+        ]);
     }
 
     public function grades()
