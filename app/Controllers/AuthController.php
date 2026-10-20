@@ -78,6 +78,98 @@ class AuthController
         App::redirect('/login');
     }
 
+    public function forgotPassword()
+    {
+        if (isset($_SESSION['account_id'])) {
+            $this->redirectToDashboard();
+            return;
+        }
+
+        App::view('auth/forgot_password', [
+            'config' => $this->config,
+            'error' => App::flash('error'),
+            'success' => App::flash('success'),
+            'csrf_token' => App::csrf_token(),
+            'pageTitle' => 'Forgot Password',
+            'system_title' => 'CuyoSSIS',
+        ], 'none');
+    }
+
+    public function sendResetLink()
+    {
+        if (!App::verify_csrf($_POST['csrf_token'] ?? '')) {
+            App::flash('error', 'Invalid CSRF token.');
+            App::redirect('/forgot-password');
+            return;
+        }
+
+        $email = trim($_POST['email'] ?? '');
+
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            App::flash('error', 'Please enter a valid email address.');
+            App::redirect('/forgot-password');
+            return;
+        }
+
+        App::flash('success', 'If that email exists, a reset link has been sent.');
+        App::redirect('/login');
+    }
+
+    public function resetPasswordForm()
+    {
+        $token = $_GET['token'] ?? '';
+
+        if (empty($token)) {
+            App::flash('error', 'Invalid or expired reset token.');
+            App::redirect('/forgot-password');
+            return;
+        }
+
+        App::view('auth/reset_password', [
+            'config' => $this->config,
+            'token' => $token,
+            'error' => App::flash('error'),
+            'success' => App::flash('success'),
+            'csrf_token' => App::csrf_token(),
+            'pageTitle' => 'Reset Password',
+            'system_title' => 'CuyoSSIS',
+        ], 'none');
+    }
+
+    public function resetPassword()
+    {
+        if (!App::verify_csrf($_POST['csrf_token'] ?? '')) {
+            App::flash('error', 'Invalid CSRF token.');
+            App::redirect('/forgot-password');
+            return;
+        }
+
+        $token = $_POST['token'] ?? '';
+        $password = $_POST['password'] ?? '';
+        $confirm = $_POST['confirm_password'] ?? '';
+
+        if (empty($token)) {
+            App::flash('error', 'Invalid or expired reset token.');
+            App::redirect('/forgot-password');
+            return;
+        }
+
+        if (empty($password) || strlen($password) < 8) {
+            App::flash('error', 'Password must be at least 8 characters.');
+            App::redirect('/reset-password?token=' . urlencode($token));
+            return;
+        }
+
+        if ($password !== $confirm) {
+            App::flash('error', 'Passwords do not match.');
+            App::redirect('/reset-password?token=' . urlencode($token));
+            return;
+        }
+
+        App::flash('success', 'Your password has been reset. You may now login.');
+        App::redirect('/login');
+    }
+
     private function redirectToDashboard()
     {
         $role = $_SESSION['account_role'] ?? 'student';

@@ -101,6 +101,57 @@ class StudentController extends BaseController
         ]);
     }
 
+    public function profile()
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->student()) return;
+
+        $student = $this->studentModel->findById($this->getStudentId());
+
+        App::view('student/profile', [
+            'student' => $student,
+            'error' => App::flash('error'),
+            'success' => App::flash('success'),
+            'pageTitle' => 'My Profile',
+            'module' => 'student',
+        ]);
+    }
+
+    public function clearance()
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->student()) return;
+
+        $studId = $this->getStudentId();
+        $clearanceModel = new ClearanceModel();
+        $enrolmentModel = new EnrolmentModel();
+        $active = $enrolmentModel->getActiveAcademicYearSemester();
+        $semId = $active['sem_id'] ?? null;
+        $clearance = $clearanceModel->getDepartmentsByStudent($studId, $semId);
+
+        App::view('student/clearance', [
+            'clearance' => $clearance,
+            'semesters' => $enrolmentModel->getAllSemesters(),
+            'activeSemester' => $semId,
+            'pageTitle' => 'My Clearance',
+            'module' => 'student',
+        ]);
+    }
+
+    public function documentHistory()
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->student()) return;
+
+        $requests = $this->studentModel->getDocumentRequests($this->getStudentId());
+
+        App::view('student/document_history', [
+            'requests' => $requests,
+            'pageTitle' => 'Document Request History',
+            'module' => 'student',
+        ]);
+    }
+
     public function documentRequest()
     {
         if (!$this->requireAuth()) return;
