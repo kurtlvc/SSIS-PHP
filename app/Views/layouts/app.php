@@ -75,8 +75,8 @@
             --accent-red: var(--dash-accent-red);
             --sidebar-bg: linear-gradient(180deg, var(--cuyo-navy) 0%, var(--cuyo-navy-light) 100%);
             --sidebar-text: #e2e8f0;
-            --header-bg: rgba(255, 255, 255, 0.03);
-            --header-border: rgba(255, 255, 255, 0.08);
+            --header-bg: rgba(15, 23, 42, 0.95);
+            --header-border: rgba(255, 255, 255, 0.12);
             --input-bg: var(--dash-card-bg);
             --input-border: var(--dash-card-border);
             --input-text: var(--dash-text-primary);
@@ -215,12 +215,13 @@
         .header h1 { color: var(--text-primary); }
         .main-content { padding: 1.5rem 2rem; flex: 1; overflow-y: auto; background: var(--bg); }
         .user-avatar { width: 36px; height: 36px; object-fit: cover; flex-shrink: 0; }
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 1015; }
+        .sidebar-overlay.open { display: block; }
         @media (max-width: 768px) {
             .main-wrap { margin-left: 0; }
             .sidebar { position: fixed; width: 280px; min-height: 100vh; transform: translateX(-100%); transition: transform .25s cubic-bezier(.4,0,.2,1); }
             .sidebar.open { transform: translateX(0); }
-            .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 1015; }
-            .sidebar-overlay.open { display: block; }
+            .sidebar-toggle { display: flex; }
         }
         
         /* Dashboard Grid Layout */
