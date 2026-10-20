@@ -5,7 +5,6 @@ class ApiDepartmentController extends BaseController
     private $clearanceModel;
     private $enrolmentModel;
     private $studentModel;
-    private $db;
 
     public function __construct()
     {

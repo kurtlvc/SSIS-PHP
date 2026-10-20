@@ -4,7 +4,6 @@ class ApiAdminController extends BaseController
 {
     private $userModel;
     private $enrolmentModel;
-    private $db;
 
     public function __construct()
     {

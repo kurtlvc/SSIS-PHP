@@ -5,7 +5,6 @@ class ApiCashierController extends BaseController
     private $paymentModel;
     private $enrolmentModel;
     private $userModel;
-    private $db;
 
     public function __construct()
     {
