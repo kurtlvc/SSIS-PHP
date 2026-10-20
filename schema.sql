@@ -398,7 +398,7 @@ CREATE TABLE accounts (
     login         VARCHAR(190) NOT NULL UNIQUE,
     email         VARCHAR(190) NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    role          ENUM('student','faculty','chair','dean','admin') NOT NULL,
+    role          ENUM('student','faculty','chair','dean','cashier','admin') NOT NULL,
     is_active     TINYINT(1) NOT NULL DEFAULT 1,
     created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY uq_account_owner (owner_type, owner_id),

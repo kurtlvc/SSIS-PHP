@@ -245,7 +245,7 @@ INSERT INTO accounts (id, owner_type, owner_id, login, email, password_hash, rol
 (1, 'personnel', 1, 'admin', 'admin@cuytech.edu', '$2y$12$Iex93s7RLrav9U9lsRyFheHZNOUjok0C60rveEapRh4k2PhpE7VYC', 'admin', 1, '2026-10-01 00:00:00'),
 (2, 'personnel', 2, 'prof.smith', 'smith@cuytech.edu', '$2y$12$Iex93s7RLrav9U9lsRyFheHZNOUjok0C60rveEapRh4k2PhpE7VYC', 'faculty', 1, '2026-10-01 00:00:00'),
 (3, 'personnel', 7, 'dean.garcia', 'garcia@cuytech.edu', '$2y$12$Iex93s7RLrav9U9lsRyFheHZNOUjok0C60rveEapRh4k2PhpE7VYC', 'dean', 1, '2026-10-01 00:00:00'),
-(4, 'personnel', 8, 'cashier.miller', 'miller@cuytech.edu', '$2y$12$Iex93s7RLrav9U9lsRyFheHZNOUjok0C60rveEapRh4k2PhpE7VYC', 'faculty', 1, '2026-10-01 00:00:00'),
+(4, 'personnel', 8, 'cashier.miller', 'miller@cuytech.edu', '$2y$12$Iex93s7RLrav9U9lsRyFheHZNOUjok0C60rveEapRh4k2PhpE7VYC', 'cashier', 1, '2026-10-01 00:00:00'),
 (5, 'student', 1, 'student001', 'juan.aguilar@student.cuytech.edu', '$2y$12$Iex93s7RLrav9U9lsRyFheHZNOUjok0C60rveEapRh4k2PhpE7VYC', 'student', 1, '2026-10-01 00:00:00'),
 (6, 'student', 2, 'student002', 'maria.santos@student.cuytech.edu', '$2y$12$Iex93s7RLrav9U9lsRyFheHZNOUjok0C60rveEapRh4k2PhpE7VYC', 'student', 1, '2026-10-01 00:00:00'),
 (7, 'student', 3, 'student003', 'carlos.reyes@student.cuytech.edu', '$2y$12$Iex93s7RLrav9U9lsRyFheHZNOUjok0C60rveEapRh4k2PhpE7VYC', 'student', 1, '2026-10-01 00:00:00'),
