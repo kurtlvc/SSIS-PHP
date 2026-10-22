@@ -502,10 +502,10 @@
                 <div class="dropdown">
                     <a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" aria-label="User menu"
                        class="d-flex align-items-center text-decoration-none gap-2 text-var-primary">
-                        <span class="user-avatar-custom">
-                            <?= strtoupper(substr($_SESSION['account_login'] ?? 'U', 0, 1)) ?>
+                        <span class="user-avatar-custom rounded">
+                            <?= strtoupper(substr($_SESSION['display_name'] ?? 'U', 0, 1)) ?>
                         </span>
-                        <span class="d-none d-sm-inline fw-medium"><?= htmlspecialchars($_SESSION['account_login'] ?? 'User') ?></span>
+                        <span class="d-none d-sm-inline fw-medium"><?= htmlspecialchars($_SESSION['display_name'] ?? 'User') ?></span>
                         <i class="bi bi-chevron-down small text-var-tertiary"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">

@@ -14,7 +14,7 @@
 </form>
 
 <div class="row g-4 mb-4 text-center">
-    <div class="col-6 col-lg-3 mx-auto">
+    <div class="col-6 col-sm-12 col-lg-6 mx-auto">
         <div class="card border-0 bg-white h-100 shadow-sm">
             <div class="card-body py-4">
                 <i class="bi bi-receipt display-6 text-primary mb-2" aria-hidden="true"></i>
@@ -23,7 +23,7 @@
             </div>
         </div>
     </div>
-    <div class="col-6 col-lg-3 mx-auto">
+    <div class="col-6 col-sm-12 col-lg-6 mx-auto">
         <div class="card border-0 bg-white h-100 shadow-sm">
             <div class="card-body py-4">
                 <i class="bi bi-cash-coin display-6 text-success mb-2" aria-hidden="true"></i>
@@ -39,8 +39,8 @@
     <div class="card-body p-0">
         <?php if (!empty($transactions)): ?>
             <div class="table-responsive">
-                <table class="table table-hover table-sm mb-0" aria-label="Daily transactions">
-                    <thead class="table-light">
+                <table class="table table-hover table-sm mb-0 table-dark-theme" aria-label="Daily transactions">
+                    <thead>
                         <tr>
                             <th>Receipt No</th>
                             <th>Student</th>

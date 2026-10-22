@@ -1,10 +1,15 @@
 <?php
 
+require_once __DIR__ . '/../Services/PaymentGatewayService.php';
+require_once __DIR__ . '/../Services/EmailService.php';
+
 class CashierController extends BaseController
 {
     private $paymentModel;
     private $enrolmentModel;
     private $userModel;
+    private $paymentGateway;
+    private $emailService;
 
     public function __construct()
     {
@@ -12,6 +17,8 @@ class CashierController extends BaseController
         $this->paymentModel = new PaymentModel();
         $this->enrolmentModel = new EnrolmentModel();
         $this->userModel = new UserModel();
+        $this->paymentGateway = new PaymentGatewayService();
+        $this->emailService = new EmailService();
     }
 
     public function dashboard()
@@ -78,27 +85,27 @@ class CashierController extends BaseController
         $enrolmentId = $_POST['enrolment_id'] ?? null;
         $amount = $_POST['amount_paid'] ?? 0;
         $ayId = $_POST['ay_id'] ?? 1;
+        $gateway = $_POST['gateway'] ?? 'simulated'; // simulated, gcash, paymaya, bank
 
         if ($enrolmentId && $amount > 0) {
-            $receiptNo = $this->paymentModel->generateReceiptNo($ayId);
+            // Get enrolment details for payment gateway
+            $enrolment = $this->enrolmentModel->findById($enrolmentId);
+            if (!$enrolment) {
+                App::flash('error', 'Enrolment not found.');
+                App::redirect('/cashier/payments/process');
+                return;
+            }
 
-            $this->db->beginTransaction();
-            try {
-                $this->paymentModel->create([
-                    'enrolment_id' => $enrolmentId,
-                    'receipt_no' => $receiptNo,
-                    'amount_paid' => $amount,
-                    'cashier_id' => $_SESSION['owner_id'] ?? 0,
-                ]);
+            // Process through simulated gateway
+            $gatewayResult = $this->paymentGateway->processPayment($enrolmentId, $gateway);
 
-                $this->db->update('enrolments', ['isassessed' => 1], 'enrolment_id = :id', ['id' => $enrolmentId]);
-
-                $this->db->commit();
-                App::flash('success', "Payment processed. Receipt No: {$receiptNo}");
-                App::redirect('/cashier/receipts/' . $receiptNo);
-            } catch (Exception $e) {
-                $this->db->rollback();
-                App::flash('error', 'Payment failed: ' . $e->getMessage());
+            if ($gatewayResult['success']) {
+                // Gateway success - payment already recorded by gateway service
+                // The gateway service already created payment record and updated enrolment
+                App::flash('success', "Payment processed successfully via {$gateway}. Reference: {$gatewayResult['gateway_reference']}");
+                App::redirect('/cashier/receipts/' . $gatewayResult['gateway_reference']);
+            } else {
+                App::flash('error', 'Payment failed: ' . $gatewayResult['error']);
                 App::redirect('/cashier/payments/process?enrolment_id=' . $enrolmentId);
             }
         } else {

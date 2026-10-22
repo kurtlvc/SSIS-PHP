@@ -1,0 +1,898 @@
+<?php
+
+class RegistrarController extends BaseController
+{
+    private $enrolmentModel;
+    private $userModel;
+    private $documentModel;
+    private $emailService;
+    private $notificationService;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->enrolmentModel = new EnrolmentModel();
+        $this->userModel = new UserModel();
+        $this->documentModel = new DocumentRequestModel();
+        $this->emailService = new EmailService();
+        $this->notificationService = new NotificationService();
+    }
+
+    public function enrollments()
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->registrar()) return;
+
+        $ayId = $_GET['ay_id'] ?? null;
+        $semId = $_GET['sem_id'] ?? null;
+        $academicTerms = $this->enrolmentModel->getActiveAcademicYearSemester();
+        $academicYears = $this->enrolmentModel->getAllAcademicYears();
+        $semesters = $this->enrolmentModel->getAllSemesters();
+        $enrolments = $this->enrolmentModel->getAll($ayId, $semId);
+
+        App::view('registrar/enrollments', [
+            'enrolments' => $enrolments,
+            'academicYears' => $academicYears,
+            'semesters' => $semesters,
+            'academicTerms' => $academicTerms,
+            'pageTitle' => 'Enrollment Management',
+            'module' => 'registrar',
+        ]);
+    }
+
+    public function studentRecord($studId)
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->registrar()) return;
+
+        $studentModel = new StudentModel();
+        $student = $studentModel->findById($studId);
+        $enrolments = $studentModel->getEnrolments($studId);
+        $grades = $studentModel->getGrades($studId);
+        $gpa = $studentModel->calculateGPA($grades);
+
+        if (!$student) {
+            http_response_code(404);
+            App::flash('error', 'Student not found.');
+            App::redirect('/registrar/enrollments');
+            return;
+        }
+
+        App::view('registrar/student_record', [
+            'student' => $student,
+            'enrolments' => $enrolments,
+            'grades' => $grades,
+            'gpa' => $gpa,
+            'pageTitle' => 'Student Master Record',
+            'module' => 'registrar',
+        ]);
+    }
+
+    public function gradesEncode()
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->faculty()) return;
+
+        $ayId = $_GET['ay_id'] ?? null;
+        $semId = $_GET['sem_id'] ?? null;
+        $academicYears = $this->enrolmentModel->getAllAcademicYears();
+        $semesters = $this->enrolmentModel->getAllSemesters();
+        $gradesToEncode = $this->enrolmentModel->getGradesToEncode($ayId, $semId);
+
+        $error = App::flash('error');
+        $success = App::flash('success');
+
+        App::view('registrar/grades_encode', [
+            'gradesToEncode' => $gradesToEncode,
+            'academicYears' => $academicYears,
+            'semesters' => $semesters,
+            'error' => $error,
+            'success' => $success,
+            'csrf_token' => App::csrf_token(),
+            'pageTitle' => 'Grades Encoding',
+            'module' => 'registrar',
+        ]);
+    }
+
+    public function storeGrade()
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->faculty()) return;
+
+        if (!App::verify_csrf($_POST['csrf_token'] ?? '')) {
+            App::flash('error', 'Invalid CSRF token.');
+            App::redirect('/registrar/grades/encode');
+            return;
+        }
+
+        $enrolmentId = $_POST['enrolment_id'] ?? null;
+        $courseId = $_POST['course_id'] ?? null;
+        $finalGrade = $_POST['final_grade'] ?? null;
+        $remarks = $_POST['remarks'] ?? '';
+
+        if ($enrolmentId && $courseId && $finalGrade !== null && $finalGrade !== '') {
+            $this->db->insert('student_grades', [
+                'enrolment_id' => $enrolmentId,
+                'course_id' => $courseId,
+                'p_id' => $_SESSION['owner_id'] ?? 0,
+                'final_grade' => $finalGrade,
+                'remarks' => $remarks,
+            ]);
+            App::flash('success', 'Grade encoded successfully!');
+
+            // Send grade notification (simulated email + in-app notification)
+            $enrolment = $this->db->fetchOne("SELECT e.*, s.emailaddress, s.fname, s.lname, s.stud_id, c.code, c.description
+                FROM enrolments e
+                JOIN students s ON e.stud_id = s.stud_id
+                JOIN courses c ON c.course_id = :course_id
+                WHERE e.enrolment_id = :enrolment_id", [
+                'enrolment_id' => $enrolmentId,
+                'course_id' => $courseId
+            ]);
+            if ($enrolment) {
+                $this->emailService->sendGradeNotification([
+                    'to_email' => $enrolment['emailaddress'],
+                    'to_name' => $enrolment['fname'] . ' ' . $enrolment['lname'],
+                    'student_id' => $enrolment['stud_id'],
+                    'course_code' => $enrolment['code'],
+                    'course_name' => $enrolment['description'],
+                    'grade' => $_POST['final_grade'],
+                ]);
+                $this->notificationService->gradeNotification($enrolment['stud_id'], [
+                    'course_code' => $enrolment['code'],
+                    'grade' => $_POST['final_grade'],
+                    'grade_id' => $this->db->lastInsertId(),
+                ]);
+            }
+        } else {
+            App::flash('error', 'All required fields must be filled.');
+        }
+
+        App::redirect('/registrar/grades/encode');
+    }
+
+    public function documentQueue()
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->registrar()) return;
+
+        $requests = $this->documentModel->getQueue();
+
+        App::view('registrar/document_queue', [
+            'requests' => $requests,
+            'pageTitle' => 'Document Request Queue',
+            'module' => 'registrar',
+            'csrf_token' => App::csrf_token(),
+        ]);
+    }
+
+    public function processDocument($id)
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->registrar()) return;
+
+        if (!App::verify_csrf($_POST['csrf_token'] ?? '')) {
+            App::flash('error', 'Invalid CSRF token.');
+            App::redirect('/registrar/documents/queue');
+            return;
+        }
+
+        $status = $_POST['status'] ?? 'Processing';
+        $validStatuses = ['Pending', 'Processing', 'Ready for Pickup', 'Released'];
+
+        if (!in_array($status, $validStatuses)) {
+            App::flash('error', 'Invalid status value.');
+            App::redirect('/registrar/documents/queue');
+            return;
+        }
+
+        $request = $this->documentModel->findById($id);
+        $this->documentModel->updateStatus($id, $status, $_SESSION['owner_id'] ?? 0);
+        App::flash('success', 'Document request status updated.');
+
+        // Send document notification (simulated email + in-app notification)
+        if ($request) {
+            $this->emailService->sendDocumentNotification([
+                'to_email' => $request['emailaddress'] ?? '',
+                'to_name' => ($request['fname'] ?? '') . ' ' . ($request['lname'] ?? ''),
+                'student_id' => $request['stud_id'] ?? 0,
+                'document_type' => $request['document_type'] ?? 'Document',
+                'status' => $status,
+                'request_id' => $id,
+            ]);
+            $this->notificationService->documentNotification($request['stud_id'] ?? 0, [
+                'document_type' => $request['document_type'] ?? 'Document',
+                'status' => $status,
+                'request_id' => $id,
+            ]);
+        }
+
+        App::redirect('/registrar/documents/queue');
+    }
+
+    private function getJsonInput()
+    {
+        $data = json_decode(file_get_contents('php://input') ?: '', true);
+        return is_array($data) ? $data : [];
+    }
+
+    // ============================================================
+    // Grade Submission Workflow
+    // ============================================================
+
+    public function gradeSubmissionList()
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->faculty()) return;
+
+        $ayId = $_GET['ay_id'] ?? null;
+        $semId = $_GET['sem_id'] ?? null;
+        $statusFilter = $_GET['status_filter'] ?? null;
+
+        $academicYears = $this->enrolmentModel->getAllAcademicYears();
+        $semesters = $this->enrolmentModel->getAllSemesters();
+
+        // Get submissions with stats
+        $where = "WHERE 1=1";
+        $params = [];
+
+        if ($ayId) {
+            $where .= " AND s.ay_id = :ay_id";
+            $params['ay_id'] = $ayId;
+        }
+        if ($semId) {
+            $where .= " AND s.sem_id = :sem_id";
+            $params['sem_id'] = $semId;
+        }
+        if ($statusFilter) {
+            $where .= " AND gs.status = :status";
+            $params['status'] = $statusFilter;
+        }
+
+        // For faculty, only show their own submissions
+        if ($this->middleware->faculty() && !$this->middleware->admin() && !$this->middleware->dean() && !$this->middleware->chair()) {
+            $where .= " AND gs.faculty_id = :faculty_id";
+            $params['faculty_id'] = $_SESSION['owner_id'] ?? 0;
+        }
+
+        $sql = "SELECT gs.*, sc.class_no, c.code, c.description, ay.ay_name, sem.semester_name,
+                       p.fname as faculty_fname, p.lname as faculty_lname,
+                       COUNT(gsi.item_id) as student_count,
+                       r.fname as reviewed_by_fname, r.lname as reviewed_by_lname
+                FROM grade_submissions gs
+                JOIN schedules sc ON gs.sched_id = sc.sched_id
+                JOIN courses c ON sc.course_id = c.course_id
+                JOIN academic_years ay ON sc.ay_id = ay.ay_id
+                JOIN semesters sem ON sc.sem_id = sem.sem_id
+                LEFT JOIN personnel p ON gs.faculty_id = p.p_id
+                LEFT JOIN grade_submission_items gsi ON gs.submission_id = gsi.submission_id
+                LEFT JOIN personnel r ON gs.reviewed_by = r.p_id
+                $where
+                GROUP BY gs.submission_id
+                ORDER BY gs.created_at DESC";
+
+        $submissions = $this->db->fetchAll($sql, $params);
+
+        // Get stats
+        $statsSql = "SELECT status, COUNT(*) as count FROM grade_submissions WHERE 1=1";
+        if ($where !== "WHERE 1=1") {
+            $statsSql .= " AND " . substr($where, 7);
+        }
+        $statsSql .= " GROUP BY status";
+        $statsRows = $this->db->fetchAll($statsSql, $params);
+        $stats = [];
+        foreach ($statsRows as $row) {
+            $stats[$row['status']] = $row['count'];
+        }
+
+        App::view('registrar/grades_submission_list', [
+            'submissions' => $submissions,
+            'stats' => $stats,
+            'academicYears' => $academicYears,
+            'semesters' => $semesters,
+            'error' => App::flash('error'),
+            'success' => App::flash('success'),
+            'pageTitle' => 'Grade Submissions',
+            'module' => 'registrar',
+        ]);
+    }
+
+    public function gradeSubmissionCreate()
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->faculty()) return;
+
+        $ayId = $_GET['ay_id'] ?? null;
+        $semId = $_GET['sem_id'] ?? null;
+
+        $academicYears = $this->enrolmentModel->getAllAcademicYears();
+        $semesters = $this->enrolmentModel->getAllSemesters();
+
+        $schedules = [];
+        $existingSubmissions = [];
+
+        if ($ayId && $semId) {
+            // Get faculty's schedules
+            $facultyId = $_SESSION['owner_id'] ?? 0;
+            $sql = "SELECT s.*, c.code, c.description, c.units,
+                           d.day_name, ts.time_start, te.time_end, r.room_name,
+                           (SELECT COUNT(*) FROM enrolment_courses ec WHERE ec.sched_id = s.sched_id) as enrolled_count
+                    FROM schedules s
+                    JOIN courses c ON s.course_id = c.course_id
+                    LEFT JOIN schedule_daytimes sd ON s.sched_id = sd.sched_id
+                    LEFT JOIN days d ON sd.day_id = d.day_id
+                    LEFT JOIN times ts ON sd.time_start_id = ts.time_id
+                    LEFT JOIN times te ON sd.time_end_id = te.time_id
+                    LEFT JOIN rooms r ON sd.room_id = r.room_id
+                    WHERE s.p_id = :faculty_id AND s.ay_id = :ay_id AND s.sem_id = :sem_id
+                    ORDER BY c.code, s.class_no";
+
+            $schedules = $this->db->fetchAll($sql, [
+                'faculty_id' => $_SESSION['owner_id'] ?? 0,
+                'ay_id' => $ayId,
+                'sem_id' => $semId
+            ]);
+
+            // Check existing submissions
+            $existingSql = "SELECT sched_id FROM grade_submissions WHERE faculty_id = :fid AND ay_id = :ay AND sem_id = :sem";
+            $existing = $this->db->fetchAll($existingSql, [
+                'fid' => $_SESSION['owner_id'] ?? 0,
+                'ay' => $ayId,
+                'sem' => $semId
+            ]);
+            $existingSubmissions = array_column($existing, 'sched_id');
+        }
+
+        App::view('registrar/grades_submission_create', [
+            'schedules' => $schedules,
+            'existingSubmissions' => $existingSubmissions,
+            'academicYears' => $academicYears,
+            'semesters' => $semesters,
+            'pageTitle' => 'New Grade Submission',
+            'module' => 'registrar',
+        ]);
+    }
+
+    public function gradeSubmissionCreateConfirm($schedId)
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->faculty()) return;
+
+        // Check if submission already exists
+        $existing = $this->db->fetchOne("SELECT * FROM grade_submissions WHERE sched_id = :id AND faculty_id = :fid", [
+            'id' => $schedId,
+            'fid' => $_SESSION['owner_id'] ?? 0
+        ]);
+
+        if ($existing) {
+            App::flash('error', 'A submission already exists for this schedule.');
+            App::redirect('/registrar/grades/submission/create');
+            return;
+        }
+
+        // Create draft submission
+        $submissionId = $this->db->insert('grade_submissions', [
+            'sched_id' => $schedId,
+            'faculty_id' => $_SESSION['owner_id'] ?? 0,
+            'status' => 'draft',
+            'created_at' => date('Y-m-d H:i:s')
+        ]);
+
+        // Pre-populate with enrolled students
+        $enrolments = $this->db->fetchAll("
+            SELECT e.enrolment_id, s.stud_id
+            FROM enrolments e
+            JOIN enrolment_courses ec ON e.enrolment_id = ec.enrolment_id
+            JOIN schedules s ON ec.sched_id = s.sched_id
+            JOIN students s ON e.stud_id = s.stud_id
+            WHERE ec.sched_id = :sched_id AND e.is_approved = 1 AND e.isassessed = 1
+        ", ['sched_id' => $schedId]);
+
+        foreach ($enrolments as $enrol) {
+            $this->db->insert('grade_submission_items', [
+                'submission_id' => $submissionId,
+                'enrolment_id' => $enrol['enrolment_id'],
+                'grade_value' => null,
+                'remarks' => null,
+                'is_final' => 0,
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
+        }
+
+        App::flash('success', 'Grade submission draft created. You can now enter grades.');
+        App::redirect('/registrar/grades/submission/' . $submissionId);
+    }
+
+    public function gradeSubmissionDetail($submissionId)
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->faculty()) return;
+
+        $submission = $this->db->fetchOne("
+            SELECT gs.*, sc.class_no, c.code, c.description, c.units, ay.ay_name, sem.semester_name,
+                   p.fname as faculty_fname, p.lname as faculty_lname,
+                   r.fname as reviewed_by_fname, r.lname as reviewed_by_lname
+            FROM grade_submissions gs
+            JOIN schedules sc ON gs.sched_id = sc.sched_id
+            JOIN courses c ON sc.course_id = c.course_id
+            JOIN academic_years ay ON gs.ay_id = ay.ay_id
+            JOIN semesters sem ON gs.sem_id = sem.sem_id
+            LEFT JOIN personnel p ON gs.faculty_id = p.p_id
+            LEFT JOIN personnel r ON gs.reviewed_by = r.p_id
+            WHERE gs.submission_id = :id", ['id' => $submissionId]);
+
+        if (!$submission) {
+            App::flash('error', 'Submission not found.');
+            App::redirect('/registrar/grades/submission');
+            return;
+        }
+
+        // Get items
+        $items = $this->db->fetchAll("
+            SELECT gsi.*, s.fname, s.lname, s.ref_no
+            FROM grade_submission_items gsi
+            JOIN enrolments e ON gsi.enrolment_id = e.enrolment_id
+            JOIN students s ON e.stud_id = s.stud_id
+            WHERE gsi.submission_id = :id
+            ORDER BY s.lname, s.fname", ['id' => $submissionId]);
+
+        // Get review history
+        $reviewHistory = $this->db->fetchAll("
+            SELECT gr.*, p.fname as reviewer_fname, p.lname as reviewer_lname
+            FROM grade_reviews gr
+            LEFT JOIN personnel p ON gr.reviewer_id = p.p_id
+            WHERE gr.submission_id = :id
+            ORDER BY gr.created_at DESC", ['id' => $submissionId]);
+
+        App::view('registrar/grades_submission_detail', [
+            'submission' => $submission,
+            'items' => $items,
+            'reviewHistory' => $reviewHistory,
+            'pageTitle' => 'Submission Details',
+            'module' => 'registrar',
+        ]);
+    }
+
+    public function gradeSubmissionSubmit($submissionId)
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->faculty()) return;
+
+        if (!App::verify_csrf($_POST['csrf_token'] ?? '')) {
+            App::flash('error', 'Invalid CSRF token.');
+            App::redirect('/registrar/grades/submission/' . $submissionId);
+            return;
+        }
+
+        $this->db->update('grade_submissions', [
+            'status' => 'submitted',
+            'submitted_at' => date('Y-m-d H:i:s')
+        ], 'submission_id = :id', ['id' => $submissionId]);
+
+        App::flash('success', 'Submission sent for review.');
+        App::redirect('/registrar/grades/submission/' . $submissionId);
+    }
+
+    public function gradeSubmissionReview($submissionId)
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->chair() && !$this->middleware->dean() && !$this->middleware->admin()) return;
+
+        $submission = $this->db->fetchOne("SELECT * FROM grade_submissions WHERE submission_id = :id", ['id' => $submissionId]);
+        if (!$submission || !in_array($submission['status'], ['submitted', 'reviewed'])) {
+            App::flash('error', 'Submission not available for review.');
+            App::redirect('/registrar/grades/submission');
+            return;
+        }
+
+        $items = $this->db->fetchAll("
+            SELECT gsi.*, s.fname, s.lname, s.ref_no
+            FROM grade_submission_items gsi
+            JOIN enrolments e ON gsi.enrolment_id = e.enrolment_id
+            JOIN students s ON e.stud_id = s.stud_id
+            WHERE gsi.submission_id = :id
+            ORDER BY s.lname, s.fname", ['id' => $submissionId]);
+
+        App::view('registrar/grades_submission_review', [
+            'submission' => $this->db->fetchOne("
+                SELECT gs.*, sc.class_no, c.code, c.description
+                FROM grade_submissions gs
+                JOIN schedules sc ON gs.sched_id = sc.sched_id
+                JOIN courses c ON sc.course_id = c.course_id
+                WHERE gs.submission_id = :id", ['id' => $submissionId]),
+            'items' => $this->db->fetchAll("
+                SELECT gsi.*, s.fname, s.lname, s.ref_no
+                FROM grade_submission_items gsi
+                JOIN enrolments e ON gsi.enrolment_id = e.enrolment_id
+                JOIN students s ON e.stud_id = s.stud_id
+                WHERE gsi.submission_id = :id
+                ORDER BY s.lname, s.fname", ['id' => $submissionId]),
+            'pageTitle' => 'Review Grade Submission',
+            'module' => 'registrar',
+        ]);
+    }
+
+    public function gradeSubmissionReviewAction($submissionId)
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->chair() && !$this->middleware->dean() && !$this->middleware->admin()) return;
+
+        if (!App::verify_csrf($_POST['csrf_token'] ?? '')) {
+            App::flash('error', 'Invalid CSRF token.');
+            App::redirect('/registrar/grades/submission/' . $submissionId);
+            return;
+        }
+
+        $action = $_POST['review_action'] ?? '';
+        $notes = $_POST['review_notes'] ?? '';
+
+        $validActions = ['approve', 'reject', 'request_revision'];
+        if (!in_array($action, $validActions)) {
+            App::flash('error', 'Invalid action.');
+            App::redirect('/registrar/grades/submission/' . $submissionId . '/review');
+            return;
+        }
+
+        $this->db->beginTransaction();
+        try {
+            $statusMap = [
+                'approve' => 'approved',
+                'reject' => 'rejected',
+                'request_revision' => 'draft',
+            ];
+            $newStatus = $statusMap[$action];
+
+            $this->db->update('grade_submissions', [
+                'status' => $newStatus,
+                'reviewed_by' => $_SESSION['owner_id'] ?? 0,
+                'reviewed_at' => date('Y-m-d H:i:s'),
+                'review_notes' => $notes
+            ], 'submission_id = :id', ['id' => $submissionId]);
+
+            // Log review
+            $this->db->insert('grade_reviews', [
+                'submission_id' => $submissionId,
+                'reviewer_id' => $_SESSION['owner_id'] ?? 0,
+                'action' => $action,
+                'notes' => $notes,
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
+
+            $this->db->commit();
+
+            $messages = [
+                'approve' => 'Submission approved.',
+                'reject' => 'Submission rejected.',
+                'request_revision' => 'Revision requested. Submission returned to draft.',
+            ];
+            App::flash('success', $messages[$action]);
+        } catch (Exception $e) {
+            $this->db->rollback();
+            App::flash('error', 'Review failed: ' . $e->getMessage());
+        }
+
+        App::redirect('/registrar/grades/submission/' . $submissionId);
+    }
+
+    public function gradeSubmissionPost($submissionId)
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->admin() && !$this->middleware->dean()) return;
+
+        if (!App::verify_csrf($_POST['csrf_token'] ?? '')) {
+            App::flash('error', 'Invalid CSRF token.');
+            App::redirect('/registrar/grades/submission/' . $submissionId);
+            return;
+        }
+
+        $submission = $this->db->fetchOne("SELECT * FROM grade_submissions WHERE submission_id = :id", ['id' => $submissionId]);
+        if (!$submission || $submission['status'] !== 'approved') {
+            App::flash('error', 'Only approved submissions can be posted.');
+            App::redirect('/registrar/grades/submission/' . $submissionId);
+            return;
+        }
+
+        $items = $this->db->fetchAll("SELECT * FROM grade_submission_items WHERE submission_id = :id AND is_final = 1", ['id' => $submissionId]);
+        if (empty($items)) {
+            App::flash('error', 'No finalized grades to post.');
+            App::redirect('/registrar/grades/submission/' . $submissionId);
+            return;
+        }
+
+        $this->db->beginTransaction();
+        try {
+            foreach ($items as $item) {
+                // Check if grade already exists
+                $existing = $this->db->fetchOne(
+                    "SELECT * FROM student_grades WHERE enrolment_id = :eid AND course_id = :cid",
+                    ['eid' => $item['enrolment_id'], 'cid' => $item['course_id']]
+                );
+
+                if ($existing) {
+                    $this->db->update('student_grades', [
+                        'final_grade' => $item['grade_value'],
+                        'remarks' => $item['remarks'],
+                        'p_id' => $_SESSION['owner_id'] ?? 0
+                    ], 'grade_id = :id', ['id' => $existing['grade_id']]);
+                } else {
+                    $this->db->insert('student_grades', [
+                        'enrolment_id' => $item['enrolment_id'],
+                        'course_id' => $item['course_id'],
+                        'p_id' => $_SESSION['owner_id'] ?? 0,
+                        'final_grade' => $item['grade_value'],
+                        'remarks' => $item['remarks'],
+                    ]);
+                }
+            }
+
+            // Mark submission as posted
+            $this->db->update('grade_submissions', [
+                'status' => 'posted',
+                'posted_by' => $_SESSION['owner_id'] ?? 0,
+                'posted_at' => date('Y-m-d H:i:s')
+            ], 'submission_id = :id', ['id' => $submissionId]);
+
+            $this->db->commit();
+            App::flash('success', 'Grades posted successfully!');
+        } catch (Exception $e) {
+            $this->db->rollback();
+            App::flash('error', 'Posting failed: ' . $e->getMessage());
+        } catch (Exception $e) {
+            $this->db->rollback();
+            App::flash('error', 'Posting failed: ' . $e->getMessage());
+        }
+    }
+
+    public function dashboard()
+        } catch (Exception $e) {
+            $this->db->rollback();
+            App::flash('error', 'Posting failed: ' . $e->getMessage());
+        }
+    }
+
+    public function dashboard()
+        } catch (Exception $e) {
+            $this->db->rollback();
+            App::flash('error', 'Posting failed: ' . $e->getMessage());
+        }
+    }
+
+    public function dashboard()
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->registrar()) return;
+
+        $counts = $this->db->fetchOne("SELECT
+            (SELECT COUNT(*) FROM students) AS students,
+            (SELECT COUNT(*) FROM enrolments WHERE is_approved = 1) AS approved_enrolments,
+            (SELECT COUNT(*) FROM enrolments WHERE isassessed = 0) AS pending_assessment,
+            (SELECT COUNT(*) FROM document_requests WHERE status IN ('Pending','Processing')) AS doc_queue");
+
+        App::view('registrar/dashboard', [
+            'counts' => $counts,
+            'pageTitle' => 'Registrar Dashboard',
+            'module' => 'registrar',
+        ]);
+    }
+
+    public function students()
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->registrar()) return;
+
+        $students = $this->userModel->getStudentsList();
+
+        App::view('registrar/students', [
+            'students' => $students,
+            'error' => App::flash('error'),
+            'success' => App::flash('success'),
+            'csrf_token' => App::csrf_token(),
+            'pageTitle' => 'Students',
+            'module' => 'registrar',
+        ]);
+    }
+
+    public function createStudentForm()
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->registrar()) return;
+
+        $academicYears = $this->enrolmentModel->getAllAcademicYears();
+        App::view('registrar/student_form', [
+            'student' => null,
+            'academicYears' => $academicYears,
+            'csrf_token' => App::csrf_token(),
+            'pageTitle' => 'Add New Student',
+            'module' => 'registrar',
+        ]);
+    }
+
+    public function storeStudent()
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->registrar()) return;
+
+        if (!App::verify_csrf($_POST['csrf_token'] ?? '')) {
+            App::flash('error', 'Invalid CSRF token.');
+            App::redirect('/registrar/students/new');
+            return;
+        }
+
+        $required = ['ref_no', 'lname', 'fname', 'curr_id'];
+        foreach ($required as $field) {
+            if (empty($_POST[$field])) {
+                App::flash('error', 'All required fields must be filled.');
+                App::redirect('/registrar/students/new');
+                return;
+            }
+        }
+
+        $data = [
+            'ref_no'      => $_POST['ref_no'],
+            'lname'       => $_POST['lname'],
+            'fname'       => $_POST['fname'],
+            'mname'       => $_POST['mname'] ?? null,
+            'ext'         => $_POST['ext'] ?? null,
+            'emailaddress' => $_POST['emailaddress'] ?? null,
+            'contactno'   => $_POST['contactno'] ?? null,
+            'curr_id'     => $_POST['curr_id'],
+            'LRN'         => $_POST['LRN'] ?? null,
+            'created_at'  => date('Y-m-d H:i:s'),
+            'updated_at'  => date('Y-m-d H:i:s'),
+        ];
+        $this->db->insert('students', $data);
+        App::flash('success', 'Student created successfully.');
+        App::redirect('/registrar/students');
+    }
+
+    public function editStudentForm($studId)
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->registrar()) return;
+
+        $studentModel = new StudentModel();
+        $student = $studentModel->findById($studId);
+        if (!$student) {
+            App::flash('error', 'Student not found.');
+            App::redirect('/registrar/students');
+            return;
+        }
+
+        App::view('registrar/student_form', [
+            'student' => $student,
+            'csrf_token' => App::csrf_token(),
+            'pageTitle' => 'Edit Student',
+            'module' => 'registrar',
+        ]);
+    }
+
+    public function updateStudent($studId)
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->registrar()) return;
+
+        if (!App::verify_csrf($_POST['csrf_token'] ?? '')) {
+            App::flash('error', 'Invalid CSRF token.');
+            App::redirect('/registrar/students/' . $studId . '/edit');
+            return;
+        }
+
+        $updates = [];
+        foreach (['lname', 'fname', 'mname', 'ext', 'emailaddress', 'contactno', 'LRN'] as $field) {
+            if (array_key_exists($field, $_POST)) {
+                $updates[$field] = $_POST[$field];
+            }
+        }
+        $updates['updated_at'] = date('Y-m-d H:i:s');
+
+        if (!empty($updates)) {
+            $this->db->update('students', $updates, 'stud_id = :id', ['id' => $studId]);
+            App::flash('success', 'Student updated successfully.');
+        }
+
+        App::redirect('/registrar/students/' . $studId);
+    }
+
+    public function assessEnrollment()
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->registrar()) return;
+
+        if (!App::verify_csrf($_POST['csrf_token'] ?? '')) {
+            App::flash('error', 'Invalid CSRF token.');
+            App::redirect('/registrar/enrollments');
+            return;
+        }
+
+        $enrolmentId = $_POST['enrolment_id'] ?? null;
+
+        if (empty($enrolmentId)) {
+            App::flash('error', 'Enrolment id is required.');
+            App::redirect('/registrar/enrollments');
+            return;
+        }
+
+        $this->db->update('enrolments', ['isassessed' => 1, 'is_approved' => 1], 'enrolment_id = :id', ['id' => $enrolmentId]);
+        App::flash('success', 'Enrolment assessed and approved.');
+        App::redirect('/registrar/enrollments');
+    }
+
+    public function updateEnrollmentStatus($enrolmentId)
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->registrar()) return;
+
+        if (!App::verify_csrf($_POST['csrf_token'] ?? '')) {
+            App::flash('error', 'Invalid CSRF token.');
+            App::redirect('/registrar/enrollments');
+            return;
+        }
+
+        $status = $_POST['enrol_status'] ?? null;
+        $valid  = ['Pending', 'Approved', 'Rejected', 'Dropped'];
+
+        if (!in_array($status, $valid)) {
+            App::flash('error', 'Invalid enrollment status.');
+            App::redirect('/registrar/enrollments');
+            return;
+        }
+
+        $this->db->update('enrolments', ['enrol_status' => $status], 'enrolment_id = :id', ['id' => $enrolmentId]);
+        App::flash('success', 'Enrollment status updated.');
+        App::redirect('/registrar/enrollments');
+    }
+
+    public function gradeEncodeStudents($schedId)
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->faculty()) return;
+
+        $sql = "SELECT e.enrolment_id, e.stud_id, s.ref_no, s.lname, s.fname,
+                       c.course_id, c.code, c.description, c.units,
+                       ay.ay_name, sem.semester_name, g.final_grade, g.remarks
+                FROM schedules sch
+                JOIN courses c ON c.course_id = sch.course_id
+                JOIN enrolments e ON e.program_id = c.program_id AND e.ay_id = sch.ay_id AND e.sem_id = sch.sem_id
+                JOIN students s ON s.stud_id = e.stud_id
+                JOIN academic_years ay ON e.ay_id = ay.ay_id
+                JOIN semesters sem ON e.sem_id = sem.sem_id
+                LEFT JOIN student_grades g ON g.enrolment_id = e.enrolment_id AND g.course_id = c.course_id
+                WHERE sch.sched_id = :sched_id AND e.is_approved = 1 AND e.isassessed = 1
+                ORDER BY s.lname, s.fname, c.code";
+
+        $gradesToEncode = $this->db->fetchAll($sql, ['sched_id' => $schedId]);
+
+        App::view('registrar/grades_encode', [
+            'gradesToEncode' => $gradesToEncode,
+            'academicYears'  => $this->enrolmentModel->getAllAcademicYears(),
+            'semesters'      => $this->enrolmentModel->getAllSemesters(),
+            'csrf_token'     => App::csrf_token(),
+            'pageTitle'      => 'Grade Encoding for Schedule',
+            'module'         => 'registrar',
+        ]);
+    }
+
+    public function updateDocumentStatus($requestId)
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->registrar()) return;
+
+        if (!App::verify_csrf($_POST['csrf_token'] ?? '')) {
+            App::flash('error', 'Invalid CSRF token.');
+            App::redirect('/registrar/documents/queue');
+            return;
+        }
+
+        $status = $_POST['status'] ?? null;
+        $validStatuses = ['Pending', 'Processing', 'Ready for Pickup', 'Released'];
+
+        if (!in_array($status, $validStatuses)) {
+            App::flash('error', 'Invalid status value.');
+            App::redirect('/registrar/documents/queue');
+            return;
+        }
+
+        $this->documentModel->updateStatus($requestId, $status, $_SESSION['owner_id'] ?? 0);
+        App::flash('success', 'Document request status updated.');
+        App::redirect('/registrar/documents/queue');
+    }
+}

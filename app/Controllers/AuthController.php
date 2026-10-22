@@ -1,14 +1,19 @@
 <?php
 
-class AuthController
+require_once __DIR__ . '/../Middleware/RateLimitMiddleware.php';
+
+class AuthController extends BaseController
 {
     private $userModel;
-    private $config;
+    protected $config;
+    private $rateLimiter;
 
     public function __construct()
     {
+        parent::__construct();
         $this->userModel = new UserModel();
         $this->config = App::getInstance()->getConfig();
+        $this->rateLimiter = new RateLimitMiddleware();
     }
 
     public function login()
@@ -44,6 +49,12 @@ class AuthController
             return;
         }
 
+        // Rate limiting for login attempts
+        $clientId = $this->rateLimiter->getClientIdentifier();
+        if (!$this->rateLimiter->loginLimit($clientId)) {
+            return; // Redirect already handled by middleware
+        }
+
         $account = $this->userModel->findByLogin($login);
 
         if (!$account || !password_verify($password, $account['password_hash'])) {
@@ -64,11 +75,34 @@ class AuthController
         $_SESSION['owner_type'] = $account['owner_type'];
         $_SESSION['owner_id'] = $account['owner_id'];
 
+        // Build display name: Fname M. Lname
         if ($account['owner_type'] === 'student') {
             $_SESSION['stud_id'] = $account['student_id'];
+            $fname = $account['student_fname'] ?? '';
+            $lname = $account['student_lname'] ?? '';
+            $mname = ''; // students don't have middle name in current schema
+        } else {
+            $fname = $account['personnel_fname'] ?? '';
+            $lname = $account['personnel_lname'] ?? '';
+            // Get middle name if available
+            $mname = $this->getPersonnelMiddleName($account['owner_id']);
         }
 
+        // Format: Fname M. Lname
+        $middleInitial = $mname ? strtoupper(substr(trim($mname), 0, 1)) . '. ' : '';
+        $_SESSION['display_name'] = trim($fname . ' ' . $middleInitial . $lname);
+
         $this->redirectToDashboard();
+    }
+
+    /**
+     * Get personnel middle name
+     */
+    private function getPersonnelMiddleName($personnelId)
+    {
+        $sql = "SELECT mname FROM personnel WHERE p_id = :id";
+        $row = $this->db->fetchOne($sql, ['id' => $personnelId]);
+        return $row ? $row['mname'] : '';
     }
 
     public function logout()
@@ -118,6 +152,12 @@ class AuthController
             App::flash('error', 'Please enter a valid email address.');
             App::redirect('/forgot-password');
             return;
+        }
+
+        // Rate limiting for password reset
+        $clientId = $this->rateLimiter->getClientIdentifier();
+        if (!$this->rateLimiter->passwordResetLimit($clientId)) {
+            return; // Redirect already handled by middleware
         }
 
         App::flash('success', 'If that email exists, a reset link has been sent.');

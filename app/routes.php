@@ -39,6 +39,18 @@ $router->get('/student/documents/request', 'StudentController@documentRequest');
 $router->post('/student/documents/request', 'StudentController@storeDocumentRequest');
 $router->get('/student/documents/history', 'StudentController@documentHistory');
 
+// Enrollment Cart
+$router->get('/student/enrollment/cart', 'StudentController@enrollmentCart');
+$router->get('/student/enrollment/available', 'StudentController@enrollmentAvailable');
+$router->post('/student/enrollment/cart/add', 'StudentController@addToCart');
+$router->post('/student/enrollment/cart/remove', 'StudentController@removeFromCart');
+$router->post('/student/enrollment/cart/submit', 'StudentController@submitCart');
+$router->get('/student/enrollment/history', 'StudentController@enrollmentHistory');
+$router->get('/student/payment/assessments', 'StudentController@paymentAssessments');
+$router->get('/student/payment/pay', 'StudentController@paymentPay');
+$router->post('/student/payment/pay', 'StudentController@paymentProcess');
+$router->get('/student/payment/history/{id}', 'StudentController@paymentHistory');
+
 // ============================================================
 // Student Portal (API v1)
 // Middleware: auth:jwt, role:student
@@ -69,8 +81,33 @@ $router->get('/registrar/grades/encode', 'RegistrarController@gradesEncode');
 $router->post('/registrar/grades/encode', 'RegistrarController@storeGrade');
 $router->get('/registrar/grades/encode/{sched_id}', 'RegistrarController@gradeEncodeStudents');
 $router->post('/api/v1/registrar/grades/batch', 'ApiRegistrarController@storeBatchGrades');
+
+// Grade Submission Workflow
+$router->get('/registrar/grades/submission', 'RegistrarController@gradeSubmissionList');
+$router->get('/registrar/grades/submission/create', 'RegistrarController@gradeSubmissionCreate');
+$router->get('/registrar/grades/submission/create/confirm', 'RegistrarController@gradeSubmissionCreateConfirm');
+$router->get('/registrar/grades/submission/{id}', 'RegistrarController@gradeSubmissionDetail');
+$router->post('/registrar/grades/submission/{id}/submit', 'RegistrarController@gradeSubmissionSubmit');
+$router->get('/registrar/grades/submission/{id}/review', 'RegistrarController@gradeSubmissionReview');
+$router->post('/registrar/grades/submission/{id}/review', 'RegistrarController@gradeSubmissionReviewAction');
+$router->post('/registrar/grades/submission/{id}/post', 'RegistrarController@gradeSubmissionPost');
+
 $router->get('/registrar/documents/queue', 'RegistrarController@documentQueue');
 $router->patch('/registrar/documents/{request_id}/status', 'RegistrarController@updateDocumentStatus');
+
+// ============================================================
+// Faculty Module (Frontend)
+// Middleware: auth, role:faculty
+// ============================================================
+$router->get('/faculty/dashboard', 'FacultyController@dashboard');
+$router->get('/faculty/grade-submissions', 'FacultyController@gradeSubmissions');
+$router->get('/faculty/grade-submissions/create', 'FacultyController@gradeSubmissionCreate');
+$router->get('/faculty/grade-submissions/create/confirm', 'FacultyController@gradeSubmissionCreateConfirm');
+$router->get('/faculty/grade-submissions/{id}', 'FacultyController@gradeSubmissionDetail');
+$router->get('/faculty/grade-submissions/{id}/edit', 'FacultyController@gradeSubmissionEdit');
+$router->post('/faculty/grade-submissions/{id}/edit', 'FacultyController@gradeSubmissionUpdateGrades');
+$router->post('/faculty/grade-submissions/{id}/submit', 'FacultyController@gradeSubmissionSubmit');
+$router->post('/faculty/grade-submissions/{id}/post', 'FacultyController@gradeSubmissionPost');
 
 // ============================================================
 // Registrar Module (API v1)
@@ -116,6 +153,7 @@ $router->get('/api/v1/cashier/reports/daily', 'ApiCashierController@dailyReport'
 // ============================================================
 $router->get('/department/dashboard', 'DepartmentController@dashboard');
 $router->get('/department/clearance', 'DepartmentController@clearanceList');
+$router->get('/department/clearance/student-view', 'DepartmentController@studentClearanceView');
 $router->get('/department/clearance/{stud_id}', 'DepartmentController@studentClearance');
 $router->post('/department/clearance/{stud_id}', 'DepartmentController@updateClearance');
 
@@ -145,6 +183,43 @@ $router->get('/admin/system-settings', 'AdminController@settings');
 $router->post('/admin/settings/update', 'AdminController@updateSettings');
 $router->get('/admin/roles', 'AdminController@roles');
 $router->get('/admin/audit-logs', 'AdminController@auditLogs');
+
+// Program Management
+$router->get('/admin/programs', 'AdminController@programs');
+$router->get('/admin/programs/create', 'AdminController@programCreate');
+$router->post('/admin/programs/create', 'AdminController@storeProgram');
+$router->get('/admin/programs/{id}/edit', 'AdminController@programEdit');
+$router->post('/admin/programs/{id}/edit', 'AdminController@updateProgram');
+$router->delete('/admin/programs/{id}/delete', 'AdminController@deleteProgram');
+
+// Curriculum Management
+$router->get('/admin/curriculums', 'AdminController@curriculums');
+$router->get('/admin/curriculums/create', 'AdminController@curriculumCreate');
+$router->post('/admin/curriculums/create', 'AdminController@storeCurriculum');
+$router->get('/admin/curriculums/{id}/edit', 'AdminController@curriculumEdit');
+$router->post('/admin/curriculums/{id}/edit', 'AdminController@updateCurriculum');
+$router->delete('/admin/curriculums/{id}/delete', 'AdminController@deleteCurriculum');
+
+// Course Management
+$router->get('/admin/courses', 'AdminController@courses');
+$router->get('/admin/courses/create', 'AdminController@courseCreate');
+$router->post('/admin/courses/create', 'AdminController@storeCourse');
+$router->get('/admin/courses/{id}/edit', 'AdminController@courseEdit');
+$router->post('/admin/courses/{id}/edit', 'AdminController@updateCourse');
+$router->delete('/admin/courses/{id}/delete', 'AdminController@deleteCourse');
+
+// Schedule Management
+$router->get('/admin/schedules', 'AdminController@schedules');
+$router->post('/admin/schedules/create', 'AdminController@storeSchedule');
+$router->delete('/admin/schedules/{id}/delete', 'AdminController@deleteSchedule');
+
+// Announcement Management
+$router->get('/admin/announcements', 'AdminController@announcements');
+$router->get('/admin/announcements/create', 'AdminController@announcementCreate');
+$router->post('/admin/announcements/create', 'AdminController@storeAnnouncement');
+$router->get('/admin/announcements/{id}/edit', 'AdminController@announcementEdit');
+$router->post('/admin/announcements/{id}/edit', 'AdminController@updateAnnouncement');
+$router->delete('/admin/announcements/{id}/delete', 'AdminController@deleteAnnouncement');
 
 // ============================================================
 // Admin Module (API v1)

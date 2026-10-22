@@ -1,13 +1,17 @@
 <?php
 
+require_once __DIR__ . '/../Services/EnrolmentService.php';
+
 class StudentController extends BaseController
 {
     private $studentModel;
+    private $notificationService;
 
     public function __construct()
     {
         parent::__construct();
         $this->studentModel = new StudentModel();
+        $this->notificationService = new NotificationService();
     }
 
     public function dashboard()
@@ -70,10 +74,25 @@ class StudentController extends BaseController
         $grades = $this->studentModel->getGrades($studId);
         $gpa = $this->studentModel->calculateGPA($grades);
 
+        // Calculate passed/failed counts
+        $passedCount = 0;
+        $failedCount = 0;
+        if (!empty($grades)) {
+            foreach ($grades as $g) {
+                if ($g['remarks'] === 'Passed' || ($g['final_grade'] !== null && $g['final_grade'] >= 3.0)) {
+                    $passedCount++;
+                } else {
+                    $failedCount++;
+                }
+            }
+        }
+
         App::view('student/grades', [
             'student' => $student,
             'grades' => $grades,
             'gpa' => $gpa,
+            'passedCount' => $passedCount,
+            'failedCount' => $failedCount,
             'pageTitle' => 'Grades & Academic History',
             'module' => 'student',
         ]);
@@ -197,8 +216,369 @@ class StudentController extends BaseController
             return;
         }
 
-        $this->studentModel->createDocumentRequest($this->getStudentId(), $docType);
+        $requestId = $this->studentModel->createDocumentRequest($this->getStudentId(), $docType);
         App::flash('success', 'Document request submitted successfully!');
+
+        // Send document notification
+        $student = $this->studentModel->findById($this->getStudentId());
+        if ($student) {
+            $this->notificationService->documentNotification($student['stud_id'], [
+                'document_type' => $docType,
+                'status' => 'Pending',
+                'request_id' => $requestId,
+            ]);
+        }
+
         App::redirect('/student/documents/request');
+    }
+
+    public function enrollmentCart()
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->student()) return;
+
+        $studId = $this->getStudentId();
+        $student = $this->studentModel->findById($studId);
+        $enrolmentModel = new EnrolmentModel();
+
+        // Get active semester
+        $academicTerms = $enrolmentModel->getActiveAcademicYearSemester();
+        $semId = $academicTerms['sem_id'] ?? null;
+        $ayId = $academicTerms['ay_id'] ?? null;
+
+        if (!$semId || !$ayId) {
+            App::flash('error', 'No active academic term found.');
+            App::redirect('/student/dashboard');
+            return;
+        }
+
+        // Get or create cart
+        $enrolmentService = new EnrolmentService();
+        $cart = $enrolmentService->getOrCreateCart($studId, $semId, $ayId);
+        $cartItems = $enrolmentService->getCartItems($cart['cart_id']);
+
+        $assessment = null;
+        if (in_array($cart['status'], ['assessed', 'paid'])) {
+            $assessment = $this->db->fetchOne('
+                SELECT ea.*, e.enrolment_id, e.stud_id, ay.ay_name, sem.semester_name, p.program_code
+                FROM enrolment_assessments ea
+                JOIN enrolments e ON ea.enrolment_id = e.enrolment_id
+                JOIN academic_years ay ON e.ay_id = ay.ay_id
+                JOIN semesters sem ON e.sem_id = sem.sem_id
+                JOIN programs p ON e.program_id = p.program_id
+                JOIN enrolment_carts ec ON e.enrolment_id = ec.enrolment_id
+                WHERE ec.cart_id = :cart_id
+                ORDER BY ea.assessed_at DESC
+                LIMIT 1', ['cart_id' => $cart['cart_id']]);
+        }
+
+        App::view('student/enrollment_cart', [
+            'student' => $student,
+            'cart' => $cart,
+            'cartItems' => $cartItems,
+            'currentSemester' => $enrolmentModel->getSemesterName($semId),
+            'assessment' => $assessment,
+            'error' => App::flash('error'),
+            'success' => App::flash('success'),
+            'csrf_token' => App::csrf_token(),
+            'pageTitle' => 'Enrollment Cart',
+            'module' => 'student',
+        ]);
+    }
+
+    public function enrollmentAvailable()
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->student()) return;
+
+        $studId = $this->getStudentId();
+        $student = $this->studentModel->findById($studId);
+        $enrolmentService = new EnrolmentService();
+
+        $academicTerms = $enrolmentService->getActiveAcademicYearSemester();
+        $semId = $academicTerms['sem_id'] ?? null;
+        $ayId = $academicTerms['ay_id'] ?? null;
+
+        if (!$semId || !$ayId) {
+            App::flash('error', 'No active academic term found.');
+            App::redirect('/student/dashboard');
+            return;
+        }
+
+        // Get cart to check what's already in it
+        $cart = $enrolmentService->getOrCreateCart($studId, $semId, $ayId);
+        $cartItems = $enrolmentService->getCartItems($cart['cart_id']);
+        $cartSchedIds = array_column($cartItems, 'sched_id');
+
+        // Get already enrolled schedules
+        $enrolments = $this->studentModel->getEnrolments($studId);
+        $enrolledSchedIds = [];
+        foreach ($enrolments as $enrolment) {
+            $courses = $enrolmentService->getEnrolmentCourses($enrolment['enrolment_id']);
+            foreach ($courses as $course) {
+                $enrolledSchedIds[] = $course['sched_id'];
+            }
+        }
+
+        // Get available schedules
+        $availableSchedules = $enrolmentService->getAvailableSchedules($studId, $semId, $ayId);
+
+        App::view('student/enrollment_available', [
+            'student' => $student,
+            'availableSchedules' => $availableSchedules,
+            'cartItems' => $cartItems,
+            'cartSchedIds' => $cartSchedIds,
+            'enrolledSchedIds' => $enrolledSchedIds,
+            'currentSemester' => $enrolmentService->getSemesterName($semId),
+            'error' => App::flash('error'),
+            'success' => App::flash('success'),
+            'csrf_token' => App::csrf_token(),
+            'pageTitle' => 'Available Subjects',
+            'module' => 'student',
+        ]);
+    }
+
+    public function addToCart()
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->student()) return;
+
+        if (!App::verify_csrf($_POST['csrf_token'] ?? '')) {
+            App::flash('error', 'Invalid CSRF token.');
+            App::redirect('/student/enrollment/available');
+            return;
+        }
+
+        $schedId = $_POST['sched_id'] ?? null;
+        $studId = $this->getStudentId();
+        $enrolmentService = new EnrolmentService();
+
+        $academicTerms = $enrolmentService->getActiveAcademicYearSemester();
+        $semId = $academicTerms['sem_id'] ?? null;
+        $ayId = $academicTerms['ay_id'] ?? null;
+
+        if (!$semId || !$ayId) {
+            App::flash('error', 'No active academic term found.');
+            App::redirect('/student/enrollment/available');
+            return;
+        }
+
+        $cart = $enrolmentService->getOrCreateCart($studId, $semId, $ayId);
+        $result = $enrolmentService->addToCart($cart['cart_id'], $schedId);
+
+        if ($result['success']) {
+            App::flash('success', 'Subject added to cart!');
+        } else {
+            App::flash('error', $result['error']);
+        }
+
+        App::redirect('/student/enrollment/available');
+    }
+
+    public function removeFromCart()
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->student()) return;
+
+        if (!App::verify_csrf($_POST['csrf_token'] ?? '')) {
+            App::flash('error', 'Invalid CSRF token.');
+            App::redirect('/student/enrollment/cart');
+            return;
+        }
+
+        $cartId = $_POST['cart_id'] ?? null;
+        $schedId = $_POST['sched_id'] ?? null;
+        $enrolmentService = new EnrolmentService();
+
+        if ($cartId && $schedId) {
+            $result = $enrolmentService->removeFromCart($cartId, $schedId);
+            if ($result['success']) {
+                App::flash('success', 'Subject removed from cart.');
+            }
+        }
+
+        App::redirect('/student/enrollment/cart');
+    }
+
+    public function submitCart()
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->student()) return;
+
+        if (!App::verify_csrf($_POST['csrf_token'] ?? '')) {
+            App::flash('error', 'Invalid CSRF token.');
+            App::redirect('/student/enrollment/cart');
+            return;
+        }
+
+        $cartId = $_POST['cart_id'] ?? null;
+        $enrolmentService = new EnrolmentService();
+
+        if ($cartId) {
+            $result = $enrolmentService->submitForAssessment($cartId);
+            if ($result['success']) {
+                App::flash('success', $result['message']);
+
+                // Send enrollment notification
+                $this->notificationService->enrollmentNotification($this->getStudentId(), [
+                    'ay_name' => $result['ay_name'] ?? 'Current Term',
+                    'semester_name' => $result['semester_name'] ?? 'Current Semester',
+                    'status' => 'Submitted for Assessment',
+                    'enrolment_id' => $result['enrolment_id'] ?? null,
+                ]);
+            } else {
+                App::flash('error', $result['error']);
+            }
+        }
+
+        App::redirect('/student/enrollment/cart');
+    }
+
+    public function paymentPay()
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->student()) return;
+
+        $studId = $this->getStudentId();
+        $assessmentId = $_GET['assessment_id'] ?? null;
+
+        if (!$assessmentId) {
+            App::flash('error', 'Invalid assessment.');
+            App::redirect('/student/payment/assessments');
+            return;
+        }
+
+        $enrolmentModel = new EnrolmentModel();
+        $assessment = $enrolmentModel->getAssessmentById($assessmentId);
+
+        if (!$assessment || $assessment['stud_id'] != $this->getStudentId()) {
+            App::flash('error', 'Assessment not found.');
+            App::redirect('/student/payment/assessments');
+            return;
+        }
+
+        App::view('student/payment_pay', [
+            'assessment' => $assessment,
+            'pageTitle' => 'Pay Assessment',
+            'module' => 'student',
+        ]);
+    }
+
+    public function paymentProcess()
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->student()) return;
+
+        if (!App::verify_csrf($_POST['csrf_token'] ?? '')) {
+            App::flash('error', 'Invalid CSRF token.');
+            App::redirect('/student/payment/assessments');
+            return;
+        }
+
+        $studId = $this->getStudentId();
+        $assessmentId = $_POST['assessment_id'] ?? null;
+        $gateway = $_POST['gateway'] ?? 'simulated';
+
+        if (!$assessmentId) {
+            App::flash('error', 'Invalid assessment.');
+            App::redirect('/student/payment/assessments');
+            return;
+        }
+
+        $enrolmentModel = new EnrolmentModel();
+        $assessment = $enrolmentModel->getAssessmentById($assessmentId);
+
+        if (!$assessment || $assessment['stud_id'] != $this->getStudentId()) {
+            App::flash('error', 'Assessment not found.');
+            App::redirect('/student/payment/assessments');
+            return;
+        }
+
+        if ($assessment['status'] === 'paid') {
+            App::flash('error', 'This assessment is already paid.');
+            App::redirect('/student/payment/assessments');
+            return;
+        }
+
+        // Process payment through gateway
+        $paymentGateway = new PaymentGatewayService();
+        $result = $paymentGateway->processPayment($assessment['enrolment_id'], $gateway);
+
+        if ($result['success']) {
+            App::flash('success', 'Payment processed successfully! Reference: ' . $result['gateway_reference']);
+            App::redirect('/student/payment/assessments');
+        } else {
+            App::flash('error', 'Payment failed: ' . $result['error']);
+            App::redirect('/student/payment/pay?assessment_id=' . $assessmentId);
+        }
+    }
+
+    public function paymentAssessments()
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->student()) return;
+
+        $studId = $this->getStudentId();
+        $student = $this->studentModel->findById($studId);
+        $enrolmentModel = new EnrolmentModel();
+
+        $assessments = $enrolmentModel->getStudentAssessments($studId);
+
+        App::view('student/payment_assessments', [
+            'student' => $student,
+            'assessments' => $assessments,
+            'pageTitle' => 'Payment Assessments',
+            'module' => 'student',
+        ]);
+    }
+
+    public function paymentHistory($assessmentId)
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->student()) return;
+
+        $studId = $this->getStudentId();
+        $student = $this->studentModel->findById($studId);
+        $enrolmentModel = new EnrolmentModel();
+
+        $assessment = $enrolmentModel->getAssessmentById($assessmentId);
+
+        if (!$assessment || $assessment['stud_id'] != $studId) {
+            App::flash('error', 'Assessment not found.');
+            App::redirect('/student/payment/assessments');
+            return;
+        }
+
+        $payments = $this->db->fetchAll("
+            SELECT p.*, per.lname as cashier_lname, per.fname as cashier_fname
+            FROM payments p
+            LEFT JOIN personnel per ON p.cashier_id = per.p_id
+            WHERE p.enrolment_id = :enrolment_id
+            ORDER BY p.payment_date DESC", ['enrolment_id' => $assessment['enrolment_id']]);
+
+        App::view('student/payment_history', [
+            'student' => $this->studentModel->findById($studId),
+            'assessment' => $assessment,
+            'payments' => $payments,
+            'pageTitle' => 'Payment History',
+            'module' => 'student',
+        ]);
+    }
+
+    public function enrollmentHistory()
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->student()) return;
+
+        $studId = $this->getStudentId();
+        $student = $this->studentModel->findById($studId);
+        $enrolments = $this->studentModel->getEnrolments($studId);
+
+        App::view('student/enrollment_history', [
+            'student' => $student,
+            'enrolments' => $enrolments,
+            'pageTitle' => 'Enrollment History',
+            'module' => 'student',
+        ]);
     }
 }

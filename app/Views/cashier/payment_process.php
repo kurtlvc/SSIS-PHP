@@ -94,11 +94,12 @@ function cashBadge($status) {
                         <input type="text" name="or_no" id="or_no" class="form-control" placeholder="Optional">
                     </div>
                     <div class="col-md-4">
-                        <label for="payment_method" class="form-label">Payment Method</label>
-                        <select name="payment_method" id="payment_method" class="form-select">
-                            <option value="Cash">Cash</option>
-                            <option value="Bank Deposit">Bank Deposit</option>
-                            <option value="Online Transfer">Online Transfer</option>
+                        <label for="gateway" class="form-label">Payment Gateway</label>
+                        <select name="gateway" id="gateway" class="form-select">
+                            <option value="simulated">Simulated Gateway</option>
+                            <option value="gcash">GCash</option>
+                            <option value="paymaya">PayMaya</option>
+                            <option value="bank">Bank Transfer</option>
                         </select>
                     </div>
                 </div>

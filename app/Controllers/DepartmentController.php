@@ -4,12 +4,16 @@ class DepartmentController extends BaseController
 {
     private $clearanceModel;
     private $enrolmentModel;
+    private $emailService;
+    private $notificationService;
 
     public function __construct()
     {
         parent::__construct();
         $this->clearanceModel = new ClearanceModel();
         $this->enrolmentModel = new EnrolmentModel();
+        $this->emailService = new EmailService();
+        $this->notificationService = new NotificationService();
     }
 
     public function clearanceList()
@@ -18,14 +22,19 @@ class DepartmentController extends BaseController
         if (!$this->middleware->department()) return;
 
         $semId = $_GET['sem_id'] ?? null;
+        $deptId = $_GET['dept_id'] ?? null;
         $departments = $this->clearanceModel->getAllDepartments();
-        $records = $this->clearanceModel->getClearanceQueue($semId);
+        $records = $this->clearanceModel->getClearanceQueue($semId, $deptId);
         $semesters = $this->enrolmentModel->getAllSemesters();
+
+        // Get department statistics
+        $deptStats = $this->clearanceModel->getDepartmentStats($semId);
 
         App::view('department/clearance_list', [
             'records' => $records,
             'departments' => $departments,
             'semesters' => $semesters,
+            'deptStats' => $deptStats,
             'pageTitle' => 'Clearance Queue',
             'module' => 'department',
         ]);
@@ -101,12 +110,99 @@ class DepartmentController extends BaseController
         $validStatuses = ['Pending', 'Cleared', 'On-Hold'];
 
         if ($recordId && in_array($status, $validStatuses)) {
+            // Get record details before update
+            $record = $this->db->fetchOne("SELECT cr.*, cd.dept_name, s.emailaddress, s.fname, s.lname, s.stud_id
+                FROM clearance_records cr
+                JOIN clearance_departments cd ON cr.dept_id = cd.dept_id
+                JOIN students s ON cr.stud_id = s.stud_id
+                WHERE cr.record_id = :id", ['id' => $recordId]);
+
             $this->clearanceModel->updateStatus($recordId, $status, $_SESSION['owner_id'] ?? 0);
             App::flash('success', 'Clearance status updated.');
+
+            // Send clearance notification (simulated email + in-app notification)
+            if ($record) {
+                $this->emailService->sendClearanceNotification([
+                    'to_email' => $record['emailaddress'],
+                    'to_name' => $record['fname'] . ' ' . $record['lname'],
+                    'student_id' => $record['stud_id'],
+                    'department' => $record['dept_name'],
+                    'status' => $status,
+                    'clearance_id' => $recordId,
+                ]);
+                $this->notificationService->clearanceNotification($record['stud_id'], [
+                    'department' => $record['dept_name'],
+                    'status' => $status,
+                    'clearance_id' => $recordId,
+                ]);
+            }
         } else {
             App::flash('error', 'Invalid clearance data.');
         }
 
         App::redirect('/department/clearance/' . $studId);
+    }
+
+    public function studentClearanceView()
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->department()) return;
+
+        $semId = $_GET['sem_id'] ?? null;
+        $search = $_GET['search'] ?? '';
+        $departments = $this->clearanceModel->getAllDepartments();
+        $semesters = $this->enrolmentModel->getAllSemesters();
+
+        // Get students with their clearance status per department
+        $where = "";
+        $params = [];
+        if ($semId) {
+            $where = "WHERE e.sem_id = :sem_id";
+            $params['sem_id'] = $semId;
+        }
+        if ($search) {
+            $where .= ($where ? " AND " : "WHERE ") . "(s.lname LIKE :search OR s.fname LIKE :search OR s.ref_no LIKE :search)";
+            $params['search'] = "%$search%";
+        }
+
+        $sql = "SELECT s.stud_id, s.ref_no, s.fname, s.lname, s.mname, p.program_code,
+                       GROUP_CONCAT(CONCAT(cr.dept_id, ':', cr.status) SEPARATOR '|') as clearance_data,
+                       CASE 
+                           WHEN COUNT(cr.record_id) = 0 THEN 'Pending'
+                           WHEN SUM(cr.status = 'Cleared') = COUNT(cr.record_id) THEN 'Cleared'
+                           WHEN SUM(cr.status = 'On-Hold') > 0 THEN 'On-Hold'
+                           ELSE 'Pending'
+                       END as overall_status
+                FROM students s
+                JOIN enrolments e ON s.stud_id = e.stud_id
+                LEFT JOIN clearance_records cr ON cr.stud_id = s.stud_id " . ($semId ? "AND cr.sem_id = :sem_id" : "") . "
+                JOIN programs p ON s.program_id = p.program_id
+                $where
+                GROUP BY s.stud_id
+                ORDER BY s.lname, s.fname";
+
+        $students = $this->db->fetchAll($sql, $params);
+
+        // Parse clearance data
+        foreach ($students as &$student) {
+            $clearance = [];
+            if (!empty($student['clearance_data'])) {
+                foreach (explode('|', $student['clearance_data']) as $pair) {
+                    list($deptId, $status) = explode(':', $pair);
+                    $clearance[$deptId] = $status;
+                }
+            }
+            $student['clearance'] = $clearance;
+        }
+
+        App::view('department/clearance_student_view', [
+            'students' => $students,
+            'departments' => $departments,
+            'semesters' => $semesters,
+            'activeSemester' => $semId,
+            'search' => $search,
+            'pageTitle' => 'Student Clearance Status',
+            'module' => 'department',
+        ]);
     }
 }

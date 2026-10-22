@@ -20,67 +20,46 @@ $pendingCount = count($pendingPayments);
 $avgPerTx = $totalTransactions > 0 ? $totalCollections / $totalTransactions : 0;
 ?>
 
-<div class="dashboard-grid" role="group" aria-label="Cashier metrics">
-    <article class="dash-card dash-card--users" tabindex="0">
-        <div class="dash-card__icon dash-card__icon--success" aria-hidden="true">
-            <i class="bi bi-cash-stack icon-1_5rem"></i>
-        </div>
-        <div class="dash-card__content">
-            <h2 class="dash-card__title">Today's Collections</h2>
-            <p class="dash-card__subtitle">Total revenue</p>
-            <div class="dash-card__value">₱ <?= number_format($totalCollections, 2) ?></div>
-            <div class="dash-card__meta">As of <?= date('g:i A') ?></div>
-        </div>
-        <a href="/ssis/cashier/reports/daily" class="dash-card__action" aria-label="View daily report">View Report</a>
-    </article>
-
-    <article class="dash-card dash-card--documents" tabindex="0">
-        <div class="dash-card__icon dash-card__icon--info" aria-hidden="true">
-            <i class="bi bi-receipt icon-1_5rem"></i>
-        </div>
-        <div class="dash-card__content">
-            <h2 class="dash-card__title">Total Transactions</h2>
-            <p class="dash-card__subtitle">Completed today</p>
-            <div class="dash-card__value"><?= number_format($totalTransactions) ?></div>
-            <div class="dash-card__meta">Successful payments</div>
-        </div>
-        <a href="/ssis/cashier/reports/daily" class="dash-card__action" aria-label="View transactions">Details</a>
-    </article>
-
-    <article class="dash-card dash-card--warnings" tabindex="0">
-        <div class="dash-card__icon dash-card__icon--warning" aria-hidden="true">
-            <i class="bi bi-hourglass-bottom icon-1_5rem"></i>
-        </div>
-        <div class="dash-card__content">
-            <h2 class="dash-card__title">Pending Payments</h2>
-            <p class="dash-card__subtitle">Awaiting collection</p>
-            <div class="dash-card__value"><?= number_format($pendingCount) ?></div>
-            <div class="dash-card__meta">
-                <?php if ($pendingCount > 0): ?>
-                    <span class="dash-card__badge dash-card__badge--critical"><?= $pendingCount ?> Students</span>
-                <?php else: ?>
-                    <span class="text-success-custom">Queue clear</span>
-                <?php endif; ?>
+<div class="row g-4 mb-4 text-center">
+    <div class="col-6 col-sm-12 col-lg-6 mx-auto">
+        <div class="card border-0 bg-white h-100 shadow-sm">
+            <div class="card-body py-4">
+                <i class="bi bi-receipt display-6 text-primary mb-2" aria-hidden="true"></i>
+                <h2 class="fw-bold mb-0"><?= number_format($totalTransactions) ?></h2>
+                <p class="text-muted small mb-0">Transactions</p>
             </div>
         </div>
-        <a href="/ssis/cashier/payments/process" class="dash-card__action" aria-label="Process payments">Process</a>
-    </article>
-
-    <article class="dash-card dash-card--status" tabindex="0">
-        <div class="dash-card__icon dash-card__icon--cyan" aria-hidden="true">
-            <i class="bi bi-graph-up-arrow icon-1_5rem"></i>
-        </div>
-        <div class="dash-card__content">
-            <h2 class="dash-card__title">Avg. per Transaction</h2>
-            <p class="dash-card__subtitle">Mean payment value</p>
-            <div class="dash-card__value">₱ <?= number_format($avgPerTx, 2) ?></div>
-            <div class="dash-card__meta">
-                <span class="dash-card__status-dot" aria-hidden="true"></span>
-                Based on today's data
+    </div>
+    <div class="col-6 col-sm-12 col-lg-6 mx-auto">
+        <div class="card border-0 bg-white h-100 shadow-sm">
+            <div class="card-body py-4">
+                <i class="bi bi-cash-coin display-6 text-success mb-2" aria-hidden="true"></i>
+                <h2 class="fw-bold mb-0">₱ <?= number_format($totalCollections, 2) ?></h2>
+                <p class="text-muted small mb-0">Total Amount</p>
             </div>
         </div>
-        <a href="/ssis/cashier/reports/daily" class="dash-card__action" aria-label="View analytics">Analytics</a>
-    </article>
+    </div>
+</div>
+
+<div class="row g-4 mb-4 text-center">
+    <div class="col-6 col-sm-12 col-lg-6 mx-auto">
+        <div class="card border-0 bg-white h-100 shadow-sm">
+            <div class="card-body py-4">
+                <i class="bi bi-hourglass-bottom display-6 text-warning mb-2" aria-hidden="true"></i>
+                <h2 class="fw-bold mb-0"><?= number_format($pendingCount) ?></h2>
+                <p class="text-muted small mb-0">Pending Payments</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-sm-12 col-lg-6 mx-auto">
+        <div class="card border-0 bg-white h-100 shadow-sm">
+            <div class="card-body py-4">
+                <i class="bi bi-graph-up-arrow display-6 text-info mb-2" aria-hidden="true"></i>
+                <h2 class="fw-bold mb-0">₱ <?= number_format($avgPerTx, 2) ?></h2>
+                <p class="text-muted small mb-0">Avg. per Transaction</p>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="row g-4 mt-4">

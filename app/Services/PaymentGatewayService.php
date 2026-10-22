@@ -1,14 +1,21 @@
 <?php
 
+require_once __DIR__ . '/EmailService.php';
+require_once __DIR__ . '/NotificationService.php';
+
 class PaymentGatewayService
 {
     private $db;
     private $config;
+    private $emailService;
+    private $notificationService;
 
     public function __construct()
     {
         $this->db = Database::getInstance();
         $this->config = App::getInstance()->getConfig();
+        $this->emailService = new EmailService();
+        $this->notificationService = new NotificationService();
     }
 
     /**
@@ -143,6 +150,33 @@ class PaymentGatewayService
                 'cleared_at' => date('Y-m-d H:i:s')
             ], 'enrolment_id = :id', ['id' => $payment['enrolment_id']]);
         }
+
+        // Send notification to student
+        $paymentData = $this->db->fetchOne('
+            SELECT p.*, s.ref_no, s.lname, s.fname, s.emailaddress, s.stud_id
+            FROM payments p
+            JOIN enrolments e ON p.enrolment_id = e.enrolment_id
+            JOIN students s ON e.stud_id = s.stud_id
+            WHERE p.payment_id = :id', ['id' => $paymentId]);
+        
+        if ($paymentData) {
+            $this->notificationService->paymentNotification($paymentData['stud_id'], [
+                'amount' => $paymentData['amount_paid'],
+                'receipt_no' => $paymentData['receipt_no'],
+                'payment_id' => $paymentId
+            ]);
+            
+            // Send email
+            $this->emailService->sendPaymentReceipt([
+                'to_email' => $paymentData['emailaddress'],
+                'to_name' => $paymentData['fname'] . ' ' . $paymentData['lname'],
+                'student_ref' => $paymentData['ref_no'],
+                'receipt_no' => $paymentData['receipt_no'],
+                'amount' => $paymentData['amount_paid'],
+                'payment_date' => $paymentData['payment_date'],
+                'transaction_ref' => $paymentData['auth_code'] ?? 'N/A'
+            ]);
+        }
     }
 
     /**
@@ -157,26 +191,6 @@ class PaymentGatewayService
             default => 'SIM'
         };
         return $prefix . '-' . date('YmdHis') . '-' . strtoupper(substr(md5(uniqid()), 0, 6));
-    }
-
-    /**
-     * Simulate sending payment receipt via email
-     */
-    private function sendPaymentReceipt(array $payment): void
-    {
-        $emailService = new EmailService();
-        $emailService->sendPaymentReceipt([
-            'to_email' => $payment['emailaddress'],
-            'to_name' => $payment['fname'] . ' ' . $payment['lname'],
-            'student_ref' => $payment['ref_no'],
-            'receipt_no' => $payment['receipt_no'],
-            'amount' => $payment['amount_paid'],
-            'program' => $payment['program_desc'],
-            'ay' => $payment['ay_name'],
-            'semester' => $payment['semester_name'],
-            'payment_date' => $payment['payment_date'],
-            'transaction_ref' => $payment['auth_code'] ?? 'N/A'
-        ]);
     }
 
     /**

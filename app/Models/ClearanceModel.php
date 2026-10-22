@@ -89,4 +89,31 @@ class ClearanceModel
                 ORDER BY d.dept_name";
         return $this->db->fetchAll($sql, ['stud_id' => $studId, 'sem_id' => $semId]);
     }
+
+    /**
+     * Get department statistics for a semester
+     */
+    public function getDepartmentStats($semId = null)
+    {
+        $params = [];
+
+        $sql = "SELECT d.dept_id, d.dept_name, d.dept_code,
+                       COUNT(cr.clearance_id) as total,
+                       SUM(CASE WHEN cr.status = 'Cleared' THEN 1 ELSE 0 END) as cleared,
+                       SUM(CASE WHEN cr.status = 'Pending' THEN 1 ELSE 0 END) as pending,
+                       SUM(CASE WHEN cr.status = 'On-Hold' THEN 1 ELSE 0 END) as on_hold
+                FROM clearance_departments d
+                LEFT JOIN clearance_records cr ON cr.department_id = d.dept_id";
+
+        if ($semId) {
+            $sql .= " AND cr.sem_id = :sem_id";
+            $params['sem_id'] = $semId;
+        }
+
+        $sql .= " WHERE d.is_active = 1
+                GROUP BY d.dept_id, d.dept_name, d.dept_code
+                ORDER BY d.dept_name";
+
+        return $this->db->fetchAll($sql, $params);
+    }
 }

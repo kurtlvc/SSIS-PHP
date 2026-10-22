@@ -51,6 +51,7 @@ class App
     public static function redirect($path)
     {
         $config = self::getInstance()->getConfig();
+        session_write_close();
         header("Location: {$config['site_url']}{$path}");
         exit;
     }

@@ -1,16 +1,5 @@
 <?php
 $studentName = ($student['fname'] ?? '') . ' ' . ($student['lname'] ?? '');
-$passedCount = 0;
-$failedCount = 0;
-if (!empty($grades)) {
-    foreach ($grades as $g) {
-        if ($g['final_grade'] !== null && $g['final_grade'] >= 3.0) {
-            $passedCount++;
-        } else {
-            $failedCount++;
-        }
-    }
-}
 ?>
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0">Grades & Academic History</h1>

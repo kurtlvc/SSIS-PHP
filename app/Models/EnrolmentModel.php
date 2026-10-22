@@ -109,15 +109,69 @@ class EnrolmentModel
         return $this->db->fetchOne($sql);
     }
 
+    public function getStudentAssessments($studId)
+    {
+        $sql = "SELECT ea.*, e.enrolment_id, ay.ay_name, sem.semester_name, p.program_code
+                FROM enrolment_assessments ea
+                JOIN enrolments e ON ea.enrolment_id = e.enrolment_id
+                JOIN academic_years ay ON e.ay_id = ay.ay_id
+                JOIN semesters sem ON e.sem_id = sem.sem_id
+                JOIN programs p ON e.program_id = p.program_id
+                WHERE e.stud_id = :stud_id
+                ORDER BY ea.assessed_at DESC";
+        return $this->db->fetchAll($sql, ['stud_id' => $studId]);
+    }
+
+    public function getAssessmentById($assessmentId)
+    {
+        $sql = "SELECT ea.*, e.enrolment_id, e.stud_id, ay.ay_name, sem.semester_name, p.program_code,
+                       s.ref_no, s.lname, s.fname, s.emailaddress
+                FROM enrolment_assessments ea
+                JOIN enrolments e ON ea.enrolment_id = e.enrolment_id
+                JOIN students s ON e.stud_id = s.stud_id
+                JOIN academic_years ay ON e.ay_id = ay.ay_id
+                JOIN semesters sem ON e.sem_id = sem.sem_id
+                JOIN programs p ON e.program_id = p.program_id
+                WHERE ea.assessment_id = :id";
+        return $this->db->fetchOne($sql, ['id' => $assessmentId]);
+    }
+
     public function getAllAcademicYears()
     {
         $sql = "SELECT * FROM academic_years ORDER BY ay_name DESC";
         return $this->db->fetchAll($sql);
     }
 
-    public function getAllSemesters()
+public function getAllSemesters()
     {
         $sql = "SELECT * FROM semesters ORDER BY sem_id";
         return $this->db->fetchAll($sql);
+    }
+
+    /**
+     * Get semester name by ID
+     */
+    public function getSemesterName(int $semId): ?string
+    {
+        $row = $this->db->fetchOne('SELECT semester_name FROM semesters WHERE sem_id = :id', ['id' => $semId]);
+        return $row ? $row['semester_name'] : null;
+    }
+
+    /**
+     * Get assessment by enrolment cart ID
+     */
+    public function getAssessmentByEnrolmentCart(int $cartId): ?array
+    {
+        $sql = "SELECT ea.*, e.enrolment_id, e.stud_id, ay.ay_name, sem.semester_name, p.program_code
+                FROM enrolment_assessments ea
+                JOIN enrolments e ON ea.enrolment_id = e.enrolment_id
+                JOIN academic_years ay ON e.ay_id = ay.ay_id
+                JOIN semesters sem ON e.sem_id = sem.sem_id
+                JOIN programs p ON e.program_id = p.program_id
+                JOIN enrolment_carts ec ON e.enrolment_id = ec.enrolment_id
+                WHERE ec.cart_id = :cart_id
+                ORDER BY ea.assessed_at DESC
+                LIMIT 1";
+        return $this->db->fetchOne($sql, ['cart_id' => $cartId]);
     }
 }

@@ -25,7 +25,7 @@
     <div class="card-header fw-semibold">All Accounts</div>
     <div class="card-body p-0">
         <?php if (!empty($accounts)): ?>
-            <div class="table-responsive">
+            <div class="table-responsive table-user-management">
                 <table class="table table-hover mb-0" aria-label="All accounts">
                     <thead>
                         <tr>

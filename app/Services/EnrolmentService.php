@@ -40,7 +40,6 @@ class EnrolmentService
      */
     public function addToCart(int $cartId, int $schedId): array
     {
-        // Check if already in cart
         $existing = $this->db->fetchOne(
             "SELECT * FROM enrolment_cart_items WHERE cart_id = :cart_id AND sched_id = :sched_id",
             ['cart_id' => $cartId, 'sched_id' => $schedId]
@@ -50,7 +49,6 @@ class EnrolmentService
             return ['success' => false, 'error' => 'Schedule already in cart'];
         }
 
-        // Check schedule availability
         $schedule = $this->db->fetchOne(
             "SELECT s.*, c.code, c.description, c.units 
              FROM schedules s 
@@ -67,13 +65,11 @@ class EnrolmentService
             return ['success' => false, 'error' => 'Class is full'];
         }
 
-        // Add to cart
         $this->db->insert('enrolment_cart_items', [
             'cart_id' => $cartId,
             'sched_id' => $schedId
         ]);
 
-        // Update cart total units
         $this->updateCartTotals($cartId);
 
         return [
@@ -153,7 +149,6 @@ class EnrolmentService
             return ['success' => false, 'error' => 'Cart is empty'];
         }
 
-        // Create enrolment record
         $enrolmentId = $this->db->insert('enrolments', [
             'stud_id' => $cart['stud_id'],
             'sem_id' => $cart['sem_id'],
@@ -167,7 +162,6 @@ class EnrolmentService
             'registration_date' => date('Y-m-d')
         ]);
 
-        // Link schedules to enrolment
         foreach ($items as $item) {
             $this->db->insert('enrolment_courses', [
                 'enrolment_id' => $enrolmentId,
@@ -175,10 +169,8 @@ class EnrolmentService
             ]);
         }
 
-        // Update cart status
         $this->db->update('enrolment_carts', ['status' => 'assessed'], 'cart_id = :id', ['id' => $cartId]);
 
-        // Create assessment
         $this->createAssessment($enrolmentId, $items);
 
         return [
@@ -193,13 +185,11 @@ class EnrolmentService
      */
     private function createAssessment(int $enrolmentId, array $items): int
     {
-        // Calculate fees (simplified)
         $totalUnits = 0;
         foreach ($items as $item) {
             $totalUnits += $item['units'];
         }
 
-        // Base fees (configurable)
         $tuitionPerUnit = $this->config['fees']['tuition_per_unit'] ?? 1500;
         $miscFee = $this->config['fees']['misc_fee'] ?? 2000;
         $labFeePerUnit = $this->config['fees']['lab_fee_per_unit'] ?? 500;
@@ -235,7 +225,6 @@ class EnrolmentService
 
         $currId = $student['curr_id'];
 
-        // Get courses in curriculum for this semester
         $sql = "SELECT s.sched_id, s.class_no, c.code, c.description, c.units, c.lec_units, c.lab_units,
                        p.lname as prof_lname, p.fname as prof_fname, p.p_id as prof_id,
                        s.class_size, s.remarks,
@@ -299,5 +288,14 @@ class EnrolmentService
                 LEFT JOIN personnel p ON s.p_id = p.p_id
                 WHERE ec.enrolment_id = :enrolment_id";
         return $this->db->fetchAll($sql, ['enrolment_id' => $enrolmentId]);
+    }
+
+    /**
+     * Get semester name by ID
+     */
+    public function getSemesterName(int $semId): ?string
+    {
+        $row = $this->db->fetchOne('SELECT semester_name FROM semesters WHERE sem_id = :id', ['id' => $semId]);
+        return $row ? $row['semester_name'] : null;
     }
 }
