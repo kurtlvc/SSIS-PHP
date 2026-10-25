@@ -149,6 +149,11 @@
         html, body { height: 100%; }
         .app-shell { min-height: 100vh; display: flex; }
         
+        /* Utility classes for flexbox */
+        .min-w-0 { min-width: 0 !important; }
+        .flex-grow-1 { flex-grow: 1 !important; }
+        .flex-shrink-0 { flex-shrink: 0 !important; }
+        
         /* Prevent flash of wrong theme */
         .theme-loading { visibility: hidden; }
         .theme-loaded .theme-loading { visibility: visible; }
@@ -169,14 +174,40 @@
         .sidebar .brand-link {
             display: flex;
             align-items: center;
-            gap: .6rem;
-            color: var(--cuyo-teal);
+            gap: 0.75rem;
             font-weight: 700;
-            font-size: 1.15rem;
             text-decoration: none;
-            padding: 1rem;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            transition: background-color 0.15s ease, color 0.15s ease;
+            color: var(--text-primary);
         }
-        .sidebar .brand-link img { width: 32px; height: 32px; }
+        .sidebar .brand-link:hover {
+            background: var(--card-hover-bg);
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+        .sidebar .brand-link:focus-visible {
+            outline: 2px solid var(--accent-blue);
+            outline-offset: 2px;
+        }
+        .sidebar .brand-logo {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .sidebar .brand-logo img {
+            width: 180px;
+            height: auto;
+            max-width: 100%;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+        .sidebar .sidebar-subheader {
+            padding-top: 0.5rem;
+            border-top: 1px solid var(--card-border);
+            margin-top: -0.5rem;
+        }
         .sidebar-nav { flex: 1; overflow-y: auto; padding: 0.5rem; }
         .sidebar .nav-link {
             color: var(--text-tertiary);
@@ -438,15 +469,20 @@
 
     <!-- Sidebar -->
     <aside class="sidebar d-flex flex-column" role="navigation" aria-label="Sidebar navigation" id="sidebar">
-        <div class="sidebar-header p-3 border-bottom-var">
+        <div class="sidebar-header p-3">
             <?php
             $role = $_SESSION['account_role'] ?? 'student';
             $home = '/ssis/' . ($role === 'student' ? 'student/dashboard' : ($role === 'admin' ? 'admin/dashboard' : ($role === 'cashier' ? 'cashier/dashboard' : ($role === 'dean' || $role === 'chair' ? 'registrar/dashboard' : 'department/dashboard'))));
             ?>
-            <a class="brand-link" href="<?= $home ?>">
-                <img src="/ssis/assets/cuyotech-logo-900x900.webp" alt="CuyoSSIS">
-                <span>CuyoSSIS</span>
+            <a class="brand-link d-flex align-items-center justify-content-center gap-3 px-2 py-3" href="<?= $home ?>" aria-label="CuyoSSIS - Go to Dashboard">
+                <span class="brand-logo" aria-hidden="true">
+                    <img src="/ssis/assets/cuyossis-3204x981.webp" alt="CuyoSSIS" width="180" height="55" loading="lazy" style="max-width: 100%; height: auto;">
+                </span>
             </a>
+        </div>
+
+        <div class="sidebar-subheader px-3 pb-2">
+            <p class="text-center text-uppercase small fw-semibold text-muted" style="font-size: 0.625rem; letter-spacing: 0.1em;">CuyoTech University Student Services Information System</p>
         </div>
 
         <nav class="sidebar-nav nav nav-pills flex-column mx-2 my-4 gap-1" role="navigation" aria-label="Sidebar navigation">

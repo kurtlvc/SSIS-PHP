@@ -236,7 +236,7 @@
         .field-success{ color: var(--brand); }
 
         .password-toggle {
-            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            position: absolute; right: 12px; top: 22%; transform: translateY(-50%);
             border: none; background: transparent; color: var(--text-tertiary);
             padding: .25rem; font-size: 1.1rem; cursor: pointer;
             transition: color .2s cubic-bezier(.4,0,.2,1);
@@ -319,11 +319,8 @@
             <div class="float-shape s4"></div>
             <div class="content-wrapper">
                 <div class="info-card card border-0">
-                    <div class="logo-badge logo-badge-custom">
-                        <img src="/ssis/assets/cuyossis-3204x981.webp" alt="CuyoSSIS" class="logo-img-custom">
-                    </div>
                     <div class="brand">CuyoTech University</div>
-                    <h1 class="title">CuyoSSIS</h1>
+                    <img src="/ssis/assets/cuyossis-3204x981.webp" alt="CuyoSSIS" class="logo-img-custom">
                     <p class="subtitle">Student Services Information System</p>
                     <p class="desc">Access your academic records, enrollment, grades, schedules, and document services — all in one secure portal.</p>
                     <div class="features">

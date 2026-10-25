@@ -419,6 +419,76 @@ a:focus-visible,
     }
 }
 
+/* ============================================================
+   FORM CONTROLS - Theme-aware base styles
+   ============================================================ */
+
+.form-control,
+.form-select {
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--input-text);
+    transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-control::placeholder,
+.form-select::placeholder {
+    color: var(--input-placeholder);
+}
+
+/* Select dropdown options */
+.form-select option {
+    background-color: var(--dropdown-bg);
+    color: var(--dropdown-item-text);
+}
+
+.form-select option:hover,
+.form-select option:checked {
+    background-color: var(--dropdown-hover-bg);
+    color: var(--dropdown-hover-text);
+}
+
+/* Focus states */
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--input-bg);
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
+    color: var(--input-text);
+}
+
+/* Disabled state */
+.form-control:disabled,
+.form-select:disabled,
+.form-control[readonly],
+.form-select[readonly] {
+    background-color: var(--card-hover-bg);
+    color: var(--text-disabled);
+    opacity: 1;
+}
+
+/* Invalid state */
+.form-control.is-invalid,
+.form-select.is-invalid {
+    border-color: var(--accent-red);
+}
+
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus {
+    box-shadow: 0 0 0 0.25rem rgba(239, 68, 68, 0.25);
+}
+
+/* Valid state */
+.form-control.is-valid,
+.form-select.is-valid {
+    border-color: var(--accent-green);
+}
+
+.form-control.is-valid:focus,
+.form-select.is-valid:focus {
+    box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.25);
+}
+
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
     .bg-cuyo-gray {
@@ -538,8 +608,8 @@ a:focus-visible,
 .text-brand { color: var(--brand) !important; }
 
 /* Background Colors */
-.bg-primary { background: var(--card-bg) !important; }
-.bg-secondary { background: var(--card-hover-bg) !important; }
+.bg-primary { background-color: var(--accent-blue) !important; color: #ffffff !important; }
+.bg-secondary { background-color: #6c757d !important; color: #ffffff !important; }
 .bg-transparent { background: transparent !important; }
 .bg-accent-green { background: var(--accent-green) !important; }
 .bg-accent-blue { background: var(--accent-blue) !important; }
@@ -657,8 +727,9 @@ a:focus-visible,
     margin: 0 auto 1.5rem !important;
 }
 .logo-img-custom {
-    width: auto !important;
+    width: 150px !important;
     height: 48px !important;
+    filter: drop-shadow(0px 0px 3px white);
 }
 .alert-custom-radius {
     border-radius: .75rem !important;
