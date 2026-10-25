@@ -72,17 +72,20 @@ class EnrolmentModel
             $where[] = "e.sem_id = :sem_id";
             $params['sem_id'] = $semId;
         }
+        if ($courseId) {
+            $where[] = "c.course_id = :course_id";
+            $params['course_id'] = $courseId;
+        }
 
         $sql = "SELECT e.enrolment_id, e.stud_id, s.ref_no, s.lname, s.fname,
                        c.course_id, c.code, c.description, c.units,
+                       sch.sched_id, sch.class_no,
                        ay.ay_name, sem.semester_name
                 FROM enrolments e
+                JOIN enrolment_courses ec ON e.enrolment_id = ec.enrolment_id
+                JOIN schedules sch ON ec.sched_id = sch.sched_id
+                JOIN courses c ON sch.course_id = c.course_id
                 JOIN students s ON e.stud_id = s.stud_id
-                JOIN courses c ON c.course_id IN (
-                    SELECT DISTINCT c2.course_id FROM courses c2
-                    JOIN programs p ON c2.program_id = p.program_id
-                    WHERE p.program_id = e.program_id
-                )
                 JOIN academic_years ay ON e.ay_id = ay.ay_id
                 JOIN semesters sem ON e.sem_id = sem.sem_id
                 WHERE e.is_approved = 1 AND e.isassessed = 1";
@@ -124,7 +127,8 @@ class EnrolmentModel
 
     public function getAssessmentById($assessmentId)
     {
-        $sql = "SELECT ea.*, e.enrolment_id, e.stud_id, ay.ay_name, sem.semester_name, p.program_code,
+        $sql = "SELECT ea.*, e.enrolment_id, e.stud_id, e.ay_id, e.sem_id, e.is_approved,
+                       e.enrol_status, ay.ay_name, sem.semester_name, p.program_code,
                        s.ref_no, s.lname, s.fname, s.emailaddress
                 FROM enrolment_assessments ea
                 JOIN enrolments e ON ea.enrolment_id = e.enrolment_id

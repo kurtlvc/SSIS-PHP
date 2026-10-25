@@ -88,7 +88,7 @@ class UserModel
 
     public function getStudentsList()
     {
-        $sql = "SELECT s.stud_id, s.ref_no, s.lname, s.fname, s.emailaddress, p.program_code, c.year
+        $sql = "SELECT s.stud_id, s.ref_no, s.lname, s.fname, s.mname, s.emailaddress, p.program_code, p.description, c.year
                 FROM students s
                 LEFT JOIN curriculums c ON s.curr_id = c.curr_id
                 LEFT JOIN programs p ON c.program_id = p.program_id
