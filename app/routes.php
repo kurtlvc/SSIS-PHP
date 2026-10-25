@@ -50,6 +50,7 @@ $router->get('/student/payment/assessments', 'StudentController@paymentAssessmen
 $router->get('/student/payment/pay', 'StudentController@paymentPay');
 $router->post('/student/payment/pay', 'StudentController@paymentProcess');
 $router->get('/student/payment/history/{id}', 'StudentController@paymentHistory');
+$router->get('/student/payment/receipt/{receipt_no}', 'StudentController@paymentReceipt');
 
 // ============================================================
 // Student Portal (API v1)
@@ -135,7 +136,11 @@ $router->get('/cashier/dashboard', 'CashierController@dashboard');
 $router->get('/cashier/payments/process', 'CashierController@paymentProcess');
 $router->post('/cashier/payments/process', 'CashierController@storePayment');
 $router->get('/cashier/receipts/{receipt_no}', 'CashierController@receipt');
+$router->get('/cashier/receipts/{receipt_no}/pdf', 'CashierController@receiptPdf');
 $router->get('/cashier/reports/daily', 'CashierController@dailyReport');
+
+// Receipt Verification (Public)
+$router->get('/verify/receipt/{receipt_no}', 'CashierController@verifyReceipt');
 
 // ============================================================
 // Cashier Module (API v1)
@@ -177,7 +182,7 @@ $router->post('/admin/users/create', 'AdminController@createUser');
 $router->get('/admin/users/{id}', 'AdminController@viewUser');
 $router->get('/admin/users/{id}/edit', 'AdminController@editUserForm');
 $router->post('/admin/users/{id}/edit', 'AdminController@updateUser');
-$router->patch('/admin/users/{id}/toggle-status', 'AdminController@toggleUserStatus');
+$router->post('/admin/users/{id}/toggle-status', 'AdminController@toggleUserStatus');
 $router->delete('/admin/users/{id}/delete', 'AdminController@deleteUser');
 $router->get('/admin/system-settings', 'AdminController@settings');
 $router->post('/admin/settings/update', 'AdminController@updateSettings');
