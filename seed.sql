@@ -11,11 +11,20 @@ DELETE FROM api_tokens;
 DELETE FROM password_resets;
 DELETE FROM rate_limits;
 DELETE FROM notifications;
+DELETE FROM communication_log;
 DELETE FROM accounts;
 DELETE FROM document_requests;
 DELETE FROM clearance_records;
 DELETE FROM clearance_departments;
+DELETE FROM payment_transactions;
 DELETE FROM payments;
+DELETE FROM grade_reviews;
+DELETE FROM grade_submission_items;
+DELETE FROM grade_submissions;
+DELETE FROM enrolment_assessments;
+DELETE FROM enrolment_courses;
+DELETE FROM enrolment_cart_items;
+DELETE FROM enrolment_carts;
 DELETE FROM student_grades;
 DELETE FROM submissions;
 DELETE FROM post_options;
@@ -199,12 +208,30 @@ INSERT INTO student_grades (grade_id, enrolment_id, course_id, p_id, final_grade
 
 -- 10. PAYMENTS
 -- ---------------------------------------------------------
-INSERT INTO payments (payment_id, enrolment_id, receipt_no, amount_paid, payment_date, cashier_id) VALUES
-(1, 1, 'RCPT-2026-AY1-00001', 25000.00, '2026-10-06 09:00:00', 8),
-(2, 2, 'RCPT-2026-AY1-00002', 25000.00, '2026-10-06 09:30:00', 8),
-(3, 3, 'RCPT-2026-AY1-00003', 15000.00, '2026-10-06 10:00:00', 10),
-(4, 5, 'RCPT-2026-AY1-00004', 30000.00, '2026-10-06 11:00:00', 8),
-(5, 6, 'RCPT-2026-AY1-00005', 25000.00, '2026-10-06 11:30:00', 10);
+INSERT INTO payments (payment_id, enrolment_id, receipt_no, amount_paid, payment_date, cashier_id, status, auth_code, completed_at) VALUES
+(1, 1, 'RCPT-2026-AY1-00001', 25000.00, '2026-10-06 09:00:00', 8, 'completed', 'AUTH123456', '2026-10-06 09:00:00'),
+(2, 2, 'RCPT-2026-AY1-00002', 25000.00, '2026-10-06 09:30:00', 8, 'completed', 'AUTH234567', '2026-10-06 09:30:00'),
+(3, 3, 'RCPT-2026-AY1-00003', 15000.00, '2026-10-06 10:00:00', 10, 'completed', 'AUTH345678', '2026-10-06 10:00:00'),
+(4, 5, 'RCPT-2026-AY1-00004', 30000.00, '2026-10-06 11:00:00', 8, 'completed', 'AUTH456789', '2026-10-06 11:00:00'),
+(5, 6, 'RCPT-2026-AY1-00005', 25000.00, '2026-10-06 11:30:00', 10, 'completed', 'AUTH567890', '2026-10-06 11:30:00');
+
+-- 10b. ENROLMENT ASSESSMENTS
+-- ---------------------------------------------------------
+-- Based on tuition_per_unit=1500, misc_fee=2000, lab_fee_per_unit=500
+-- BSCS/BSIT (15 units): tuition=22500, misc=2000, lab=0 (no lab units) = 24500 net
+-- BSBA (15 units): tuition=22500, misc=2000, lab=0 = 24500 net
+-- ABPsyc (12 units): tuition=18000, misc=2000, lab=0 = 20000 net
+INSERT INTO enrolment_assessments (assessment_id, enrolment_id, tuition_fee, misc_fee, lab_fee, other_fees, discount_amount, status, assessed_by, assessed_at, paid_at) VALUES
+(1, 1, 22500.00, 2000.00, 0.00, 0.00, 0.00, 'paid', 1, '2026-10-05 09:05:00', '2026-10-06 09:00:00'),
+(2, 2, 22500.00, 2000.00, 0.00, 0.00, 0.00, 'paid', 1, '2026-10-05 09:35:00', '2026-10-06 09:30:00'),
+(3, 3, 22500.00, 2000.00, 0.00, 0.00, 0.00, 'paid', 1, '2026-10-05 10:05:00', '2026-10-06 10:00:00'),
+(4, 4, 22500.00, 2000.00, 0.00, 0.00, 0.00, 'pending', 1, '2026-10-05 10:35:00', NULL),
+(5, 5, 22500.00, 2000.00, 0.00, 0.00, 0.00, 'paid', 1, '2026-10-05 11:05:00', '2026-10-06 11:00:00'),
+(6, 6, 22500.00, 2000.00, 0.00, 0.00, 0.00, 'paid', 1, '2026-10-05 11:35:00', '2026-10-06 11:30:00'),
+(7, 7, 22500.00, 2000.00, 0.00, 0.00, 0.00, 'paid', 1, '2026-10-05 12:05:00', NULL),
+(8, 8, 22500.00, 2000.00, 0.00, 0.00, 0.00, 'pending', 1, '2026-10-05 12:35:00', NULL),
+(9, 9, 18000.00, 2000.00, 0.00, 0.00, 0.00, 'paid', 1, '2026-10-05 13:05:00', NULL),
+(10, 10, 22500.00, 2000.00, 0.00, 0.00, 0.00, 'paid', 1, '2026-10-05 13:35:00', NULL);
 
 -- 11. CLEARANCE DEPARTMENTS
 -- ---------------------------------------------------------
@@ -214,7 +241,9 @@ INSERT INTO clearance_departments (dept_id, dept_name, dept_code, is_active) VAL
 (3, 'Finance/Cashier', 'FIN', 1),
 (4, 'Academic Affairs', 'AAF', 1),
 (5, 'Student Affairs', 'STD', 1),
-(6, 'Information Technology', 'ITD', 1);
+(6, 'Information Technology', 'ITD', 1),
+(7, 'Registrar', 'REG', 1),
+(8, 'Guidance Office', 'GO', 1);
 
 -- 12. CLEARANCE RECORDS
 -- ---------------------------------------------------------

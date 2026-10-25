@@ -232,12 +232,75 @@ CREATE TABLE enrolments (
     has_regform TINYINT(1) DEFAULT 0,
     is_cleared TINYINT(1) DEFAULT 0,
     college_cleared TINYINT(1) DEFAULT 0,
+    cleared_at DATETIME NULL,
     registration_date DATETIME,
     FOREIGN KEY (stud_id) REFERENCES students(stud_id),
     FOREIGN KEY (program_id) REFERENCES programs(program_id),
     FOREIGN KEY (sem_id) REFERENCES semesters(sem_id),
     FOREIGN KEY (ay_id) REFERENCES academic_years(ay_id),
     FOREIGN KEY (curr_id) REFERENCES curriculums(curr_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE enrolment_carts (
+    cart_id INT AUTO_INCREMENT PRIMARY KEY,
+    stud_id INT NOT NULL,
+    sem_id INT NOT NULL,
+    ay_id INT NOT NULL,
+    enrolment_id INT NULL,
+    status ENUM('draft','submitted','assessed','paid','cancelled') DEFAULT 'draft',
+    total_units INT DEFAULT 0,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_student_sem_ay (stud_id, sem_id, ay_id),
+    KEY idx_enrolment_carts_enrolment (enrolment_id),
+    KEY idx_enrolment_carts_status (status),
+    FOREIGN KEY (stud_id) REFERENCES students(stud_id) ON DELETE CASCADE,
+    FOREIGN KEY (sem_id) REFERENCES semesters(sem_id),
+    FOREIGN KEY (ay_id) REFERENCES academic_years(ay_id),
+    FOREIGN KEY (enrolment_id) REFERENCES enrolments(enrolment_id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE enrolment_cart_items (
+    item_id INT AUTO_INCREMENT PRIMARY KEY,
+    cart_id INT NOT NULL,
+    sched_id INT NOT NULL,
+    added_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_cart_sched (cart_id, sched_id),
+    KEY idx_enrolment_cart_items_sched (sched_id),
+    FOREIGN KEY (cart_id) REFERENCES enrolment_carts(cart_id) ON DELETE CASCADE,
+    FOREIGN KEY (sched_id) REFERENCES schedules(sched_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE enrolment_courses (
+    enrolment_course_id INT AUTO_INCREMENT PRIMARY KEY,
+    enrolment_id INT NOT NULL,
+    sched_id INT NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_enrolment_sched (enrolment_id, sched_id),
+    KEY idx_enrolment_courses_sched (sched_id),
+    FOREIGN KEY (enrolment_id) REFERENCES enrolments(enrolment_id) ON DELETE CASCADE,
+    FOREIGN KEY (sched_id) REFERENCES schedules(sched_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE enrolment_assessments (
+    assessment_id INT AUTO_INCREMENT PRIMARY KEY,
+    enrolment_id INT NOT NULL,
+    tuition_fee DECIMAL(10,2) DEFAULT 0.00,
+    misc_fee DECIMAL(10,2) DEFAULT 0.00,
+    lab_fee DECIMAL(10,2) DEFAULT 0.00,
+    other_fees DECIMAL(10,2) DEFAULT 0.00,
+    total_amount DECIMAL(12,2) GENERATED ALWAYS AS (tuition_fee + misc_fee + lab_fee + other_fees) STORED,
+    discount_amount DECIMAL(10,2) DEFAULT 0.00,
+    net_amount DECIMAL(12,2) GENERATED ALWAYS AS (tuition_fee + misc_fee + lab_fee + other_fees - discount_amount) STORED,
+    status ENUM('pending','paid','partial','cancelled','refunded') DEFAULT 'pending',
+    assessed_by INT NULL,
+    assessed_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    paid_at DATETIME NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    KEY idx_enrolment_assessments_enrolment (enrolment_id),
+    KEY idx_enrolment_assessments_status (status),
+    FOREIGN KEY (enrolment_id) REFERENCES enrolments(enrolment_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 4. CLASSROOM (POSTS, FILES, SUBMISSIONS)
@@ -410,6 +473,28 @@ ALTER TABLE notifications
   ADD CONSTRAINT fk_notifications_account
     FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE;
 
+CREATE TABLE communication_log (
+    log_id INT AUTO_INCREMENT PRIMARY KEY,
+    recipient_type ENUM('student','personnel','admin') NOT NULL,
+    recipient_id INT NOT NULL,
+    recipient_email VARCHAR(255) NULL,
+    recipient_phone VARCHAR(20) NULL,
+    channel ENUM('email','sms','push') NOT NULL,
+    template_key VARCHAR(100) NOT NULL,
+    subject VARCHAR(255) NULL,
+    message TEXT NOT NULL,
+    status ENUM('queued','sent','failed','simulated') DEFAULT 'queued',
+    reference_type VARCHAR(50) NULL,
+    reference_id INT NULL,
+    sent_at DATETIME NULL,
+    error_message TEXT NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_communication_recipient (recipient_type, recipient_id),
+    KEY idx_communication_status (status),
+    KEY idx_communication_template (template_key),
+    KEY idx_communication_created (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE api_tokens (
     id         BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     account_id BIGINT UNSIGNED NOT NULL,
@@ -433,13 +518,14 @@ CREATE TABLE audit_log (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE rate_limits (
-    id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    `key`         VARCHAR(191) NOT NULL,
-    route         VARCHAR(128) NOT NULL,
-    attempts      SMALLINT UNSIGNED NOT NULL DEFAULT 1,
-    window_start  INT UNSIGNED NOT NULL,
-    UNIQUE KEY uq_rl_window (`key`, route, window_start),
-    INDEX idx_rl_window (window_start)
+    rate_limit_id INT AUTO_INCREMENT PRIMARY KEY,
+    identifier VARCHAR(255) NOT NULL,
+    action VARCHAR(100) NOT NULL,
+    count INT DEFAULT 1,
+    window_start TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    expires_at DATETIME NOT NULL,
+    INDEX idx_rate_limits_identifier (identifier),
+    INDEX idx_rate_limits_expires (expires_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE password_resets (
@@ -468,6 +554,58 @@ CREATE TABLE student_grades (
     FOREIGN KEY (p_id) REFERENCES personnel(p_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE grade_submissions (
+    submission_id INT AUTO_INCREMENT PRIMARY KEY,
+    sched_id INT NOT NULL,
+    faculty_id INT NOT NULL,
+    status ENUM('draft','submitted','reviewed','approved','rejected','posted') DEFAULT 'draft',
+    submitted_at DATETIME NULL,
+    reviewed_by INT NULL,
+    reviewed_at DATETIME NULL,
+    review_notes TEXT NULL,
+    approved_by INT NULL,
+    approved_at DATETIME NULL,
+    posted_by INT NULL,
+    posted_at DATETIME NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    KEY idx_grade_submissions_sched (sched_id),
+    KEY idx_grade_submissions_faculty (faculty_id),
+    KEY idx_grade_submissions_status (status),
+    FOREIGN KEY (sched_id) REFERENCES schedules(sched_id),
+    FOREIGN KEY (faculty_id) REFERENCES personnel(p_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE grade_submission_items (
+    item_id INT AUTO_INCREMENT PRIMARY KEY,
+    submission_id INT NOT NULL,
+    enrolment_id INT NOT NULL,
+    course_id INT NULL,
+    grade_value DECIMAL(5,2) NULL,
+    remarks VARCHAR(50) NULL,
+    is_final TINYINT(1) DEFAULT 0,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_submission_enrolment (submission_id, enrolment_id),
+    KEY idx_grade_submission_items_enrolment (enrolment_id),
+    KEY idx_grade_submission_items_course (course_id),
+    FOREIGN KEY (submission_id) REFERENCES grade_submissions(submission_id) ON DELETE CASCADE,
+    FOREIGN KEY (enrolment_id) REFERENCES enrolments(enrolment_id) ON DELETE CASCADE,
+    FOREIGN KEY (course_id) REFERENCES courses(course_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE grade_reviews (
+    review_id INT AUTO_INCREMENT PRIMARY KEY,
+    submission_id INT NOT NULL,
+    reviewer_id INT NOT NULL,
+    action VARCHAR(50) NOT NULL,
+    notes TEXT NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_grade_reviews_submission (submission_id),
+    KEY idx_grade_reviews_reviewer (reviewer_id),
+    FOREIGN KEY (submission_id) REFERENCES grade_submissions(submission_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- 8. CASHIER MODULE (PAYMENTS)
 -- ---------------------------------------------------------
 CREATE TABLE payments (
@@ -476,9 +614,33 @@ CREATE TABLE payments (
     receipt_no VARCHAR(50) UNIQUE NOT NULL,
     amount_paid DECIMAL(10,2) NOT NULL,
     payment_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    cashier_id INT NOT NULL,
+    cashier_id INT NULL,
+    status ENUM('pending','completed','failed','refunded','partial_refund') DEFAULT 'completed',
+    auth_code VARCHAR(100) NULL,
+    completed_at DATETIME NULL,
+    refunded_amount DECIMAL(10,2) DEFAULT 0.00,
+    refund_reason TEXT NULL,
+    refunded_at DATETIME NULL,
     FOREIGN KEY (enrolment_id) REFERENCES enrolments(enrolment_id),
     FOREIGN KEY (cashier_id) REFERENCES personnel(p_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE payment_transactions (
+    transaction_id INT AUTO_INCREMENT PRIMARY KEY,
+    payment_id INT NOT NULL,
+    gateway_reference VARCHAR(100) NOT NULL,
+    gateway_name VARCHAR(50) DEFAULT 'simulated',
+    amount DECIMAL(10,2) NOT NULL,
+    currency VARCHAR(3) DEFAULT 'PHP',
+    status ENUM('pending','success','failed','cancelled','refunded') DEFAULT 'pending',
+    gateway_response JSON NULL,
+    processed_at DATETIME NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_gateway_ref (gateway_reference),
+    KEY idx_payment_transactions_payment (payment_id),
+    KEY idx_payment_transactions_status (status),
+    KEY idx_payment_transactions_gateway (gateway_name),
+    FOREIGN KEY (payment_id) REFERENCES payments(payment_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 9. DEPARTMENT MODULE (CLEARANCES)
