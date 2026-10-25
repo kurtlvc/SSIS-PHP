@@ -89,30 +89,22 @@ $studentName = ($student['fname'] ?? '') . ' ' . ($student['lname'] ?? '');
                 <table class="table table-bordered table-hover" aria-label="Class schedule">
                     <thead class="table-light">
                         <tr>
-                            <th>Day</th>
-                            <th>Time</th>
+                            <th>Schedule</th>
                             <th>Course</th>
                             <th>Units</th>
                             <th>Instructor</th>
-                            <th>Room</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($schedule as $sched): ?>
                             <tr>
-                                <td><?= htmlspecialchars($sched['day_name'] ?? '—') ?></td>
-                                <td>
-                                    <?php $ts = $sched['time_start'] ?? null; $te = $sched['time_end'] ?? null; ?>
-                                    <?= $ts ? htmlspecialchars(date('g:i a', strtotime($ts))) : '—' ?> -
-                                    <?= $te ? htmlspecialchars(date('g:i a', strtotime($te))) : '—' ?>
-                                </td>
+                                <td><?= htmlspecialchars($sched['schedule_info'] ?? 'TBA') ?></td>
                                 <td>
                                     <strong><?= htmlspecialchars($sched['code']) ?></strong><br>
                                     <small class="text-muted"><?= htmlspecialchars($sched['description']) ?></small>
                                 </td>
                                 <td><?= number_format($sched['units'], 2) ?></td>
                                 <td><?= htmlspecialchars(($sched['prof_lname'] ?? '') . ', ' . ($sched['prof_fname'] ?? '')) ?></td>
-                                <td><?= htmlspecialchars($sched['room_name'] ?? '—') ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>

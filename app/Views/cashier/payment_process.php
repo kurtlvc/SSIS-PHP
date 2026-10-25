@@ -78,22 +78,26 @@ function cashBadge($status) {
     <form method="POST" action="/ssis/cashier/payments/process">
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token ?? '') ?>">
         <input type="hidden" name="enrolment_id" value="<?= $enrolment['enrolment_id'] ?>">
-        <input type="hidden" name="ay_id" value="<?= $enrolment['ay_id'] ?>">
         <div class="card">
             <div class="card-header">
                 <span class="fw-bold">Payment Details</span>
             </div>
             <div class="card-body">
+                <?php if (!empty($assessment)): ?>
+                    <div class="alert alert-info">
+                        Assessment #<?= (int) $assessment['assessment_id'] ?> &mdash;
+                        Net amount: <strong>₱ <?= number_format($assessment['net_amount'], 2) ?></strong><br>
+                        Remaining balance: <strong>₱ <?= number_format($balance ?? 0, 2) ?></strong>
+                    </div>
+                <?php else: ?>
+                    <div class="alert alert-warning">No assessment exists for this enrolment. Ask the registrar to assess it first.</div>
+                <?php endif; ?>
                 <div class="row g-3">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <label for="amount_paid" class="form-label">Amount to Pay (₱)</label>
-                        <input type="number" step="0.01" name="amount_paid" id="amount_paid" class="form-control" required>
+                        <input type="number" step="0.01" min="0.01" max="<?= htmlspecialchars((string) ($balance ?? 0)) ?>" name="amount_paid" id="amount_paid" class="form-control" value="<?= htmlspecialchars((string) ($balance ?? 0)) ?>" required>
                     </div>
-                    <div class="col-md-4">
-                        <label for="or_no" class="form-label">Or Number</label>
-                        <input type="text" name="or_no" id="or_no" class="form-control" placeholder="Optional">
-                    </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <label for="gateway" class="form-label">Payment Gateway</label>
                         <select name="gateway" id="gateway" class="form-select">
                             <option value="simulated">Simulated Gateway</option>
@@ -103,11 +107,7 @@ function cashBadge($status) {
                         </select>
                     </div>
                 </div>
-                <div class="mb-3">
-                    <label for="remarks" class="form-label">Remarks</label>
-                    <input type="text" name="remarks" id="remarks" class="form-control" placeholder="Optional notes">
-                </div>
-                <button type="submit" class="btn btn-success">Process Payment</button>
+                <button type="submit" class="btn btn-success mt-3" <?= empty($assessment) ? 'disabled' : '' ?>>Process Payment</button>
             </div>
         </div>
     </form>

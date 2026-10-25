@@ -52,6 +52,7 @@
                                     'dean' => 'bg-warning',
                                     'chair' => 'bg-info',
                                     'faculty' => 'bg-primary',
+                                    'cashier' => 'bg-primary',
                                     'student' => 'bg-success',
                                     default => 'bg-secondary',
                                 };
@@ -67,7 +68,7 @@
                                 <td><?= htmlspecialchars($name) ?></td>
                                 <td><?= htmlspecialchars($acc['email'] ?? '') ?></td>
                                 <td class="text-center">
-                                    <span class="badge bg-<?= $acc['is_active'] ? 'success' : 'secondary' ?>">
+                                    <span class="badge bg-<?= $acc['is_active'] ? 'success' : 'primary' ?>">
                                         <?= $acc['is_active'] ? 'Active' : 'Inactive' ?>
                                     </span>
                                 </td>

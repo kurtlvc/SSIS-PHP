@@ -1,14 +1,14 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0">Create Grade Submission</h1>
-    <a href="/faculty/grade-submissions" class="btn btn-outline-secondary">
+    <a href="/ssis/faculty/grade-submissions" class="btn btn-outline-secondary">
         <i class="bi bi-arrow-left me-1"></i>Back to Submissions
     </a>
 </div>
 
 <nav aria-label="Breadcrumb" class="mb-4">
     <ol class="breadcrumb mb-0 breadcrumb-custom">
-        <li class="breadcrumb-item"><a href="/faculty/dashboard">Dashboard</a></li>
-        <li class="breadcrumb-item"><a href="/faculty/grade-submissions">Grade Submissions</a></li>
+        <li class="breadcrumb-item"><a href="/ssis/faculty/dashboard">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="/ssis/faculty/grade-submissions">Grade Submissions</a></li>
         <li class="breadcrumb-item active" aria-current="page">New Submission</li>
     </ol>
 </nav>
@@ -34,7 +34,7 @@
         <span class="fw-bold">Select Schedule</span>
     </div>
     <div class="card-body">
-        <form method="GET" action="/faculty/grade-submissions/create" class="row g-3 align-items-end mb-4">
+        <form method="GET" action="/ssis/faculty/grade-submissions/create" class="row g-3 align-items-end mb-4">
             <div class="col-md-4">
                 <label for="ay_id" class="form-label small">Academic Year</label>
                 <select name="ay_id" id="ay_id" class="form-select form-select-sm">
@@ -116,7 +116,7 @@
                                     <?php if ($hasSubmission): ?>
                                         <span class="badge bg-success">Submission Exists</span>
                                     <?php else: ?>
-                                        <a href="/faculty/grade-submissions/create/confirm?sched_id=<?= $sched['sched_id'] ?>" class="btn btn-sm btn-primary">
+                                        <a href="/ssis/faculty/grade-submissions/create/confirm?sched_id=<?= $sched['sched_id'] ?>" class="btn btn-sm btn-primary">
                                             <i class="bi bi-plus-circle me-1"></i>Create Draft
                                         </a>
                                     <?php endif; ?>

@@ -19,7 +19,10 @@ class PaymentGatewayService
     }
 
     /**
-     * Process a payment through simulated gateway
+     * Process an existing pending payment.
+     *
+     * The demo gateway is deterministic: a valid pending payment succeeds.
+     * Real provider integration can replace the response block below.
      */
     public function processPayment(int $paymentId, string $gateway = 'simulated'): array
     {
@@ -27,68 +30,46 @@ class PaymentGatewayService
         if (!$payment) {
             return ['success' => false, 'error' => 'Payment not found'];
         }
+        if ($payment['status'] === 'completed') {
+            return ['success' => false, 'error' => 'Payment was already completed'];
+        }
+        if ($payment['status'] === 'refunded') {
+            return ['success' => false, 'error' => 'Payment was refunded'];
+        }
 
-        // Create transaction record
-        $transactionId = $this->createTransaction($paymentId, $gateway, $payment['amount_paid']);
-
-        // Simulate gateway processing delay
-        usleep(500000); // 0.5 second
-
-        // Simulate gateway response (95% success rate)
-        $success = (mt_rand(1, 100) <= 95);
+        $reference = $this->generateGatewayReference($gateway);
+        $transactionId = $this->createTransaction($paymentId, $gateway, $reference, (float) $payment['amount_paid']);
 
         $gatewayResponse = [
             'gateway' => $gateway,
-            'reference' => $this->generateGatewayReference($gateway),
-            'amount' => $payment['amount_paid'],
+            'reference' => $reference,
+            'amount' => (float) $payment['amount_paid'],
             'currency' => 'PHP',
             'timestamp' => date('c'),
-            'simulated' => true
+            'status' => 'success',
+            'simulated' => true,
+            'auth_code' => 'AUTH' . strtoupper(substr(md5($reference), 0, 8)),
         ];
 
-        if ($success) {
-            $gatewayResponse['status'] = 'success';
-            $gatewayResponse['auth_code'] = 'AUTH' . strtoupper(substr(md5(uniqid()), 0, 8));
-            
-            // Update payment and transaction
-            $this->updateTransaction($transactionId, 'success', $gatewayResponse);
-            $this->completePayment($paymentId, $gatewayResponse['auth_code']);
-            
-            // Send receipt notification (simulated email)
-            $this->sendPaymentReceipt($payment);
-            
-            return [
-                'success' => true,
-                'transaction_id' => $transactionId,
-                'gateway_reference' => $gatewayResponse['reference'],
-                'auth_code' => $gatewayResponse['auth_code'],
-                'message' => 'Payment processed successfully'
-            ];
-        } else {
-            $gatewayResponse['status'] = 'failed';
-            $gatewayResponse['error_code'] = 'INSUFFICIENT_FUNDS';
-            $gatewayResponse['error_message'] = 'Simulated payment failure - insufficient funds';
-            
-            $this->updateTransaction($transactionId, 'failed', $gatewayResponse);
-            
-            return [
-                'success' => false,
-                'transaction_id' => $transactionId,
-                'gateway_reference' => $gatewayResponse['reference'],
-                'error' => $gatewayResponse['error_message'],
-                'error_code' => $gatewayResponse['error_code']
-            ];
-        }
+        $this->updateTransaction($transactionId, 'success', $gatewayResponse);
+        $this->completePayment($paymentId, $gatewayResponse['auth_code'], $reference);
+
+        return [
+            'success' => true,
+            'payment_id' => $paymentId,
+            'transaction_id' => $transactionId,
+            'gateway_reference' => $reference,
+            'auth_code' => $gatewayResponse['auth_code'],
+            'receipt_no' => $payment['receipt_no'],
+            'message' => 'Payment processed successfully',
+        ];
     }
 
-    /**
-     * Get payment details with student info
-     */
     private function getPaymentDetails(int $paymentId): ?array
     {
-        $sql = "SELECT p.*, s.ref_no, s.lname, s.fname, s.emailaddress,
-                       e.total_units, ay.ay_name, sem.semester_name,
-                       pgm.program_code, pgm.description as program_desc
+        $sql = "SELECT p.*, s.ref_no, s.lname, s.fname, s.emailaddress, s.stud_id,
+                       e.total_units, e.is_approved, ay.ay_name, sem.semester_name,
+                       pgm.program_code, pgm.description AS program_desc
                 FROM payments p
                 JOIN enrolments e ON p.enrolment_id = e.enrolment_id
                 JOIN students s ON e.stud_id = s.stud_id
@@ -99,13 +80,9 @@ class PaymentGatewayService
         return $this->db->fetchOne($sql, ['payment_id' => $paymentId]);
     }
 
-    /**
-     * Create transaction record
-     */
-    private function createTransaction(int $paymentId, string $gateway, float $amount): int
+    private function createTransaction(int $paymentId, string $gateway, string $reference, float $amount): int
     {
-        $reference = $this->generateGatewayReference($gateway);
-        $data = [
+        return (int) $this->db->insert('payment_transactions', [
             'payment_id' => $paymentId,
             'gateway_reference' => $reference,
             'gateway_name' => $gateway,
@@ -113,60 +90,85 @@ class PaymentGatewayService
             'currency' => 'PHP',
             'status' => 'pending',
             'gateway_response' => json_encode(['status' => 'pending', 'simulated' => true]),
-            'created_at' => date('Y-m-d H:i:s')
-        ];
-        return $this->db->insert('payment_transactions', $data);
+        ]);
     }
 
-    /**
-     * Update transaction with gateway response
-     */
     private function updateTransaction(int $transactionId, string $status, array $response): void
     {
         $this->db->update('payment_transactions', [
             'status' => $status,
             'gateway_response' => json_encode($response),
-            'processed_at' => date('Y-m-d H:i:s')
+            'processed_at' => date('Y-m-d H:i:s'),
         ], 'transaction_id = :id', ['id' => $transactionId]);
     }
 
     /**
-     * Complete payment in payments table
+     * Mark the payment complete and reconcile assessment/enrollment.
      */
-    private function completePayment(int $paymentId, string $authCode): void
+    private function completePayment(int $paymentId, string $authCode, string $gatewayReference): void
     {
+        $now = date('Y-m-d H:i:s');
+        $payment = $this->db->fetchOne('SELECT * FROM payments WHERE payment_id = :id', ['id' => $paymentId]);
+        if (!$payment) {
+            return;
+        }
+
         $this->db->update('payments', [
             'auth_code' => $authCode,
             'status' => 'completed',
-            'completed_at' => date('Y-m-d H:i:s')
+            'completed_at' => $now,
         ], 'payment_id = :id', ['id' => $paymentId]);
 
-        // Update enrolment status
-        $payment = $this->db->fetchOne('SELECT enrolment_id FROM payments WHERE payment_id = :id', ['id' => $paymentId]);
-        if ($payment) {
+        $enrolmentId = (int) $payment['enrolment_id'];
+        $assessment = $this->db->fetchOne(
+            'SELECT * FROM enrolment_assessments WHERE enrolment_id = :id ORDER BY assessment_id DESC LIMIT 1',
+            ['id' => $enrolmentId]
+        );
+        $totalPaid = $this->db->fetchOne(
+            "SELECT COALESCE(SUM(amount_paid), 0) AS total
+             FROM payments WHERE enrolment_id = :id AND status = 'completed'",
+            ['id' => $enrolmentId]
+        );
+        $paid = $totalPaid ? (float) $totalPaid['total'] : 0.0;
+        $fullyPaid = !$assessment || $paid >= (float) $assessment['net_amount'];
+
+        if ($assessment) {
+            $this->db->update('enrolment_assessments', [
+                'status' => $fullyPaid ? 'paid' : 'partial',
+                'paid_at' => $fullyPaid ? $now : null,
+            ], 'assessment_id = :id', ['id' => $assessment['assessment_id']]);
+        }
+
+        if ($fullyPaid) {
             $this->db->update('enrolments', [
                 'is_cleared' => 1,
                 'college_cleared' => 1,
-                'cleared_at' => date('Y-m-d H:i:s')
-            ], 'enrolment_id = :id', ['id' => $payment['enrolment_id']]);
+                'cleared_at' => $now,
+                'enrol_status' => 'Enrolled',
+            ], 'enrolment_id = :id', ['id' => $enrolmentId]);
+
+            $this->db->query(
+                "UPDATE enrolment_carts SET status = 'paid' WHERE enrolment_id = :id",
+                ['id' => $enrolmentId]
+            );
         }
 
-        // Send notification to student
-        $paymentData = $this->db->fetchOne('
-            SELECT p.*, s.ref_no, s.lname, s.fname, s.emailaddress, s.stud_id
-            FROM payments p
-            JOIN enrolments e ON p.enrolment_id = e.enrolment_id
-            JOIN students s ON e.stud_id = s.stud_id
-            WHERE p.payment_id = :id', ['id' => $paymentId]);
-        
+        $paymentData = $this->db->fetchOne(
+            'SELECT p.*, s.ref_no, s.lname, s.fname, s.emailaddress, s.stud_id
+             FROM payments p
+             JOIN enrolments e ON p.enrolment_id = e.enrolment_id
+             JOIN students s ON e.stud_id = s.stud_id
+             WHERE p.payment_id = :id',
+            ['id' => $paymentId]
+        );
+
         if ($paymentData) {
-            $this->notificationService->paymentNotification($paymentData['stud_id'], [
+            $this->notificationService->paymentNotification((int) $paymentData['stud_id'], [
                 'amount' => $paymentData['amount_paid'],
                 'receipt_no' => $paymentData['receipt_no'],
-                'payment_id' => $paymentId
+                'payment_id' => $paymentId,
             ]);
-            
-            // Send email
+
             $this->emailService->sendPaymentReceipt([
                 'to_email' => $paymentData['emailaddress'],
                 'to_name' => $paymentData['fname'] . ' ' . $paymentData['lname'],
@@ -174,36 +176,32 @@ class PaymentGatewayService
                 'receipt_no' => $paymentData['receipt_no'],
                 'amount' => $paymentData['amount_paid'],
                 'payment_date' => $paymentData['payment_date'],
-                'transaction_ref' => $paymentData['auth_code'] ?? 'N/A'
+                'transaction_ref' => $gatewayReference,
             ]);
         }
     }
 
-    /**
-     * Generate gateway reference number
-     */
     private function generateGatewayReference(string $gateway): string
     {
-        $prefix = match($gateway) {
+        $prefix = match ($gateway) {
             'gcash' => 'GCASH',
             'paymaya' => 'PYMYA',
             'bank' => 'BANK',
-            default => 'SIM'
+            default => 'SIM',
         };
-        return $prefix . '-' . date('YmdHis') . '-' . strtoupper(substr(md5(uniqid()), 0, 6));
+        return $prefix . '-' . date('YmdHis') . '-' . strtoupper(bin2hex(random_bytes(3)));
     }
 
-    /**
-     * Get payment transaction history
-     */
     public function getTransactionHistory(int $paymentId): array
     {
-        $sql = "SELECT * FROM payment_transactions WHERE payment_id = :payment_id ORDER BY created_at DESC";
-        return $this->db->fetchAll($sql, ['payment_id' => $paymentId]);
+        return $this->db->fetchAll(
+            'SELECT * FROM payment_transactions WHERE payment_id = :payment_id ORDER BY created_at DESC',
+            ['payment_id' => $paymentId]
+        );
     }
 
     /**
-     * Refund a payment (simulate)
+     * Refund a completed payment (demo behaviour).
      */
     public function refundPayment(int $paymentId, float $amount, string $reason): array
     {
@@ -211,45 +209,57 @@ class PaymentGatewayService
         if (!$payment) {
             return ['success' => false, 'error' => 'Payment not found'];
         }
-
         if ($payment['status'] !== 'completed') {
             return ['success' => false, 'error' => 'Payment not completed'];
         }
-
-        if ($amount > $payment['amount_paid']) {
-            return ['success' => false, 'error' => 'Refund amount exceeds payment'];
+        if ($amount <= 0 || $amount > (float) $payment['amount_paid']) {
+            return ['success' => false, 'error' => 'Invalid refund amount'];
         }
 
-        // Create refund transaction
-        $transactionId = $this->createTransaction($paymentId, 'simulated', -$amount);
-        
-        $gatewayResponse = [
-            'gateway' => 'simulated',
-            'reference' => $this->generateGatewayReference('simulated'),
+        $reference = $this->generateGatewayReference('simulated');
+        $transactionId = (int) $this->db->insert('payment_transactions', [
+            'payment_id' => $paymentId,
+            'gateway_reference' => $reference,
+            'gateway_name' => 'simulated',
             'amount' => -$amount,
             'currency' => 'PHP',
-            'timestamp' => date('c'),
             'status' => 'success',
-            'simulated' => true,
-            'type' => 'refund',
-            'reason' => $reason
-        ];
+            'gateway_response' => json_encode([
+                'status' => 'success',
+                'type' => 'refund',
+                'reason' => $reason,
+            ]),
+            'processed_at' => date('Y-m-d H:i:s'),
+        ]);
 
-        $this->updateTransaction($transactionId, 'success', $gatewayResponse);
-
-        // Update payment status
         $this->db->update('payments', [
-            'status' => $amount >= $payment['amount_paid'] ? 'refunded' : 'partial_refund',
+            'status' => $amount >= (float) $payment['amount_paid'] ? 'refunded' : 'partial_refund',
             'refunded_amount' => $amount,
             'refund_reason' => $reason,
-            'refunded_at' => date('Y-m-d H:i:s')
+            'refunded_at' => date('Y-m-d H:i:s'),
         ], 'payment_id = :id', ['id' => $paymentId]);
+
+        $assessment = $this->db->fetchOne(
+            'SELECT * FROM enrolment_assessments WHERE enrolment_id = :id ORDER BY assessment_id DESC LIMIT 1',
+            ['id' => $payment['enrolment_id']]
+        );
+        if ($assessment) {
+            $this->db->update('enrolment_assessments', [
+                'status' => 'partial',
+                'paid_at' => null,
+            ], 'assessment_id = :id', ['id' => $assessment['assessment_id']]);
+        }
+        $this->db->update('enrolments', [
+            'is_cleared' => 0,
+            'college_cleared' => 0,
+            'cleared_at' => null,
+        ], 'enrolment_id = :id', ['id' => $payment['enrolment_id']]);
 
         return [
             'success' => true,
             'transaction_id' => $transactionId,
             'refund_amount' => $amount,
-            'message' => 'Refund processed successfully'
+            'message' => 'Refund processed successfully',
         ];
     }
 }

@@ -24,19 +24,32 @@
     <div class="card-body p-0">
         <?php if (!empty($students)): ?>
             <div class="table-responsive">
-                <table class="table table-hover mb-0" aria-label="Students list">
+                <table class="table table-hover align-middle mb-0" aria-label="Students list">
                     <thead class="table-light">
-                        <tr><th>Ref No</th><th>Name</th><th>Program</th><th>Actions</th></tr>
+                        <tr>
+                            <th style="width: 140px;">Ref No</th>
+                            <th>Name</th>
+                            <th>Program</th>
+                            <th class="text-end" style="width: 160px;">Actions</th>
+                        </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($students as $s): ?>
+                            <?php
+                                $programText = trim(($s['program_code'] ?? '') . (!empty($s['description']) ? ' - ' . $s['description'] : ''));
+                                if (empty($programText)) {
+                                    $programText = '<span class="text-muted fst-italic">Not Assigned</span>';
+                                } else {
+                                    $programText = htmlspecialchars($programText);
+                                }
+                            ?>
                             <tr>
-                                <td><?= htmlspecialchars($s['ref_no'] ?? '') ?></td>
-                                <td><?= htmlspecialchars($s['lname'] . ', ' . $s['fname'] . ' ' . ($s['mname'] ?? '')) ?></td>
-                                <td><?= htmlspecialchars(($s['program_code'] ?? '') . ' - ' . ($s['description'] ?? '')) ?></td>
-                                <td class="text-end">
-                                    <a href="/ssis/registrar/students/<?= $s['stud_id'] ?>" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> View</a>
-                                    <a href="/ssis/registrar/students/<?= $s['stud_id'] ?>/edit" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i> Edit</a>
+                                <td class="font-monospace fw-semibold text-primary"><?= htmlspecialchars($s['ref_no'] ?? '') ?></td>
+                                <td class="fw-medium"><?= htmlspecialchars(trim($s['lname'] . ', ' . $s['fname'] . ' ' . ($s['mname'] ?? ''))) ?></td>
+                                <td><?= $programText ?></td>
+                                <td class="text-end text-nowrap">
+                                    <a href="/ssis/registrar/students/<?= $s['stud_id'] ?>" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye me-1"></i>View</a>
+                                    <a href="/ssis/registrar/students/<?= $s['stud_id'] ?>/edit" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil me-1"></i>Edit</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

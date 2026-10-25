@@ -1,15 +1,15 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0">Edit Grades</h1>
-    <a href="/faculty/grade-submissions/<?= $submission['submission_id'] ?>" class="btn btn-outline-secondary">
+    <a href="/ssis/faculty/grade-submissions/<?= $submission['submission_id'] ?>" class="btn btn-outline-secondary">
         <i class="bi bi-arrow-left me-1"></i>Back
     </a>
 </div>
 
 <nav aria-label="Breadcrumb" class="mb-4">
     <ol class="breadcrumb mb-0 breadcrumb-custom">
-        <li class="breadcrumb-item"><a href="/faculty/dashboard">Dashboard</a></li>
-        <li class="breadcrumb-item"><a href="/faculty/grade-submissions">Grade Submissions</a></li>
-        <li class="breadcrumb-item"><a href="/faculty/grade-submissions/<?= $submission['submission_id'] ?>">View</a></li>
+        <li class="breadcrumb-item"><a href="/ssis/faculty/dashboard">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="/ssis/faculty/grade-submissions">Grade Submissions</a></li>
+        <li class="breadcrumb-item"><a href="/ssis/faculty/grade-submissions/<?= $submission['submission_id'] ?>">View</a></li>
         <li class="breadcrumb-item active" aria-current="page">Edit</li>
     </ol>
 </nav>
@@ -43,7 +43,7 @@
         </div>
     </div>
     <div class="card-body">
-        <form method="POST" action="/faculty/grade-submissions/<?= $submission['submission_id'] ?>/edit" class="row g-3">
+        <form method="POST" action="/ssis/faculty/grade-submissions/<?= $submission['submission_id'] ?>/edit" class="row g-3">
             <input type="hidden" name="csrf_token" value="<?= App::csrf_token() ?>">
             
             <div class="col-12">
@@ -83,7 +83,7 @@
                 <button type="submit" class="btn btn-primary">
                     <i class="bi bi-save me-1"></i>Save Grades
                 </button>
-                <a href="/faculty/grade-submissions/<?= $submission['submission_id'] ?>" class="btn btn-outline-secondary">
+                <a href="/ssis/faculty/grade-submissions/<?= $submission['submission_id'] ?>" class="btn btn-outline-secondary">
                     <i class="bi bi-x me-1"></i>Cancel
                 </a>
             </div>

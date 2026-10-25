@@ -124,9 +124,24 @@
                         </select>
                     </div>
 
+                    <div class="mb-3">
+                        <label for="amount_paid" class="form-label">Amount to Pay</label>
+                        <div class="input-group">
+                            <span class="input-group-text">₱</span>
+                            <input type="number" name="amount_paid" id="amount_paid" class="form-control form-control-lg"
+                                   step="0.01" min="1" max="<?= $assessment['net_amount'] ?>"
+                                   value="<?= number_format($assessment['net_amount'], 2, '.', '') ?>" required>
+                        </div>
+                        <div class="form-text">Maximum: ₱ <?= number_format($assessment['net_amount'], 2) ?>
+                            <?php if (isset($assessment['balance']) && $assessment['balance'] < $assessment['net_amount']): ?>
+                                | Remaining balance: ₱ <?= number_format($assessment['balance'], 2) ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
                     <div class="d-grid gap-2 mt-3">
                         <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="bi bi-credit-card me-1"></i>Pay ₱ <?= number_format($assessment['net_amount'] ?? 0, 2) ?>
+                            <i class="bi bi-credit-card me-1"></i>Pay ₱ <span id="payAmount"><?= number_format($assessment['net_amount'], 2) ?></span>
                         </button>
                     </div>
                 </form>
@@ -138,9 +153,16 @@
                         <li>You will receive an email confirmation upon successful payment.</li>
                         <li>Official receipt will be available for download after payment.</li>
                         <li>For Bank Transfer, please use the reference number provided after payment.</li>
+                        <li>Partial payments are allowed. You can make multiple payments until the full amount is settled.</li>
                     </ul>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+document.getElementById('amount_paid').addEventListener('input', function() {
+    document.getElementById('payAmount').textContent = parseFloat(this.value || 0).toFixed(2);
+});
+</script>

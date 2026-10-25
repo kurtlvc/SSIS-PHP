@@ -101,6 +101,7 @@ function clearBadge($status) {
                                             <form method="POST" action="/ssis/department/clearance/<?= $student['stud_id'] ?>" class="d-inline">
                                                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token ?? '') ?>">
                                                 <input type="hidden" name="record_id" value="<?= $cd['clearance_id'] ?>">
+                                                <input type="hidden" name="sem_id" value="<?= $activeSemester ?>">
                                                 <select name="status" class="form-select form-select-sm d-inline-block w-auto" aria-label="Update clearance status">
                                                     <option value="Cleared" <?= $cd['status'] == 'Cleared' ? 'selected' : '' ?>>Cleared</option>
                                                     <option value="On-Hold" <?= $cd['status'] == 'On-Hold' ? 'selected' : '' ?>>On-Hold</option>
@@ -113,6 +114,7 @@ function clearBadge($status) {
                                                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token ?? '') ?>">
                                                 <input type="hidden" name="department_id" value="<?= $cd['dept_id'] ?>">
                                                 <input type="hidden" name="sem_id" value="<?= $activeSemester ?>">
+                                                <input type="hidden" name="status" value="Cleared">
                                                 <button type="submit" name="action" value="create" class="btn btn-sm btn-success">Sign Off</button>
                                             </form>
                                         <?php endif; ?>

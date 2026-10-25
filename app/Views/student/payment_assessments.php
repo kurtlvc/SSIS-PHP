@@ -112,9 +112,11 @@
                                     </button>
                                 </form>
                             <?php endif; ?>
-                            <a href="/ssis/cashier/receipts/<?= $assessment['assessment_id'] ?>" class="btn btn-outline-secondary btn-sm" target="_blank" title="View Receipt">
-                                <i class="bi bi-receipt me-1"></i>View Receipt
-                            </a>
+                            <?php if ($isPaid): ?>
+                                <a href="/ssis/student/payment/history/<?= $assessment['assessment_id'] ?>" class="btn btn-outline-secondary btn-sm">
+                                    <i class="bi bi-receipt me-1"></i>View Receipt
+                                </a>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>

@@ -60,10 +60,7 @@
                                 <td class="small text-tertiary font-monospace"><?= htmlspecialchars($item['code']) ?></td>
                                 <td class="small text-center fw-bold"><?= $item['units'] ?></td>
                                 <td class="small text-tertiary">
-                                    <?= htmlspecialchars($item['day_name'] ?? '') ?> 
-                                    <?= htmlspecialchars($item['time_start'] ?? '') ?>-<?= htmlspecialchars($item['time_end'] ?? '') ?>
-                                    <br>
-                                    <small><?= htmlspecialchars($item['room_name'] ?? '') ?></small>
+                                    <?= htmlspecialchars($item['schedule_info'] ?? 'TBA') ?>
                                 </td>
                                 <td class="small text-tertiary">
                                     <?= htmlspecialchars(($item['prof_fname'] ?? '') . ' ' . ($item['prof_lname'] ?? '')) ?>
@@ -99,10 +96,17 @@
         </div>
     <?php endif; ?>
 
+    <?php if ($cart['status'] === 'submitted'): ?>
+        <div class="alert alert-info mb-4">
+            <i class="bi bi-info-circle me-1"></i>
+            Your enrollment has been submitted. Please wait for the registrar to assess it.
+        </div>
+    <?php endif; ?>
+
     <?php if ($cart['status'] === 'assessed'): ?>
         <div class="alert alert-info mb-4">
             <i class="bi bi-info-circle me-1"></i>
-            Your cart has been submitted for assessment. Please wait for the registrar to generate your assessment.
+            Your enrollment has been assessed. You may now view and pay your assessment.
         </div>
     <?php endif; ?>
 
@@ -187,9 +191,11 @@
                             </button>
                         </form>
                     <?php endif; ?>
-                    <a href="/ssis/cashier/receipts/<?= $assessment['assessment_id'] ?>" class="btn btn-outline-secondary btn-sm" target="_blank" title="View Receipt">
-                        <i class="bi bi-receipt me-1"></i>View Receipt
-                    </a>
+                    <?php if ($assessment['status'] === 'paid'): ?>
+                        <a href="/ssis/student/payment/history/<?= $assessment['assessment_id'] ?>" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-receipt me-1"></i>View Receipt
+                        </a>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>

@@ -16,15 +16,19 @@ class AuditService
      */
     public function log(string $action, string $entityType, ?int $entityId = null, array $oldValues = [], array $newValues = []): int
     {
+        $meta = [
+            'old' => !empty($oldValues) ? $oldValues : null,
+            'new' => !empty($newValues) ? $newValues : null,
+            'ip' => $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
+        ];
+
         $data = [
             'actor_id' => $this->currentUserId,
             'action' => $action, // CREATE, READ, UPDATE, DELETE, LOGIN, LOGOUT, etc.
-            'entity_type' => $entityType, // students, enrolments, payments, etc.
-            'entity_id' => $entityId,
-            'old_values' => !empty($oldValues) ? json_encode($oldValues) : null,
-            'new_values' => !empty($newValues) ? json_encode($newValues) : null,
-            'ip_address' => $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'unknown',
-            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
+            'entity' => $entityType, // students, enrolments, payments, accounts, etc.
+            'entity_id' => $entityId !== null ? (string)$entityId : '',
+            'meta' => json_encode($meta),
             'created_at' => date('Y-m-d H:i:s')
         ];
 
@@ -82,7 +86,7 @@ class AuditService
         }
 
         if (!empty($filters['entity_type'])) {
-            $where .= " AND al.entity_type = :entity_type";
+            $where .= " AND al.entity = :entity_type";
             $params['entity_type'] = $filters['entity_type'];
         }
 
@@ -134,7 +138,7 @@ class AuditService
         }
 
         if (!empty($filters['entity_type'])) {
-            $where .= " AND entity_type = :entity_type";
+            $where .= " AND entity = :entity_type";
             $params['entity_type'] = $filters['entity_type'];
         }
 

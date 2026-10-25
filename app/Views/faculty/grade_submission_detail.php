@@ -1,14 +1,14 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0">Grade Submission Details</h1>
-    <a href="/faculty/grade-submissions" class="btn btn-outline-secondary">
+    <a href="/ssis/faculty/grade-submissions" class="btn btn-outline-secondary">
         <i class="bi bi-arrow-left me-1"></i>Back to Submissions
     </a>
 </div>
 
 <nav aria-label="Breadcrumb" class="mb-4">
     <ol class="breadcrumb mb-0 breadcrumb-custom">
-        <li class="breadcrumb-item"><a href="/faculty/dashboard">Dashboard</a></li>
-        <li class="breadcrumb-item"><a href="/faculty/grade-submissions">Grade Submissions</a></li>
+        <li class="breadcrumb-item"><a href="/ssis/faculty/dashboard">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="/ssis/faculty/grade-submissions">Grade Submissions</a></li>
         <li class="breadcrumb-item active" aria-current="page">Submission Details</li>
     </ol>
 </nav>
@@ -99,18 +99,18 @@
             <div class="card-body">
                 <div class="d-grid gap-2">
                     <?php if ($submission['status'] === 'draft'): ?>
-                        <form method="POST" action="/faculty/grade-submissions/<?= $submission['submission_id'] ?>/submit" class="d-inline" onsubmit="return confirm('Submit this draft for review?');">
+                        <form method="POST" action="/ssis/faculty/grade-submissions/<?= $submission['submission_id'] ?>/submit" class="d-inline" onsubmit="return confirm('Submit this draft for review?');">
                             <input type="hidden" name="csrf_token" value="<?= App::csrf_token() ?>">
                             <button type="submit" class="btn btn-success w-100">
                                 <i class="bi bi-send-check me-1"></i>Submit for Review
                             </button>
                         </form>
                     <?php elseif ($submission['status'] === 'submitted' || $submission['status'] === 'reviewed'): ?>
-                        <a href="/faculty/grade-submissions/<?= $submission['submission_id'] ?>/edit" class="btn btn-primary w-100">
+                        <a href="/ssis/faculty/grade-submissions/<?= $submission['submission_id'] ?>/edit" class="btn btn-primary w-100">
                             <i class="bi bi-pencil me-1"></i>Edit Grades
                         </a>
                     <?php elseif ($submission['status'] === 'approved'): ?>
-                        <form method="POST" action="/faculty/grade-submissions/<?= $submission['submission_id'] ?>/post" class="d-inline" onsubmit="return confirm('Post these grades to student records? This action cannot be undone.');">
+                        <form method="POST" action="/ssis/faculty/grade-submissions/<?= $submission['submission_id'] ?>/post" class="d-inline" onsubmit="return confirm('Post these grades to student records? This action cannot be undone.');">
                             <input type="hidden" name="csrf_token" value="<?= App::csrf_token() ?>">
                             <button type="submit" class="btn btn-primary w-100">
                                 <i class="bi bi-upload me-1"></i>Post Grades

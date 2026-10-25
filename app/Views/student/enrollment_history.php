@@ -67,8 +67,8 @@
                                 <td class="small text-center fw-bold"><?= $enrolment['total_units'] ?? 0 ?></td>
                                 <td class="small text-tertiary"><?= $enrolment['registration_date'] ? date('M d, Y', strtotime($enrolment['registration_date'])) : 'N/A' ?></td>
                                 <td class="text-center">
-                                    <a href="/ssis/student/enrollment/view/<?= $enrolment['enrolment_id'] ?>" class="btn btn-sm btn-outline-primary">
-                                        <i class="bi bi-eye me-1"></i>View Details
+                                    <a href="/ssis/student/schedule" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-calendar-week me-1"></i>Schedule
                                     </a>
                                 </td>
                             </tr>

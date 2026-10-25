@@ -50,7 +50,7 @@
                         <td>Student Portal</td>
                     </tr>
                     <tr>
-                        <td><span class="badge bg-secondary">Cashier</span></td>
+                        <td><span class="badge bg-success">Cashier</span></td>
                         <td>Cashier. Payment processing, receipt generation, daily collections.</td>
                         <td>65</td>
                         <td>Cashier</td>

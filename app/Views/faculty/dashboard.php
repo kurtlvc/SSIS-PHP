@@ -124,15 +124,15 @@
                                         </td>
                                         <td class="text-center">
                                             <div class="btn-group btn-group-sm" role="group">
-                                                <a href="/faculty/grade-submissions/<?= $sched['submission_id'] ?? 0 ?>" class="btn btn-outline-primary btn-sm" title="View Grades">
+                                                <a href="/ssis/faculty/grade-submissions/<?= $sched['submission_id'] ?? 0 ?>" class="btn btn-outline-primary btn-sm" title="View Grades">
                                                     <i class="bi bi-eye"></i>
                                                 </a>
                                                 <?php if (!isset($sched['submission_id'])): ?>
-                                                    <a href="/faculty/grade-submissions/create/confirm?sched_id=<?= $sched['sched_id'] ?>" class="btn btn-outline-success" title="Create Submission">
+                                                    <a href="/ssis/faculty/grade-submissions/create/confirm?sched_id=<?= $sched['sched_id'] ?>" class="btn btn-outline-success" title="Create Submission">
                                                         <i class="bi bi-plus-circle"></i>
                                                     </a>
                                                 <?php else: ?>
-                                                    <a href="/faculty/grade-submissions/<?= $sched['submission_id'] ?>" class="btn btn-outline-primary" title="Edit Grades">
+                                                    <a href="/ssis/faculty/grade-submissions/<?= $sched['submission_id'] ?>" class="btn btn-outline-primary" title="Edit Grades">
                                                         <i class="bi bi-pencil"></i>
                                                     </a>
                                                 <?php endif; ?>
@@ -182,16 +182,16 @@
             <div class="card-header fw-semibold">Quick Actions</div>
             <div class="card-body">
                 <div class="d-flex flex-wrap gap-2">
-                    <a href="/faculty/grade-submissions" class="btn btn-primary">
+                    <a href="/ssis/faculty/grade-submissions" class="btn btn-primary">
                         <i class="bi bi-pencil-square me-1"></i>Grade Submissions
                     </a>
-                    <a href="/faculty/grade-submissions/create" class="btn btn-success">
+                    <a href="/ssis/faculty/grade-submissions/create" class="btn btn-success">
                         <i class="bi bi-plus-circle me-1"></i>New Grade Submission
                     </a>
-                    <a href="/faculty/schedule" class="btn btn-outline-primary">
+                    <a href="/ssis/faculty/schedule" class="btn btn-outline-primary">
                         <i class="bi bi-calendar-event me-1"></i>My Schedule
                     </a>
-                    <a href="/faculty/profile" class="btn btn-outline-secondary">
+                    <a href="/ssis/faculty/profile" class="btn btn-outline-secondary">
                         <i class="bi bi-person me-1"></i>My Profile
                     </a>
                 </div>

@@ -84,7 +84,7 @@
                                 <td class="fw-medium"><?= htmlspecialchars($rec['lname'] . ', ' . $rec['fname']) ?></td>
                                 <td class="small text-tertiary font-monospace"><?= htmlspecialchars($rec['ref_no']) ?></td>
                                 <td>
-                                    <span class="badge bg-<?= $cls ?>"><?= htmlspecialchars($rec['dept_name']) ?></span>
+                                    <span class="badge bg-secondary"><?= htmlspecialchars($rec['dept_name']) ?></span>
                                 </td>
                                 <td class="small text-tertiary"><?= htmlspecialchars($rec['semester_name']) ?></td>
                                 <td>

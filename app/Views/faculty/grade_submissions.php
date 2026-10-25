@@ -1,13 +1,13 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0">Grade Submissions</h1>
-    <a href="/faculty/grade-submissions/create" class="btn btn-primary">
+    <a href="/ssis/faculty/grade-submissions/create" class="btn btn-primary">
         <i class="bi bi-plus-circle me-1"></i>New Submission
     </a>
 </div>
 
 <nav aria-label="Breadcrumb" class="mb-4">
     <ol class="breadcrumb mb-0 breadcrumb-custom">
-        <li class="breadcrumb-item"><a href="/faculty/dashboard">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="/ssis/faculty/dashboard">Dashboard</a></li>
         <li class="breadcrumb-item active" aria-current="page">Grade Submissions</li>
     </ol>
 </nav>
@@ -124,7 +124,7 @@
                 <button type="submit" class="btn btn-primary btn-sm">Filter</button>
             </div>
         </form>
-        <a href="/faculty/grade-submissions/create" class="btn btn-primary btn-sm">
+        <a href="/ssis/faculty/grade-submissions/create" class="btn btn-primary btn-sm">
             <i class="bi bi-plus me-1"></i>New Submission
         </a>
     </div>
@@ -187,18 +187,18 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <a href="/faculty/grade-submissions/<?= $sub['submission_id'] ?>" class="btn btn-outline-primary" title="View">
+                                        <a href="/ssis/faculty/grade-submissions/<?= $sub['submission_id'] ?>" class="btn btn-outline-primary" title="View">
                                             <i class="bi bi-eye"></i>
                                         </a>
                                         <?php if ($sub['status'] === 'draft'): ?>
-                                            <form method="POST" action="/faculty/grade-submissions/<?= $sub['submission_id'] ?>/submit" class="d-inline" onsubmit="return confirm('Submit this draft for review?');">
+                                            <form method="POST" action="/ssis/faculty/grade-submissions/<?= $sub['submission_id'] ?>/submit" class="d-inline" onsubmit="return confirm('Submit this draft for review?');">
                                                 <input type="hidden" name="csrf_token" value="<?= App::csrf_token() ?>">
                                                 <button type="submit" class="btn btn-outline-success" title="Submit for Review">
                                                     <i class="bi bi-send"></i>
                                                 </button>
                                             </form>
                                         <?php elseif ($sub['status'] === 'submitted' || $sub['status'] === 'reviewed'): ?>
-                                            <a href="/faculty/grade-submissions/<?= $sub['submission_id'] ?>/edit" class="btn btn-outline-primary" title="Edit Grades">
+                                            <a href="/ssis/faculty/grade-submissions/<?= $sub['submission_id'] ?>/edit" class="btn btn-outline-primary" title="Edit Grades">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
                                         <?php elseif ($sub['status'] === 'approved'): ?>

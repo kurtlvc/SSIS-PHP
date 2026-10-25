@@ -1,7 +1,7 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0">Payment History</h1>
-    <a href="/ssis/cashier/receipts/<?= $assessment['assessment_id'] ?>" class="btn btn-outline-secondary btn-sm" target="_blank" title="View Receipt">
-        <i class="bi bi-receipt me-1"></i>View Receipt
+    <a href="/ssis/student/payment/assessments" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>Back to Assessments
     </a>
 </div>
 
@@ -134,7 +134,7 @@
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <a href="/ssis/cashier/receipts/<?= $payment['receipt_no'] ?>" class="btn btn-sm btn-outline-primary" target="_blank" title="View Receipt">
+                                    <a href="/ssis/student/payment/receipt/<?= urlencode($payment['receipt_no']) ?>" class="btn btn-sm btn-outline-primary" title="View Receipt">
                                         <i class="bi bi-receipt me-1"></i>View
                                     </a>
                                 </td>

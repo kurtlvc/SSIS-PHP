@@ -31,7 +31,7 @@
 
 <?php if (!empty($availableSchedules)): ?>
     <div class="card mb-4">
-        <div class="card-header fw-semibold">Available Schedules for <?= htmlspecialchars($currentSemester['name'] ?? 'Current Semester') ?></div>
+        <div class="card-header fw-semibold">Available Schedules for <?= htmlspecialchars($currentSemester ?? 'Current Semester') ?></div>
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover mb-0 table-dark-theme" aria-label="Available schedules">
@@ -68,10 +68,7 @@
                                 <td class="small text-tertiary font-monospace"><?= htmlspecialchars($schedule['code']) ?></td>
                                 <td class="small text-center fw-bold"><?= $schedule['units'] ?></td>
                                 <td class="small text-tertiary">
-                                    <?= htmlspecialchars($schedule['day_name'] ?? '') ?>
-                                    <?= htmlspecialchars($schedule['time_start'] ?? '') ?>-<?= htmlspecialchars($schedule['time_end'] ?? '') ?>
-                                    <br>
-                                    <small><?= htmlspecialchars($schedule['room_name'] ?? '') ?></small>
+                                    <?= htmlspecialchars($schedule['schedule_info'] ?? 'TBA') ?>
                                 </td>
                                 <td class="small text-tertiary">
                                     <?= htmlspecialchars(($schedule['prof_fname'] ?? '') . ' ' . ($schedule['prof_lname'] ?? '')) ?>

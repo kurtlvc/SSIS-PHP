@@ -35,7 +35,14 @@ return [
     'app_env'    => env('APP_ENV', 'local'),
     'app_debug'  => env('APP_DEBUG', false),
     'site_url'   => rtrim(env('SITE_URL', 'http://localhost'), '/'),
+    'system_title' => env('APP_NAME', 'CuyoSSIS'),
     'base_path'  => __DIR__ . '/..',
+
+    'fees' => [
+        'tuition_per_unit'  => (float) env('FEE_TUITION_PER_UNIT', 1500),
+        'misc_fee'          => (float) env('FEE_MISC', 2000),
+        'lab_fee_per_unit'  => (float) env('FEE_LAB_PER_UNIT', 500),
+    ],
 
     'db' => [
         'host'      => env('DB_HOST', '127.0.0.1'),
