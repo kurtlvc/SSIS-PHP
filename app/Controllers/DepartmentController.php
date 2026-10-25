@@ -23,6 +23,13 @@ class DepartmentController extends BaseController
 
         $semId = $_GET['sem_id'] ?? null;
         $deptId = $_GET['dept_id'] ?? null;
+        if (!$semId) {
+            $active = $this->enrolmentModel->getActiveAcademicYearSemester();
+            $semId = $active['sem_id'] ?? null;
+        }
+        if ($semId) {
+            $this->clearanceModel->ensureRecordsForTerm((int) $semId);
+        }
         $departments = $this->clearanceModel->getAllDepartments();
         $records = $this->clearanceModel->getClearanceQueue($semId, $deptId);
         $semesters = $this->enrolmentModel->getAllSemesters();
@@ -75,6 +82,7 @@ class DepartmentController extends BaseController
 
         $clearanceData = [];
         if ($student && $semId) {
+            $this->clearanceModel->ensureRecordsForStudent((int) $studId, (int) $semId);
             $clearanceData = $this->clearanceModel->getDepartmentsByStudent($studId, $semId);
         }
 
@@ -106,36 +114,61 @@ class DepartmentController extends BaseController
         }
 
         $recordId = $_POST['record_id'] ?? null;
+        $departmentId = $_POST['department_id'] ?? null;
         $status = $_POST['status'] ?? null;
+        $semId = $_POST['sem_id'] ?? null;
         $validStatuses = ['Pending', 'Cleared', 'On-Hold'];
 
-        if ($recordId && in_array($status, $validStatuses)) {
-            // Get record details before update
-            $record = $this->db->fetchOne("SELECT cr.*, cd.dept_name, s.emailaddress, s.fname, s.lname, s.stud_id
-                FROM clearance_records cr
-                JOIN clearance_departments cd ON cr.dept_id = cd.dept_id
-                JOIN students s ON cr.stud_id = s.stud_id
-                WHERE cr.record_id = :id", ['id' => $recordId]);
+        if (!$semId) {
+            $active = $this->enrolmentModel->getActiveAcademicYearSemester();
+            $semId = $active['sem_id'] ?? null;
+        }
 
-            $this->clearanceModel->updateStatus($recordId, $status, $_SESSION['owner_id'] ?? 0);
+        if (in_array($status, $validStatuses) && $semId && (!$recordId || !$departmentId)) {
+            $this->clearanceModel->ensureRecordsForStudent((int) $studId, (int) $semId);
+            if (!$recordId && $departmentId) {
+                $row = $this->db->fetchOne(
+                    'SELECT clearance_id FROM clearance_records
+                     WHERE stud_id = :stud_id AND sem_id = :sem_id AND department_id = :dept_id
+                     ORDER BY clearance_id DESC LIMIT 1',
+                    ['stud_id' => $studId, 'sem_id' => $semId, 'dept_id' => $departmentId]
+                );
+                $recordId = $row['clearance_id'] ?? null;
+            }
+        }
+
+        if ($recordId && in_array($status, $validStatuses)) {
+            $record = $this->db->fetchOne(
+                "SELECT cr.*, cd.dept_name, s.emailaddress, s.fname, s.lname, s.stud_id
+                 FROM clearance_records cr
+                 JOIN clearance_departments cd ON cr.department_id = cd.dept_id
+                 JOIN students s ON cr.stud_id = s.stud_id
+                 WHERE cr.clearance_id = :id AND cr.stud_id = :stud_id",
+                ['id' => $recordId, 'stud_id' => $studId]
+            );
+
+            if (!$record) {
+                App::flash('error', 'Clearance record not found.');
+                App::redirect('/department/clearance/' . $studId);
+                return;
+            }
+
+            $this->clearanceModel->updateStatus($recordId, $status, $_SESSION['owner_id'] ?? null);
             App::flash('success', 'Clearance status updated.');
 
-            // Send clearance notification (simulated email + in-app notification)
-            if ($record) {
-                $this->emailService->sendClearanceNotification([
-                    'to_email' => $record['emailaddress'],
-                    'to_name' => $record['fname'] . ' ' . $record['lname'],
-                    'student_id' => $record['stud_id'],
-                    'department' => $record['dept_name'],
-                    'status' => $status,
-                    'clearance_id' => $recordId,
-                ]);
-                $this->notificationService->clearanceNotification($record['stud_id'], [
-                    'department' => $record['dept_name'],
-                    'status' => $status,
-                    'clearance_id' => $recordId,
-                ]);
-            }
+            $this->emailService->sendClearanceNotification([
+                'to_email' => $record['emailaddress'],
+                'to_name' => $record['fname'] . ' ' . $record['lname'],
+                'student_id' => $record['stud_id'],
+                'department' => $record['dept_name'],
+                'status' => $status,
+                'clearance_id' => $recordId,
+            ]);
+            $this->notificationService->clearanceNotification((int) $record['stud_id'], [
+                'department' => $record['dept_name'],
+                'status' => $status,
+                'clearance_id' => $recordId,
+            ]);
         } else {
             App::flash('error', 'Invalid clearance data.');
         }

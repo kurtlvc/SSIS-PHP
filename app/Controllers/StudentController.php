@@ -1,6 +1,8 @@
 <?php
 
 require_once __DIR__ . '/../Services/EnrolmentService.php';
+require_once __DIR__ . '/../Services/PaymentGatewayService.php';
+require_once __DIR__ . '/../Services/NotificationService.php';
 
 class StudentController extends BaseController
 {
@@ -149,6 +151,9 @@ class StudentController extends BaseController
         $enrolmentModel = new EnrolmentModel();
         $active = $enrolmentModel->getActiveAcademicYearSemester();
         $semId = $active['sem_id'] ?? null;
+        if ($semId && $studId) {
+            $clearanceModel->ensureRecordsForStudent((int) $studId, (int) $semId);
+        }
         $clearance = $clearanceModel->getDepartmentsByStudent($studId, $semId);
 
         App::view('student/clearance', [
@@ -259,17 +264,7 @@ class StudentController extends BaseController
 
         $assessment = null;
         if (in_array($cart['status'], ['assessed', 'paid'])) {
-            $assessment = $this->db->fetchOne('
-                SELECT ea.*, e.enrolment_id, e.stud_id, ay.ay_name, sem.semester_name, p.program_code
-                FROM enrolment_assessments ea
-                JOIN enrolments e ON ea.enrolment_id = e.enrolment_id
-                JOIN academic_years ay ON e.ay_id = ay.ay_id
-                JOIN semesters sem ON e.sem_id = sem.sem_id
-                JOIN programs p ON e.program_id = p.program_id
-                JOIN enrolment_carts ec ON e.enrolment_id = ec.enrolment_id
-                WHERE ec.cart_id = :cart_id
-                ORDER BY ea.assessed_at DESC
-                LIMIT 1', ['cart_id' => $cart['cart_id']]);
+            $assessment = $enrolmentService->getAssessmentByCart((int) $cart['cart_id']);
         }
 
         App::view('student/enrollment_cart', [
@@ -457,8 +452,14 @@ class StudentController extends BaseController
             return;
         }
 
+        $paymentModel = new PaymentModel();
+        $totalPaid = $paymentModel->getTotalCompleted((int) $assessment['enrolment_id']);
+        $balance = max(0, (float) $assessment['net_amount'] - $totalPaid);
+        $assessment['balance'] = $balance;
+
         App::view('student/payment_pay', [
             'assessment' => $assessment,
+            'csrf_token' => App::csrf_token(),
             'pageTitle' => 'Pay Assessment',
             'module' => 'student',
         ]);
@@ -475,7 +476,6 @@ class StudentController extends BaseController
             return;
         }
 
-        $studId = $this->getStudentId();
         $assessmentId = $_POST['assessment_id'] ?? null;
         $gateway = $_POST['gateway'] ?? 'simulated';
 
@@ -493,21 +493,37 @@ class StudentController extends BaseController
             App::redirect('/student/payment/assessments');
             return;
         }
-
+        if (!$assessment['is_approved']) {
+            App::flash('error', 'Your enrollment has not been approved by the registrar yet.');
+            App::redirect('/student/payment/assessments');
+            return;
+        }
         if ($assessment['status'] === 'paid') {
             App::flash('error', 'This assessment is already paid.');
             App::redirect('/student/payment/assessments');
             return;
         }
 
-        // Process payment through gateway
+        $paymentModel = new PaymentModel();
+        $receiptNo = $paymentModel->generateReceiptNo((int) $assessment['ay_id']);
+        $amount = (float) ($_POST['amount_paid'] ?? $assessment['net_amount']);
+        $paymentId = (int) $paymentModel->create([
+            'enrolment_id' => $assessment['enrolment_id'],
+            'receipt_no' => $receiptNo,
+            'amount_paid' => $amount,
+            'payment_date' => date('Y-m-d H:i:s'),
+            'cashier_id' => null,
+            'status' => 'pending',
+        ]);
+
         $paymentGateway = new PaymentGatewayService();
-        $result = $paymentGateway->processPayment($assessment['enrolment_id'], $gateway);
+        $result = $paymentGateway->processPayment($paymentId, $gateway);
 
         if ($result['success']) {
-            App::flash('success', 'Payment processed successfully! Reference: ' . $result['gateway_reference']);
-            App::redirect('/student/payment/assessments');
+            App::flash('success', 'Payment processed successfully. Receipt: ' . $result['receipt_no']);
+            App::redirect('/student/payment/receipt/' . urlencode($result['receipt_no']));
         } else {
+            $this->db->update('payments', ['status' => 'failed'], 'payment_id = :id', ['id' => $paymentId]);
             App::flash('error', 'Payment failed: ' . $result['error']);
             App::redirect('/student/payment/pay?assessment_id=' . $assessmentId);
         }
@@ -549,18 +565,42 @@ class StudentController extends BaseController
             return;
         }
 
-        $payments = $this->db->fetchAll("
-            SELECT p.*, per.lname as cashier_lname, per.fname as cashier_fname
-            FROM payments p
-            LEFT JOIN personnel per ON p.cashier_id = per.p_id
-            WHERE p.enrolment_id = :enrolment_id
-            ORDER BY p.payment_date DESC", ['enrolment_id' => $assessment['enrolment_id']]);
+        $payments = (new PaymentModel())->getPaymentsByEnrolment((int) $assessment['enrolment_id']);
 
         App::view('student/payment_history', [
             'student' => $this->studentModel->findById($studId),
             'assessment' => $assessment,
             'payments' => $payments,
             'pageTitle' => 'Payment History',
+            'module' => 'student',
+        ]);
+    }
+
+    public function paymentReceipt($receiptNo)
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->middleware->student()) return;
+
+        $receipt = (new PaymentModel())->findReceipt($receiptNo);
+        $ownsReceipt = false;
+        if ($receipt) {
+            $row = $this->db->fetchOne(
+                'SELECT 1 FROM payments p JOIN enrolments e ON p.enrolment_id = e.enrolment_id
+                 WHERE p.receipt_no = :receipt AND e.stud_id = :stud_id',
+                ['receipt' => $receiptNo, 'stud_id' => $this->getStudentId()]
+            );
+            $ownsReceipt = (bool) $row;
+        }
+
+        if (!$ownsReceipt) {
+            App::flash('error', 'Receipt not found.');
+            App::redirect('/student/payment/assessments');
+            return;
+        }
+
+        App::view('cashier/receipt', [
+            'receipt' => $receipt,
+            'pageTitle' => 'Official Receipt',
             'module' => 'student',
         ]);
     }

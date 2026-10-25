@@ -316,10 +316,12 @@ class AdminController extends BaseController
             $params['actor_id'] = $actor;
         }
 
-        $sql = "SELECT id, actor_id, action, entity, entity_id, meta, created_at
-                FROM audit_log
+        $sql = "SELECT al.id, al.actor_id, al.action, al.entity, al.entity_id, al.meta, al.created_at,
+                       a.login AS actor_login, a.role AS actor_role
+                FROM audit_log al
+                LEFT JOIN accounts a ON al.actor_id = a.id
                 {$where}
-                ORDER BY id DESC LIMIT 200";
+                ORDER BY al.id DESC LIMIT 200";
 
         $logs = $this->db->fetchAll($sql, $params);
 

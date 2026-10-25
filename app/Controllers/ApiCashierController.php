@@ -5,6 +5,7 @@ class ApiCashierController extends BaseController
     private $paymentModel;
     private $enrolmentModel;
     private $userModel;
+    private $paymentGateway;
 
     public function __construct()
     {
@@ -12,6 +13,7 @@ class ApiCashierController extends BaseController
         $this->paymentModel    = new PaymentModel();
         $this->enrolmentModel  = new EnrolmentModel();
         $this->userModel       = new UserModel();
+        $this->paymentGateway  = new PaymentGatewayService();
         $this->db              = Database::getInstance();
     }
 
@@ -58,19 +60,18 @@ class ApiCashierController extends BaseController
             App::json(['success' => false, 'message' => 'Active enrolment not found.'], 404);
         }
 
-        $payments = $this->paymentModel->getPaymentsByEnrolment($enrolment['enrolment_id']);
-        $paidTotal = 0;
-        foreach ($payments as $p) {
-            $paidTotal += (float) ($p['amount_paid'] ?? 0);
-        }
-        $balance = (float) ($enrolment['total_units'] ?? 0) * 500 - $paidTotal;
+        $assessment = $this->paymentModel->getAssessmentByEnrolment((int) $enrolment['enrolment_id']);
+        $payments = $this->paymentModel->getPaymentsByEnrolment((int) $enrolment['enrolment_id']);
+        $paidTotal = $this->paymentModel->getTotalCompleted((int) $enrolment['enrolment_id']);
+        $balance = $assessment ? max(0, (float) $assessment['net_amount'] - $paidTotal) : 0;
 
         App::json([
             'success'     => true,
             'enrolment'   => $enrolment,
+            'assessment'  => $assessment,
             'payments'    => $payments,
             'paid_total'  => $paidTotal,
-            'balance'     => max(0, $balance),
+            'balance'     => $balance,
         ]);
     }
 
@@ -82,28 +83,50 @@ class ApiCashierController extends BaseController
         $input = $this->getJsonInput();
         $enrolmentId = (int) ($input['enrolment_id'] ?? 0);
         $amount       = (float) ($input['amount_paid'] ?? 0);
-        $ayId         = (int) ($input['ay_id'] ?? 1);
+        $gateway      = $input['gateway'] ?? 'simulated';
 
         if ($enrolmentId <= 0 || $amount <= 0) {
             App::json(['success' => false, 'message' => 'Invalid payment data.'], 400);
         }
 
-        $receiptNo = $this->paymentModel->generateReceiptNo($ayId);
+        $enrolment = $this->enrolmentModel->findById($enrolmentId);
+        if (!$enrolment) {
+            App::json(['success' => false, 'message' => 'Enrolment not found.'], 404);
+        }
 
-        $this->db->beginTransaction();
-        try {
-            $this->paymentModel->create([
-                'enrolment_id' => $enrolmentId,
-                'receipt_no'   => $receiptNo,
-                'amount_paid'  => $amount,
-                'cashier_id'   => $_SESSION['owner_id'] ?? 0,
-            ]);
-            $this->db->update('enrolments', ['isassessed' => 1], 'enrolment_id = :id', ['id' => $enrolmentId]);
-            $this->db->commit();
-            App::json(['success' => true, 'message' => 'Payment processed.', 'receipt_no' => $receiptNo], 201);
-        } catch (Exception $e) {
-            $this->db->rollback();
-            App::json(['success' => false, 'message' => 'Payment failed.'], 500);
+        $assessment = $this->paymentModel->getAssessmentByEnrolment((int) $enrolmentId);
+        if (!$assessment) {
+            App::json(['success' => false, 'message' => 'No assessment exists for this enrolment.'], 400);
+        }
+
+        $balance = (float) $assessment['net_amount'] - $this->paymentModel->getTotalCompleted((int) $enrolmentId);
+        if ($amount > $balance + 0.01) {
+            App::json(['success' => false, 'message' => 'Amount exceeds the remaining balance.'], 400);
+        }
+
+        $receiptNo = $this->paymentModel->generateReceiptNo((int) $enrolment['ay_id']);
+        $paymentId = (int) $this->paymentModel->create([
+            'enrolment_id' => $enrolmentId,
+            'receipt_no'   => $receiptNo,
+            'amount_paid'  => $amount,
+            'payment_date' => date('Y-m-d H:i:s'),
+            'cashier_id'   => $_SESSION['owner_id'] ?? null,
+            'status'       => 'pending',
+        ]);
+
+        $gatewayResult = $this->paymentGateway->processPayment($paymentId, $gateway);
+
+        if ($gatewayResult['success']) {
+            App::json([
+                'success' => true,
+                'message' => 'Payment processed successfully.',
+                'receipt_no' => $gatewayResult['receipt_no'],
+                'gateway_reference' => $gatewayResult['gateway_reference'],
+                'auth_code' => $gatewayResult['auth_code'],
+            ], 201);
+        } else {
+            $this->db->update('payments', ['status' => 'failed'], 'payment_id = :id', ['id' => $paymentId]);
+            App::json(['success' => false, 'message' => 'Payment failed: ' . $gatewayResult['error']], 500);
         }
     }
 
@@ -133,6 +156,7 @@ class ApiCashierController extends BaseController
                 JOIN students s ON s.stud_id = e.stud_id
                 LEFT JOIN personnel pr ON pr.p_id = p.cashier_id
                 WHERE DATE(p.payment_date) = :day
+                  AND p.status = 'completed'
                 ORDER BY p.payment_date DESC";
 
         $rows = $this->db->fetchAll($sql, ['day' => $day]);

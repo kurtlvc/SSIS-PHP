@@ -55,6 +55,13 @@ class CashierController extends BaseController
             $enrolment = $this->enrolmentModel->findById($enrolmentId);
         }
 
+        $assessment = $enrolment
+            ? $this->paymentModel->getAssessmentByEnrolment((int) $enrolment['enrolment_id'])
+            : null;
+        $balance = $assessment
+            ? max(0, (float) $assessment['net_amount'] - $this->paymentModel->getTotalCompleted((int) $enrolment['enrolment_id']))
+            : null;
+
         $cashiers = $this->userModel->getPersonnelList();
 
         $error = App::flash('error');
@@ -62,6 +69,8 @@ class CashierController extends BaseController
 
         App::view('cashier/payment_process', [
             'enrolment' => $enrolment,
+            'assessment' => $assessment,
+            'balance' => $balance,
             'cashiers' => $cashiers,
             'error' => $error,
             'success' => $success,
@@ -83,34 +92,55 @@ class CashierController extends BaseController
         }
 
         $enrolmentId = $_POST['enrolment_id'] ?? null;
-        $amount = $_POST['amount_paid'] ?? 0;
-        $ayId = $_POST['ay_id'] ?? 1;
-        $gateway = $_POST['gateway'] ?? 'simulated'; // simulated, gcash, paymaya, bank
+        $amount = (float) ($_POST['amount_paid'] ?? 0);
+        $gateway = $_POST['gateway'] ?? 'simulated';
 
-        if ($enrolmentId && $amount > 0) {
-            // Get enrolment details for payment gateway
-            $enrolment = $this->enrolmentModel->findById($enrolmentId);
-            if (!$enrolment) {
-                App::flash('error', 'Enrolment not found.');
-                App::redirect('/cashier/payments/process');
-                return;
-            }
-
-            // Process through simulated gateway
-            $gatewayResult = $this->paymentGateway->processPayment($enrolmentId, $gateway);
-
-            if ($gatewayResult['success']) {
-                // Gateway success - payment already recorded by gateway service
-                // The gateway service already created payment record and updated enrolment
-                App::flash('success', "Payment processed successfully via {$gateway}. Reference: {$gatewayResult['gateway_reference']}");
-                App::redirect('/cashier/receipts/' . $gatewayResult['gateway_reference']);
-            } else {
-                App::flash('error', 'Payment failed: ' . $gatewayResult['error']);
-                App::redirect('/cashier/payments/process?enrolment_id=' . $enrolmentId);
-            }
-        } else {
+        if (!$enrolmentId || $amount <= 0) {
             App::flash('error', 'Invalid payment data.');
             App::redirect('/cashier/payments/process');
+            return;
+        }
+
+        $enrolment = $this->enrolmentModel->findById($enrolmentId);
+        if (!$enrolment) {
+            App::flash('error', 'Enrolment not found.');
+            App::redirect('/cashier/payments/process');
+            return;
+        }
+
+        $assessment = $this->paymentModel->getAssessmentByEnrolment((int) $enrolmentId);
+        if (!$assessment) {
+            App::flash('error', 'No assessment exists for this enrolment.');
+            App::redirect('/cashier/payments/process?enrolment_id=' . $enrolmentId);
+            return;
+        }
+
+        $balance = (float) $assessment['net_amount'] - $this->paymentModel->getTotalCompleted((int) $enrolmentId);
+        if ($amount > $balance + 0.01) {
+            App::flash('error', 'Amount exceeds the remaining balance of ₱' . number_format(max(0, $balance), 2));
+            App::redirect('/cashier/payments/process?enrolment_id=' . $enrolmentId);
+            return;
+        }
+
+        $receiptNo = $this->paymentModel->generateReceiptNo((int) $enrolment['ay_id']);
+        $paymentId = (int) $this->paymentModel->create([
+            'enrolment_id' => $enrolmentId,
+            'receipt_no' => $receiptNo,
+            'amount_paid' => $amount,
+            'payment_date' => date('Y-m-d H:i:s'),
+            'cashier_id' => $_SESSION['owner_id'] ?? null,
+            'status' => 'pending',
+        ]);
+
+        $gatewayResult = $this->paymentGateway->processPayment($paymentId, $gateway);
+
+        if ($gatewayResult['success']) {
+            App::flash('success', 'Payment processed successfully. Receipt: ' . $gatewayResult['receipt_no']);
+            App::redirect('/cashier/receipts/' . urlencode($gatewayResult['receipt_no']));
+        } else {
+            $this->db->update('payments', ['status' => 'failed'], 'payment_id = :id', ['id' => $paymentId]);
+            App::flash('error', 'Payment failed: ' . $gatewayResult['error']);
+            App::redirect('/cashier/payments/process?enrolment_id=' . $enrolmentId);
         }
     }
 
@@ -134,6 +164,43 @@ class CashierController extends BaseController
         ]);
     }
 
+    public function receiptPdf($receiptNo)
+    {
+        if (!$this->requireAuth()) return;
+        if (!$this->requireRole(['cashier', 'admin', 'student'])) return;
+
+        $receipt = $this->paymentModel->findReceipt($receiptNo);
+
+        if (!$receipt) {
+            http_response_code(404);
+            App::view('errors/404', ['pageTitle' => 'Receipt Not Found', 'module' => 'cashier']);
+            return;
+        }
+
+        // For student access, verify ownership
+        if ($this->middleware->student()) {
+            $studId = $this->getStudentId();
+            $ownsReceipt = $this->db->fetchOne(
+                'SELECT 1 FROM payments p JOIN enrolments e ON p.enrolment_id = e.enrolment_id
+                 WHERE p.receipt_no = :receipt AND e.stud_id = :stud_id',
+                ['receipt' => $receiptNo, 'stud_id' => $studId]
+            );
+            if (!$ownsReceipt) {
+                http_response_code(403);
+                App::view('errors/unauthorized', ['pageTitle' => 'Unauthorized', 'module' => 'cashier']);
+                return;
+            }
+        }
+
+        // Render print-optimized version (browser print-to-PDF)
+        App::view('cashier/receipt', [
+            'receipt' => $receipt,
+            'pageTitle' => 'Official Receipt',
+            'module' => 'cashier',
+            'pdf_mode' => true,
+        ]);
+    }
+
     public function dailyReport()
     {
         if (!$this->requireAuth()) return;
@@ -147,6 +214,7 @@ class CashierController extends BaseController
                 JOIN students s ON s.stud_id = e.stud_id
                 LEFT JOIN personnel pr ON pr.p_id = p.cashier_id
                 WHERE DATE(p.payment_date) = :day
+                  AND p.status = 'completed'
                 ORDER BY p.payment_date DESC";
 
         $rows = $this->db->fetchAll($sql, ['day' => $day]);
@@ -162,6 +230,36 @@ class CashierController extends BaseController
             'total' => $total,
             'pageTitle' => 'Daily Report',
             'module' => 'cashier',
+        ]);
+    }
+
+    /**
+     * Public receipt verification (no auth required)
+     * Used by QR code on receipts
+     */
+    public function verifyReceipt($receiptNo)
+    {
+        $receipt = $this->paymentModel->findReceipt($receiptNo);
+
+        if (!$receipt) {
+            http_response_code(404);
+            App::view('cashier/verify_receipt', [
+                'receipt' => null,
+                'pageTitle' => 'Receipt Verification',
+                'module' => 'cashier',
+                'verified' => false,
+            ]);
+            return;
+        }
+
+        // Only show completed payments
+        $isVerified = $receipt['status'] === 'completed';
+
+        App::view('cashier/verify_receipt', [
+            'receipt' => $receipt,
+            'pageTitle' => 'Receipt Verification',
+            'module' => 'cashier',
+            'verified' => $isVerified,
         ]);
     }
 }
